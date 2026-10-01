@@ -1,6 +1,6 @@
 # ADR-0009: Teach in JavaScript and Python, pseudocode first
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

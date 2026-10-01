@@ -171,8 +171,9 @@ logicpath/
 │  ├─ contracts/           Zod schemas → OpenAPI + typed client
 │  ├─ grader/              shared item grading (browser + server)
 │  ├─ learning-engine/     BKT + FSRS (browser + server)
-│  ├─ visualizer/          step-engine + renderers
-│  ├─ content-schema/      content types, validators, CLI
+│  ├─ visualizer/          pseudocode interpreter (frames + narration) + React player
+│  ├─ content-schema/      content types (Zod)
+│  ├─ content-tools/       load, check (runs every program), build bundle; CLI
 │  ├─ ui/                  design system (tokens, components, Storybook)
 │  ├─ config/              eslint, tsconfig, prettier presets
 │  └─ observability/       OTel setup shared by apps
@@ -182,4 +183,6 @@ logicpath/
 └─ .github/                workflows, CODEOWNERS, templates
 ```
 
-Tooling: **pnpm** workspaces + **Turborepo** (remote cache) for task orchestration. See [ADR-0001](adr/0001-typescript-monorepo.md).
+Tooling: **pnpm** workspaces + **Turborepo** (remote cache) for task orchestration. Internal packages ship TypeScript source (no build step); Next.js transpiles them and Vitest runs them directly. See [ADR-0001](adr/0001-typescript-monorepo.md).
+
+**Built so far (R0):** `apps/web`, `packages/{learning-engine,grader,visualizer,content-schema,content-tools}`, `content/`. `apps/api`, `apps/judge`, `packages/{contracts,ui,observability}` and `infra/` arrive with R1/R2.

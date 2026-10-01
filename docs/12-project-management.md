@@ -84,8 +84,11 @@ Reviewed every cycle; new risks added by anyone.
 - **Per cycle:** demo of working software, retro actions, roadmap adjustments.
 - **Per release:** release notes, learning outcome review (did mastery/recall improve?).
 
-## 7. Immediate next steps
+## 7. Status and next steps
 
-1. Accept or change the defaults in [ADRs 0001 to 0010](adr/).
-2. Set up the monorepo skeleton and CI (E1).
-3. Build the R0 prototype for one concept, `concept:loops.counter`, and test it with 5 beginners.
+**Done (P0 + P1 code):** monorepo, CI, the learning engine (BKT + FSRS), grader, pseudocode visualizer, content schema and checker, and the R0 web prototype with one full concept (`loops.counter`) in English and Hinglish, saved on the device. ADRs 0001 to 0010 are accepted as the working defaults.
+
+**Next:**
+1. Test the prototype with 5 real beginners and fix what confuses them (P1 exit criterion).
+2. Write Stages 0 and 1 content so the path starts from absolute zero (P3).
+3. Start the MVP backend: identity, practice, learning, review modules and sync of on-device progress (P2).

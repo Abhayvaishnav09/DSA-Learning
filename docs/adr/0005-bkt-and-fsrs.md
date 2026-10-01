@@ -1,6 +1,6 @@
 # ADR-0005: Bayesian Knowledge Tracing for mastery, FSRS for reviews
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

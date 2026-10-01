@@ -1,6 +1,6 @@
 # ADR-0002: Modular monolith with an outbox, not microservices
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

@@ -1,6 +1,6 @@
 # ADR-0007: Free core, entitlements module from day one
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

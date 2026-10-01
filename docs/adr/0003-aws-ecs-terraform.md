@@ -1,6 +1,6 @@
 # ADR-0003: AWS (Mumbai) with ECS Fargate and Terraform
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

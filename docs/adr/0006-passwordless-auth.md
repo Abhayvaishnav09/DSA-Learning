@@ -1,6 +1,6 @@
 # ADR-0006: Passwordless auth: email OTP + Google OIDC, sessions owned by us
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

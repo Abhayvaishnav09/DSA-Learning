@@ -1,6 +1,6 @@
 # ADR-0001: TypeScript end to end in a pnpm + Turborepo monorepo
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

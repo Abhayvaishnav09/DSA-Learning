@@ -1,6 +1,6 @@
 # ADR-0008: Claude API for AI features, behind an ai-gateway module
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

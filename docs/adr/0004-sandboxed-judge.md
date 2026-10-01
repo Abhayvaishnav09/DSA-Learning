@@ -1,6 +1,6 @@
 # ADR-0004: Two-layer code execution: browser workers + gVisor judge
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context

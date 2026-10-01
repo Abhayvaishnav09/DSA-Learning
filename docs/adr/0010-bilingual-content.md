@@ -1,6 +1,6 @@
 # ADR-0010: English and Hinglish as first-class locales
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-01
 
 ## Context
