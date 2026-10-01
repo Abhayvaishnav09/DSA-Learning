@@ -1,0 +1,49 @@
+id: loops.counter.predict-last
+concept: loops.counter
+type: predict-output
+difficulty: 2
+prompt:
+  en: What does this program show at the end? Type the number.
+  hi-Latn: Yeh program aakhir mein kya dikhayega? Number type karo.
+code: |
+  total = 0
+  for i from 1 to 5:
+      total = total + 1
+  say total
+ask: last
+answer: '5'
+wrongAnswers:
+  - match: '6'
+    misconception: loop.off-by-one.extra
+  - match: '4'
+    misconception: loop.off-by-one.fewer
+  - match: '1'
+    misconception: loop.runs-once
+  - match: '15'
+    misconception: loop.adds-loop-variable
+hints:
+  - en: How many times does the indented line run?
+    hi-Latn: Andar wali line kitni baar chalti hai?
+  - en: Each pass adds 1 to total. total starts at 0.
+    hi-Latn: Har baar total mein 1 judta hai. total 0 se shuru hota hai.
+  - en: The line runs 5 times, and each time adds 1. What is 0 + 1 + 1 + 1 + 1 + 1?
+    hi-Latn: Line 5 baar chalti hai, har baar 1 jodti hai. 0 + 1 + 1 + 1 + 1 + 1 kitna hua?
+explanation:
+  en: The loop runs 5 times and adds 1 each time, so total goes 1, 2, 3, 4, 5. Then "say total" shows 5.
+  hi-Latn: Loop 5 baar chalta hai aur har baar 1 jodta hai, isliye total 1, 2, 3, 4, 5 hota hai. Phir "say total" 5 dikhata hai.
+explainWhy:
+  question:
+    en: Why is it 5 and not 15?
+    hi-Latn: Jawab 5 kyun hai, 15 kyun nahi?
+  options:
+    - text:
+        en: Each pass adds 1, not i, and there are 5 passes.
+        hi-Latn: Har baar 1 judta hai, i nahi, aur kul 5 baar chalta hai.
+      correct: true
+    - text:
+        en: The loop adds up 1 + 2 + 3 + 4 + 5.
+        hi-Latn: Loop 1 + 2 + 3 + 4 + 5 jodta hai.
+    - text:
+        en: '"say total" runs on every pass.'
+        hi-Latn: '"say total" har baar chalta hai.'
+estSeconds: 45

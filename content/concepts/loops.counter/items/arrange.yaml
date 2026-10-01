@@ -1,0 +1,24 @@
+id: loops.counter.arrange
+concept: loops.counter
+type: arrange-steps
+difficulty: 2
+prompt:
+  en: Put the lines in order so the program counts 3 passes and then shows 3.
+  hi-Latn: Lines ko sahi order mein lagao taaki program 3 baar gine aur phir 3 dikhaye.
+lines:
+  - count = 0
+  - 'for i from 1 to 3:'
+  - '    count = count + 1'
+  - say count
+expectedOutput: ['3']
+hints:
+  - en: A box must be made before it can be changed.
+    hi-Latn: Box ko badalne se pehle use banana zaroori hai.
+  - en: The indented line belongs inside the loop, right under the loop line.
+    hi-Latn: Aage khiski hui line loop ke andar hai, loop wali line ke theek neeche.
+  - en: 'Order: make count, start the loop, add 1 inside it, then show count after the loop.'
+    hi-Latn: 'Order: count banao, loop shuru karo, andar 1 jodo, phir loop ke baad count dikhao.'
+explanation:
+  en: count must exist before the loop adds to it, and "say count" goes after the loop so it runs once, at the end.
+  hi-Latn: Loop jodne se pehle count hona chahiye, aur "say count" loop ke baad aata hai taaki woh aakhir mein ek hi baar chale.
+estSeconds: 60

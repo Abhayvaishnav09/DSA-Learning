@@ -1,0 +1,31 @@
+id: loops.counter.how-many.v2
+concept: loops.counter
+type: mcq
+variationOf: loops.counter.how-many
+difficulty: 1
+prompt:
+  en: How many times is "clap" shown on the screen?
+  hi-Latn: Screen par "clap" kitni baar dikhega?
+code: |
+  for i from 1 to 6:
+      say "clap"
+options:
+  - text: { en: '5', hi-Latn: '5' }
+    misconception: loop.off-by-one.fewer
+  - text: { en: '6', hi-Latn: '6' }
+    correct: true
+  - text: { en: '7', hi-Latn: '7' }
+    misconception: loop.off-by-one.extra
+  - text: { en: '1', hi-Latn: '1' }
+    misconception: loop.runs-once
+hints:
+  - en: List the values of i, starting from 1.
+    hi-Latn: i ki values likho, 1 se shuru karke.
+  - en: The last value of i is the number after "to".
+    hi-Latn: i ki aakhri value "to" ke baad wala number hai.
+  - en: i is 1, 2, 3, 4, 5, 6. How many values is that?
+    hi-Latn: i 1, 2, 3, 4, 5, 6 hota hai. Kitni values hui?
+explanation:
+  en: i takes the values 1 to 6, so the indented line runs 6 times.
+  hi-Latn: i 1 se 6 tak values leta hai, isliye andar wali line 6 baar chalti hai.
+estSeconds: 25

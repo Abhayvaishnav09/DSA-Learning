@@ -1,0 +1,69 @@
+concept: loops.counter
+minutes: 7
+
+story:
+  title:
+    en: The gate counter
+    hi-Latn: Gate wala counter
+  body:
+    - en: Riya stands at the school gate with a clicker. Every time a student walks in, she presses it once. The number goes 1, 2, 3.
+      hi-Latn: Riya school ke gate par ek clicker le kar khadi hai. Jab bhi koi student andar aata hai, woh ek baar button dabati hai. Number 1, 2, 3 badhta jaata hai.
+    - en: 'She does not need new instructions for every student. She follows one rule again and again: a student comes in, press the clicker.'
+      hi-Latn: 'Use har student ke liye naya instruction nahi chahiye. Woh ek hi rule baar-baar follow karti hai: student aaya, clicker dabao.'
+    - en: A computer can do the same. We write the steps once and tell it how many times to repeat them.
+      hi-Latn: Computer bhi aisa kar sakta hai. Hum steps ek baar likhte hain aur batate hain ki unhe kitni baar dohrana hai.
+  terms:
+    - term: { en: loop, hi-Latn: loop }
+      meaning:
+        en: Running the same lines again and again.
+        hi-Latn: Same lines ko baar-baar chalana.
+    - term: { en: counter, hi-Latn: counter }
+      meaning:
+        en: A box whose number goes up by one each time.
+        hi-Latn: Ek box jiska number har baar ek se badhta hai.
+    - term: { en: 'for i from 1 to 3:', hi-Latn: 'for i from 1 to 3:' }
+      meaning:
+        en: Run the indented lines below 3 times. i is 1, then 2, then 3.
+        hi-Latn: Neeche ki aage khiski hui lines 3 baar chalao. i pehle 1, phir 2, phir 3 hota hai.
+
+see:
+  intro:
+    en: Watch Riya's rule as a program. Step through it one line at a time and keep an eye on the boxes and the screen.
+    hi-Latn: Riya ka rule ek program ki tarah dekho. Ek-ek line aage badho aur box aur screen par nazar rakho.
+  code: |
+    students = 0
+    for i from 1 to 3:
+        students = students + 1
+        say "Student " + i + " came in"
+    say "Total: " + students
+  captions:
+    '2':
+      en: The loop starts. i is 1, so this pass is for the first student.
+      hi-Latn: Loop shuru hua. i abhi 1 hai, yaani yeh pehle student ke liye hai.
+    '5':
+      en: Back to the loop line. i goes up to 2. 2 is not more than 3, so the indented lines run again.
+      hi-Latn: Wapas loop wali line par. i badh kar 2 ho gaya. 2, 3 se zyada nahi hai, isliye andar ki lines phir chalti hain.
+
+predict:
+  intro:
+    en: The third student just came in. Before you press play, predict what happens next.
+    hi-Latn: Teesra student abhi andar aaya. Play dabane se pehle socho, aage kya hoga?
+  pauseAt: 10
+  item: loops.counter.what-next
+
+practice:
+  - loops.counter.how-many
+  - loops.counter.predict-last
+  - loops.counter.trace
+  - loops.counter.arrange
+  - loops.counter.fill
+
+recap:
+  - en: A loop runs the same lines again and again.
+    hi-Latn: Loop same lines ko baar-baar chalata hai.
+  - en: '"for i from 1 to N" runs N times. i is 1, then 2, and so on up to N.'
+    hi-Latn: '"for i from 1 to N" N baar chalta hai. i pehle 1, phir 2, aise N tak jaata hai.'
+  - en: A counter is a box that goes up by one on every pass.
+    hi-Latn: Counter ek box hai jo har baar ek se badhta hai.
+  - en: After the last pass, the program carries on after the loop.
+    hi-Latn: Aakhri baar ke baad, program loop ke baad se aage chalta hai.

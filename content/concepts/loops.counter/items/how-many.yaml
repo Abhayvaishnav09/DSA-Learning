@@ -1,0 +1,45 @@
+id: loops.counter.how-many
+concept: loops.counter
+type: mcq
+difficulty: 1
+prompt:
+  en: How many times is "hi" shown on the screen?
+  hi-Latn: Screen par "hi" kitni baar dikhega?
+code: |
+  for i from 1 to 4:
+      say "hi"
+options:
+  - text: { en: '3', hi-Latn: '3' }
+    misconception: loop.off-by-one.fewer
+  - text: { en: '4', hi-Latn: '4' }
+    correct: true
+  - text: { en: '5', hi-Latn: '5' }
+    misconception: loop.off-by-one.extra
+  - text: { en: '1', hi-Latn: '1' }
+    misconception: loop.runs-once
+hints:
+  - en: Write down every value i takes, starting from 1.
+    hi-Latn: i jo-jo values leta hai, 1 se shuru karke likho.
+  - en: i goes 1, 2, 3, ... and stops after the number after "to".
+    hi-Latn: i 1, 2, 3, ... jaata hai aur "to" ke baad wale number par ruk jaata hai.
+  - en: i is 1, 2, 3, 4. Count how many values that is.
+    hi-Latn: i 1, 2, 3, 4 hota hai. Gino kitni values hain.
+explanation:
+  en: i takes the values 1, 2, 3 and 4. The indented line runs once for each, so "hi" is shown 4 times.
+  hi-Latn: i ki values 1, 2, 3 aur 4 hain. Andar wali line har value ke liye ek baar chalti hai, isliye "hi" 4 baar dikhega.
+explainWhy:
+  question:
+    en: Why is the answer 4?
+    hi-Latn: Jawab 4 kyun hai?
+  options:
+    - text:
+        en: i is 1, 2, 3, 4, and the indented line runs once for each value.
+        hi-Latn: i 1, 2, 3, 4 hota hai, aur andar wali line har value ke liye ek baar chalti hai.
+      correct: true
+    - text:
+        en: Every loop runs 4 times.
+        hi-Latn: Har loop 4 baar chalta hai.
+    - text:
+        en: The word "hi" is shown once per letter.
+        hi-Latn: '"hi" ka har letter ek baar dikhta hai.'
+estSeconds: 30

@@ -1,0 +1,31 @@
+id: loops.counter.what-next
+concept: loops.counter
+type: mcq
+difficulty: 1
+prompt:
+  en: i is 3 and the third student has been counted. What happens next?
+  hi-Latn: i abhi 3 hai aur teesra student gin liya gaya. Aage kya hoga?
+options:
+  - text:
+      en: The loop stops, because i would become 4, which is more than 3.
+      hi-Latn: Loop ruk jaata hai, kyunki i 4 banta, jo 3 se zyada hai.
+    correct: true
+  - text:
+      en: The loop runs once more for a fourth student.
+      hi-Latn: Loop ek baar aur chalta hai, chauthe student ke liye.
+    misconception: loop.off-by-one.extra
+  - text:
+      en: The program goes back to the first line and starts again.
+      hi-Latn: Program pehli line par wapas jaa kar shuru se chalta hai.
+    misconception: loop.restarts-program
+hints:
+  - en: Look at the loop line. Which values can i take?
+    hi-Latn: Loop wali line dekho. i kaun-kaun si values le sakta hai?
+  - en: The next value of i would be 4. Is 4 allowed by "to 3"?
+    hi-Latn: i ki agli value 4 hoti. Kya "to 3" mein 4 aata hai?
+  - en: 4 is more than 3, so there is no fourth pass. Where does the program go after a loop ends?
+    hi-Latn: 4, 3 se zyada hai, isliye chautha pass nahi hoga. Loop khatam hone ke baad program kahan jaata hai?
+explanation:
+  en: '"for i from 1 to 3" allows i to be 1, 2 and 3 only. After the third pass the loop stops and the program continues with the line after the loop.'
+  hi-Latn: '"for i from 1 to 3" mein i sirf 1, 2 aur 3 ho sakta hai. Teesre pass ke baad loop ruk jaata hai aur program loop ke baad wali line se aage chalta hai.'
+estSeconds: 30

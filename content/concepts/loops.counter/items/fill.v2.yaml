@@ -1,0 +1,30 @@
+id: loops.counter.fill.v2
+concept: loops.counter
+type: fill-blank
+variationOf: loops.counter.fill
+difficulty: 1
+prompt:
+  en: Fill in the blank so the program shows "Hi" exactly 3 times.
+  hi-Latn: Khaali jagah bharo taaki program "Hi" theek 3 baar dikhaye.
+code: |
+  for i from 1 to ___:
+      say "Hi"
+blanks:
+  - accept: ['3']
+    wrongAnswers:
+      - match: '2'
+        misconception: loop.off-by-one.fewer
+      - match: '4'
+        misconception: loop.off-by-one.extra
+expectedOutput: [Hi, Hi, Hi]
+hints:
+  - en: One pass per value of i.
+    hi-Latn: i ki har value ke liye ek baar.
+  - en: Starting at 1, where must i stop to make 3 passes?
+    hi-Latn: 1 se shuru karke, 3 baar ke liye i kahan rukna chahiye?
+  - en: 1, 2, ... one more.
+    hi-Latn: 1, 2, ... ek aur.
+explanation:
+  en: '"from 1 to 3" gives i = 1, 2, 3: three passes.'
+  hi-Latn: '"from 1 to 3" se i = 1, 2, 3 hota hai: teen baar.'
+estSeconds: 25

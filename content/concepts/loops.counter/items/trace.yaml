@@ -1,0 +1,35 @@
+id: loops.counter.trace
+concept: loops.counter
+type: trace-table
+difficulty: 2
+prompt:
+  en: Fill in the table. Write the value of i and steps each time line 3 finishes.
+  hi-Latn: Table bharo. Har baar line 3 khatam hone par i aur steps ki value likho.
+code: |
+  steps = 0
+  for i from 1 to 3:
+      steps = steps + 2
+line: 3
+columns: [i, steps]
+rows:
+  - ['1', '2']
+  - ['2', '4']
+  - ['3', '6']
+given: [[0, 0]]
+wrongAnswers:
+  - match:
+      - ['1', '1']
+      - ['2', '2']
+      - ['3', '3']
+    misconception: assign.adds-one-always
+hints:
+  - en: Do one pass at a time. What is steps before the first pass?
+    hi-Latn: Ek baar mein ek pass karo. Pehle pass se pehle steps kitna hai?
+  - en: Line 3 adds 2 to steps on every pass.
+    hi-Latn: Line 3 har baar steps mein 2 jodti hai.
+  - en: 'First pass: steps = 0 + 2 = 2. Second pass: steps = 2 + 2. Keep going.'
+    hi-Latn: 'Pehla pass: steps = 0 + 2 = 2. Doosra pass: steps = 2 + 2. Aise hi aage.'
+explanation:
+  en: i goes 1, 2, 3. Each pass adds 2 to steps, so steps goes 2, 4, 6.
+  hi-Latn: i 1, 2, 3 hota hai. Har pass steps mein 2 jodta hai, isliye steps 2, 4, 6 hota hai.
+estSeconds: 60

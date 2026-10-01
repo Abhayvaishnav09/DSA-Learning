@@ -1,0 +1,16 @@
+{
+  "name": "@logicpath/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./bundle.json": "./dist/bundle.json"
+  },
+  "scripts": {
+    "check": "logicpath-content check .",
+    "build": "logicpath-content build . dist/bundle.json"
+  },
+  "devDependencies": {
+    "@logicpath/content-tools": "workspace:*"
+  }
+}

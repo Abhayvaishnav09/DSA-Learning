@@ -1,0 +1,33 @@
+id: loops.counter.predict-last.v2
+concept: loops.counter
+type: predict-output
+variationOf: loops.counter.predict-last
+difficulty: 2
+prompt:
+  en: What does this program show at the end?
+  hi-Latn: Yeh program aakhir mein kya dikhayega?
+code: |
+  laps = 0
+  for i from 1 to 4:
+      laps = laps + 1
+  say "Laps: " + laps
+ask: last
+answer: 'Laps: 4'
+wrongAnswers:
+  - match: 'Laps: 5'
+    misconception: loop.off-by-one.extra
+  - match: 'Laps: 3'
+    misconception: loop.off-by-one.fewer
+  - match: 'Laps: 10'
+    misconception: loop.adds-loop-variable
+hints:
+  - en: How many passes does the loop make?
+    hi-Latn: Loop kitni baar chalta hai?
+  - en: laps goes up by 1 on each pass.
+    hi-Latn: Har baar laps 1 se badhta hai.
+  - en: 4 passes, plus 1 each time, starting from 0.
+    hi-Latn: 4 baar, har baar plus 1, 0 se shuru.
+explanation:
+  en: 'The loop runs 4 times and adds 1 each time, so laps ends at 4 and the screen shows "Laps: 4".'
+  hi-Latn: 'Loop 4 baar chalta hai aur har baar 1 jodta hai, isliye laps 4 par khatam hota hai aur screen "Laps: 4" dikhati hai.'
+estSeconds: 40

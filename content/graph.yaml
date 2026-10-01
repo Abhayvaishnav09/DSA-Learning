@@ -1,0 +1,46 @@
+# The knowledge graph (docs/01-learning-science.md §2).
+# A concept is published when concepts/<id>/lesson.yaml exists.
+stages:
+  - id: 0
+    title: { en: Thinking in steps, hi-Latn: Steps mein sochna }
+  - id: 1
+    title: { en: Logic basics, hi-Latn: Logic ki basics }
+  - id: 2
+    title: { en: Repetition, hi-Latn: Dohrana (Loops) }
+
+concepts:
+  - id: thinking.sequence
+    stage: 0
+    title: { en: Steps in order, hi-Latn: Sahi order mein steps }
+  - id: thinking.decisions
+    stage: 0
+    title: { en: Yes or no decisions, hi-Latn: Haan ya na wale faisle }
+    prerequisites: [thinking.sequence]
+  - id: logic.variables
+    stage: 1
+    title: { en: Boxes that hold values, hi-Latn: Value rakhne wale box }
+    prerequisites: [thinking.sequence]
+  - id: logic.if-else
+    stage: 1
+    title: { en: If and else, hi-Latn: If aur else }
+    prerequisites: [logic.variables, thinking.decisions]
+  - id: logic.and-or-not
+    stage: 1
+    title: { en: 'AND, OR, NOT', hi-Latn: 'AND, OR, NOT' }
+    prerequisites: [logic.if-else]
+  - id: loops.counter
+    stage: 2
+    title: { en: Loops with a counter, hi-Latn: Counter wala loop }
+    prerequisites: [logic.variables]
+  - id: loops.accumulate
+    stage: 2
+    title: { en: Adding up in a loop, hi-Latn: Loop mein jodna }
+    prerequisites: [loops.counter]
+  - id: loops.while
+    stage: 2
+    title: { en: Repeat while true, hi-Latn: 'Jab tak sach hai, dohrao' }
+    prerequisites: [loops.counter, logic.if-else]
+  - id: loops.min-max
+    stage: 2
+    title: { en: Finding the biggest and smallest, hi-Latn: Sabse bada aur sabse chhota dhundhna }
+    prerequisites: [loops.accumulate, logic.if-else]

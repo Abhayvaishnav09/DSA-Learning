@@ -1,0 +1,45 @@
+# Known wrong mental models. Wrong answers point here so feedback explains the actual mistake
+# (docs/01-learning-science.md §5).
+misconceptions:
+  - id: loop.off-by-one.extra
+    title:
+      en: Counting one pass too many
+      hi-Latn: Ek baar zyada ginna
+    explanation:
+      en: '"for i from 1 to 4" runs for i = 1, 2, 3, 4. That is 4 passes, not 5. The loop stops when i would become 5.'
+      hi-Latn: '"for i from 1 to 4" i = 1, 2, 3, 4 ke liye chalta hai. Yeh 4 baar hai, 5 nahi. Jab i 5 banne wala hota hai, loop ruk jaata hai.'
+  - id: loop.off-by-one.fewer
+    title:
+      en: Stopping one pass too early
+      hi-Latn: Ek baar pehle ruk jaana
+    explanation:
+      en: '"to 4" includes 4. i takes every value from 1 up to and including 4.'
+      hi-Latn: '"to 4" mein 4 bhi shaamil hai. i 1 se le kar 4 tak har value leta hai, 4 bhi.'
+  - id: loop.runs-once
+    title:
+      en: Thinking the loop runs only once
+      hi-Latn: Sochna ki loop sirf ek baar chalta hai
+    explanation:
+      en: The indented lines inside the loop run on every pass, once for each value of i.
+      hi-Latn: Loop ke andar ki (aage khiski hui) lines har baar chalti hain, i ki har value ke liye ek baar.
+  - id: loop.restarts-program
+    title:
+      en: Thinking the program starts over after a loop
+      hi-Latn: Sochna ki loop ke baad program shuru se chalta hai
+    explanation:
+      en: After the last pass, the program carries on with the first line after the loop. It never jumps back to the top.
+      hi-Latn: Aakhri baar ke baad, program loop ke baad wali line se aage badhta hai. Woh kabhi upar wapas nahi jaata.
+  - id: loop.adds-loop-variable
+    title:
+      en: Mixing up "+ 1" and "+ i"
+      hi-Latn: '"+ 1" aur "+ i" mein confusion'
+    explanation:
+      en: '"total = total + 1" adds 1 on each pass. It does not add i. So total goes 1, 2, 3, and so on.'
+      hi-Latn: '"total = total + 1" har baar 1 jodta hai, i nahi. Isliye total 1, 2, 3 aise badhta hai.'
+  - id: assign.adds-one-always
+    title:
+      en: Thinking every update adds 1
+      hi-Latn: Sochna ki har update 1 hi jodta hai
+    explanation:
+      en: Read the line carefully. "steps = steps + 2" adds 2 on every pass, so steps goes 2, 4, 6.
+      hi-Latn: Line dhyaan se padho. "steps = steps + 2" har baar 2 jodta hai, isliye steps 2, 4, 6 hota hai.
