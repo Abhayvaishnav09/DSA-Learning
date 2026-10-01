@@ -1,0 +1,32 @@
+/* Visualizer motion. Consumers provide the colour tokens (see apps/web globals.css). */
+
+@keyframes lp-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.lp-pop {
+  animation: lp-pop 360ms ease-out;
+}
+
+.lp-active {
+  transition: background-color 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-pop {
+    animation: none;
+  }
+  .lp-active {
+    transition: none;
+  }
+}
