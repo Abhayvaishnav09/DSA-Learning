@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:demo": "node demo/build.mjs"
   },
   "dependencies": {
     "@logicpath/content": "workspace:*",
@@ -34,6 +35,7 @@
     "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.1.1",
     "tailwindcss": "^4.3.3",
     "vitest": "^5.0.3"
