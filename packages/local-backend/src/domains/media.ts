@@ -72,7 +72,7 @@ export function mediaHandlers(db: LocalDb): Record<string, LocalHandler> {
       const { dataUrl, blur, width, height } = await shrink(file);
       const row: MediaRow = {
         id: uuid(),
-        filename: (file).name || 'picture',
+        filename: file.name || 'picture',
         width,
         height,
         bytes: file.size,

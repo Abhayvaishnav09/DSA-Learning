@@ -28,6 +28,7 @@
   --accent-soft: #ecebfd;
   --accent-2: #0f8fa8;
   --accent-2-soft: #dff4f8;
+  --accent-2-ink: #0b6f84;
   --xp: #b45309;
   --xp-soft: #fff1dc;
   --success: #0e7247;
@@ -41,6 +42,10 @@
   --hero-from: #ecebfd;
   --hero-via: #f7f7fc;
   --hero-to: #dff4f8;
+  /* Chart series (validated with the dataviz six-checks against --surface in each mode:
+     lightness band, chroma floor, colour-blind separation, contrast >= 3:1). */
+  --series-1: #5546d6;
+  --series-2: #0f8fa8;
 
   --shadow-raised: 0 1px 2px rgb(23 23 43 / 0.06), 0 2px 8px rgb(23 23 43 / 0.05);
   --shadow-floating: 0 8px 24px rgb(23 23 43 / 0.1), 0 2px 6px rgb(23 23 43 / 0.06);
@@ -68,6 +73,7 @@
     --accent-soft: #252250;
     --accent-2: #4fd1e8;
     --accent-2-soft: #0f2f38;
+    --accent-2-ink: #4fd1e8;
     --xp: #fbbf24;
     --xp-soft: #362708;
     --success: #4ade80;
@@ -81,6 +87,8 @@
     --hero-from: #1a1640;
     --hero-via: #0c0c18;
     --hero-to: #0b2a33;
+    --series-1: #7b6ef2;
+    --series-2: #2aa5bf;
     --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.03);
     --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.05);
     --shadow-overlay: 0 32px 80px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
@@ -106,6 +114,7 @@
   --accent-soft: #252250;
   --accent-2: #4fd1e8;
   --accent-2-soft: #0f2f38;
+  --accent-2-ink: #4fd1e8;
   --xp: #fbbf24;
   --xp-soft: #362708;
   --success: #4ade80;
@@ -119,6 +128,8 @@
   --hero-from: #1a1640;
   --hero-via: #0c0c18;
   --hero-to: #0b2a33;
+  --series-1: #7b6ef2;
+  --series-2: #2aa5bf;
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.03);
   --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.05);
   --shadow-overlay: 0 32px 80px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
@@ -168,6 +179,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-2: var(--accent-2);
   --color-accent-2-soft: var(--accent-2-soft);
+  --color-accent-2-ink: var(--accent-2-ink);
   --color-xp: var(--xp);
   --color-xp-soft: var(--xp-soft);
   --color-success: var(--success);

@@ -411,7 +411,7 @@ describe('flags', () => {
     expect(
       (await writer.call('flags.evaluate', { query: {} })).flags['config.daily-goal-options']
         ?.value,
-    ).toEqual([5, 10, 15, 20, 30]);
+    ).toEqual([5, 10, 20, 30]);
 
     const admin = await as('admin');
     const flag = await admin.call('admin.flags.put', {

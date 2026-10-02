@@ -2,6 +2,7 @@
 
 import type { EndpointId, ResponseOf } from '@logicpath/contracts';
 import {
+  keepPreviousData,
   QueryClient,
   QueryClientProvider,
   useMutation,
@@ -10,7 +11,7 @@ import {
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import type { ApiClient, ApiError, InputFor } from './client';
 
 const ClientContext = createContext<ApiClient | null>(null);
@@ -91,4 +92,15 @@ export function useApiMutation<K extends EndpointId>(
   });
 }
 
-export { useQueryClient };
+export { keepPreviousData, useQueryClient };
+
+/** Refreshes the reads of the given endpoints (for changes that did not come from a mutation here). */
+export function useInvalidateApi() {
+  const queryClient = useQueryClient();
+  return useCallback(
+    (ids: readonly EndpointId[]) => {
+      for (const id of ids) void queryClient.invalidateQueries({ queryKey: [id] });
+    },
+    [queryClient],
+  );
+}

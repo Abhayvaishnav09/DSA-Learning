@@ -144,6 +144,16 @@ export const ENDPOINTS = {
     response: identity.UserPage,
     status: 200,
   }),
+  'admin.users.get': e({
+    method: 'GET',
+    path: '/v1/admin/users/:id',
+    service: 'identity',
+    auth: 'admin',
+    summary: 'One user',
+    params: idParam,
+    response: identity.User,
+    status: 200,
+  }),
   'admin.users.create': e({
     method: 'POST',
     path: '/v1/admin/users',

@@ -77,12 +77,13 @@ export function analyticsHandlers(db: LocalDb): Record<string, LocalHandler> {
         activeUsers: { day: activeSince(1), week: activeSince(7), month: activeSince(30) },
         signups: series(signups),
         attempts: series(perDay),
-        correctRate: dates.map((date) => ({
-          date,
-          value: perDay.get(date)
-            ? round(((correctPerDay.get(date) ?? 0) / perDay.get(date)!) * 100)
-            : 0,
-        })),
+        // A day nobody answered anything has no rate; leaving it out beats drawing a fall to 0%.
+        correctRate: dates
+          .filter((date) => perDay.get(date))
+          .map((date) => ({
+            date,
+            value: round(((correctPerDay.get(date) ?? 0) / perDay.get(date)!) * 100),
+          })),
         lessonsCompleted: series(lessons),
         topMisconceptions: [...misconceptions]
           .sort((a, b) => b[1] - a[1])

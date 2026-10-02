@@ -227,6 +227,14 @@ describe('identity', () => {
     );
     expect(promoted.status).toBe(200);
     expect(promoted.body.role).toBe('writer');
+    const one = await call('GET', `/v1/admin/users/${student.body.user.id}`, undefined, adminAuth);
+    expect(one.status).toBe(200);
+    expect(one.body).toMatchObject({ email: adult.email.toLowerCase(), role: 'writer' });
+    const missing = `/v1/admin/users/${crypto.randomUUID()}`;
+    expect((await call('GET', missing, undefined, adminAuth)).status).toBe(404);
+    expect(
+      (await call('GET', `/v1/admin/users/${student.body.user.id}`, undefined, studentAuth)).status,
+    ).toBe(403);
     expect((await outboxEvents(dbUrl, 'identity.user.role_changed')).length).toBe(1);
     expect(
       (await outboxEvents(dbUrl, 'audit.recorded')).some(

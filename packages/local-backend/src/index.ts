@@ -11,7 +11,7 @@ import { contentHandlers, seedContent } from './domains/content';
 import { developerHandlers } from './domains/developer';
 import { flagsHandlers, seedFlags } from './domains/flags';
 import { homeHandlers } from './domains/home';
-import { authenticate, createUser, identityHandlers } from './domains/identity';
+import { authenticate, createUser, identityHandlers, welcome } from './domains/identity';
 import { leaderboardHandlers } from './domains/leaderboard';
 import { learningHandlers } from './domains/learning';
 import { mediaHandlers } from './domains/media';
@@ -21,9 +21,8 @@ import { rewardsHandlers } from './domains/rewards';
 import { searchHandlers } from './domains/search';
 import { iso, uuid } from './util';
 
-export { DEMO_ACCOUNTS, DEMO_PASSWORD } from './accounts';
+export { DEMO_ACCOUNTS, DEMO_CLASS_CODE, DEMO_PASSWORD } from './accounts';
 export { LocalDb, memoryStorage, type KeyValueStorage } from './db';
-export { DEMO_CLASS_CODE } from './demo';
 
 export interface LocalBackendOptions {
   /** The curriculum to start with (content/dist/bundle.json). */
@@ -53,11 +52,12 @@ export function createLocalBackend(options: LocalBackendOptions): LocalApi {
     seedFlags(db, now());
     if (db.isEmpty) {
       for (const account of DEMO_ACCOUNTS) {
-        await createUser(
+        const row = await createUser(
           db,
           { ...account, password: DEMO_PASSWORD, birthYear: now().getUTCFullYear() - 25 },
           now(),
         );
+        welcome(db, row, now());
       }
     }
     // Company for the demo accounts: other learners, a class, and some history to look at.

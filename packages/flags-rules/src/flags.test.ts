@@ -11,7 +11,12 @@ const flag = (patch: Partial<FlagDef> = {}): FlagDef => ({
   value: { theme: 'dark' },
   ...patch,
 });
-const me = { userId: 'user-1', role: 'student' as const, platform: 'web' as const, appVersion: null };
+const me = {
+  userId: 'user-1',
+  role: 'student' as const,
+  platform: 'web' as const,
+  appVersion: null,
+};
 
 describe('hash and buckets', () => {
   it('matches the published test vectors (the Dart port must too)', () => {
@@ -27,7 +32,9 @@ describe('hash and buckets', () => {
     expect(bucket('a', 'user-1') === bucket('b', 'user-1')).toBe(false);
   });
   it('spreads people evenly enough for a rollout', () => {
-    const on = Array.from({ length: 2000 }, (_, i) => bucket('rollout', `u${i}`) < 30).filter(Boolean);
+    const on = Array.from({ length: 2000 }, (_, i) => bucket('rollout', `u${i}`) < 30).filter(
+      Boolean,
+    );
     expect(on.length).toBeGreaterThan(500);
     expect(on.length).toBeLessThan(700);
   });

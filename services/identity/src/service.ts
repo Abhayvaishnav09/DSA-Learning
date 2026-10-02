@@ -607,6 +607,25 @@ function registerRoutes(
     },
   );
 
+  app.get(
+    '/v1/admin/users/:id',
+    {
+      schema: {
+        tags: ['admin'],
+        summary: 'One user',
+        security: [{ bearer: [] }],
+        params: z.object({ id: z.uuid() }),
+        response: { 200: identity.User, ...problems },
+      },
+    },
+    async (req) => {
+      requireRole(req, 'admin');
+      const [row] = await db.select().from(users).where(eq(users.id, req.params.id));
+      if (!row) throw notFound('User');
+      return toUser(row);
+    },
+  );
+
   app.post(
     '/v1/admin/users',
     {

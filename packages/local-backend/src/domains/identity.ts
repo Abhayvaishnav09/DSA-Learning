@@ -307,6 +307,12 @@ export function identityHandlers(db: LocalDb): Record<string, LocalHandler> {
       return { items: page.items.map(toUser), nextCursor: page.nextCursor };
     },
 
+    'admin.users.get': (_ctx, { params }) => {
+      const row = db.t.users[(params as ParamsOf<'admin.users.get'>).id];
+      if (!row) throw notFound('User');
+      return toUser(row);
+    },
+
     'admin.users.create': async (ctx, { body }) => {
       const input = body as { email: string; name: string; role: Role; password: string };
       const row = await createUser(

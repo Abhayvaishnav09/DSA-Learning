@@ -3,6 +3,7 @@ import { addDays, weekStart } from '@logicpath/gamification-rules';
 import { emptyState } from '@logicpath/progress-rules';
 import type { LocalDb } from './db';
 import { createUser } from './domains/identity';
+import { DEMO_CLASS_CODE } from './accounts';
 import { liveVersion } from './domains/content';
 import { iso, uuid } from './util';
 
@@ -30,7 +31,6 @@ const LEARNERS: readonly { name: string; activity: number; skill: number; daysOl
 ];
 
 /** Leagues and classes count days in India, where the app is first aimed. */
-export const APP_TIME_ZONE = 'Asia/Kolkata';
 const IST_OFFSET_MS = 5.5 * 3_600_000;
 
 export const istDate = (at: Date): string =>
@@ -52,9 +52,6 @@ function random(seed: string): () => number {
 }
 
 export const isDemoLearner = (email: string) => /^learner\d+@demo\.logicpath\.dev$/.test(email);
-
-/** A class that exists in every demo, so "join a class" can be tried straight away. */
-export const DEMO_CLASS_CODE = 'DEMO42';
 
 export async function ensureDemoLearners(
   db: LocalDb,
@@ -146,6 +143,18 @@ export function simulateDemo(db: LocalDb, now: Date) {
         if (correct) xp += rng() < 0.7 ? 10 : 7;
       }
       if (rng() < 0.15) xp += 20;
+      // Some of them finish the lesson that exists, once, on a day they were active.
+      if (!state.lessons['loops.counter'] && rng() < 0.3) {
+        const at = iso(new Date(Math.min(now.getTime(), dayStart + 15 * 3_600_000)));
+        state.lessons['loops.counter'] = {
+          conceptId: 'loops.counter',
+          beat: 'recap',
+          practiceIndex: 0,
+          startedAt: at,
+          completedAt: at,
+        };
+        state.stats.lessonsCompleted += 1;
+      }
       if (xp > 0) {
         db.t.xp.push({
           userId: user.id,

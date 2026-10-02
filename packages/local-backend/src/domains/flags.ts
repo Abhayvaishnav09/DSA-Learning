@@ -34,7 +34,7 @@ export const DEFAULT_FLAGS: Omit<platform.Flag, 'updatedAt'>[] = [
     roles: [],
     platforms: [],
     minAppVersion: null,
-    value: [5, 10, 15, 20, 30],
+    value: [5, 10, 20, 30],
   },
   {
     key: 'studio.media',

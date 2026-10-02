@@ -85,6 +85,14 @@ export const ENDPOINT_META: Record<string, EndpointMeta> = {
     status: 200,
     summary: 'Search users',
   },
+  'admin.users.get': {
+    method: 'GET',
+    path: '/v1/admin/users/:id',
+    service: 'identity',
+    auth: 'admin',
+    status: 200,
+    summary: 'One user',
+  },
   'admin.users.create': {
     method: 'POST',
     path: '/v1/admin/users',
