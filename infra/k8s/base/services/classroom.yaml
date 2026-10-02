@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: classroom
   labels:
-    app.kubernetes.io/name: gateway
+    app.kubernetes.io/name: classroom
     app.kubernetes.io/part-of: logicpath
 spec:
   replicas: 1
   revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app.kubernetes.io/name: gateway
+      app.kubernetes.io/name: classroom
   strategy:
     rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: gateway
+        app.kubernetes.io/name: classroom
         app.kubernetes.io/part-of: logicpath
       annotations:
         prometheus.io/scrape: "true"
@@ -28,29 +28,18 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       terminationGracePeriodSeconds: 30
       containers:
-        - name: gateway
-          image: ghcr.io/abhayvaishnav09/dsa-learning/gateway:latest
+        - name: classroom
+          image: ghcr.io/abhayvaishnav09/dsa-learning/classroom:latest
           ports: [{ name: http, containerPort: 8080 }]
           envFrom: [{ configMapRef: { name: logicpath-config } }]
           env:
-            - { name: SERVICE_NAME, value: gateway }
-            - { name: REDIS_URL, value: "redis://redis:6379" }
+            - { name: SERVICE_NAME, value: classroom }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: logicpath-db, key: classroom } }
             - name: INTERNAL_TOKEN
               valueFrom: { secretKeyRef: { name: logicpath-secrets, key: internal-token } }
-            - { name: IDENTITY_URL, value: "http://identity:8080" }
-            - { name: PROFILE_URL, value: "http://profile:8080" }
-            - { name: CONSENT_URL, value: "http://consent:8080" }
-            - { name: CONTENT_URL, value: "http://content:8080" }
-            - { name: AUTHORING_URL, value: "http://authoring:8080" }
-            - { name: NOTIFICATION_URL, value: "http://notification:8080" }
-            - { name: AUDIT_URL, value: "http://audit:8080" }
-            - { name: CLASSROOM_URL, value: "http://classroom:8080" }
-            - { name: SEARCH_URL, value: "http://search:8080" }
-            - { name: MEDIA_URL, value: "http://media:8080" }
-            - { name: FLAGS_URL, value: "http://flags:8080" }
-            - { name: DEVELOPER_URL, value: "http://developer:8080" }
           readinessProbe:
-            httpGet: { path: /healthz, port: http }
+            httpGet: { path: /readyz, port: http }
             periodSeconds: 5
           livenessProbe:
             httpGet: { path: /healthz, port: http }
@@ -75,21 +64,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway
+  name: classroom
   labels:
-    app.kubernetes.io/name: gateway
+    app.kubernetes.io/name: classroom
     app.kubernetes.io/part-of: logicpath
 spec:
   selector:
-    app.kubernetes.io/name: gateway
+    app.kubernetes.io/name: classroom
   ports: [{ name: http, port: 8080, targetPort: http }]
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: gateway
+  name: classroom
 spec:
-  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: gateway }
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: classroom }
   minReplicas: 1
   maxReplicas: 4
   metrics:
@@ -99,9 +88,9 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: gateway
+  name: classroom
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: gateway
+      app.kubernetes.io/name: classroom

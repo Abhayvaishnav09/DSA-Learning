@@ -6,8 +6,20 @@ envVarGroups:
       - { key: INTERNAL_TOKEN, generateValue: true }
       - { key: NATS_URL, value: "nats://nats:4222" }
       - { key: JWKS_URL, value: "http://identity:8080/.well-known/jwks.json" }
+      - { key: IDENTITY_URL, value: "http://identity:8080" }
+      - { key: PROFILE_URL, value: "http://profile:8080" }
+      - { key: CONSENT_URL, value: "http://consent:8080" }
       - { key: CONTENT_URL, value: "http://content:8080" }
       - { key: AUTHORING_URL, value: "http://authoring:8080" }
+      - { key: NOTIFICATION_URL, value: "http://notification:8080" }
+      - { key: AUDIT_URL, value: "http://audit:8080" }
+      - { key: CLASSROOM_URL, value: "http://classroom:8080" }
+      - { key: SEARCH_URL, value: "http://search:8080" }
+      - { key: MEDIA_URL, value: "http://media:8080" }
+      - { key: FLAGS_URL, value: "http://flags:8080" }
+      - { key: DEVELOPER_URL, value: "http://developer:8080" }
+      - { key: PUBLIC_WEB_URL, value: "https://logicpath.dev" }
+      - { key: PUBLIC_API_URL, value: "https://api.logicpath.dev" }
       - { key: HOST, value: "0.0.0.0" }
       - { key: PORT, value: "8080" }
       - { key: LOG_LEVEL, value: info }
@@ -46,6 +58,16 @@ services:
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
+    name: consent
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/consent:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: consent }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
     name: content
     runtime: image
     image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/content:main" }
@@ -66,6 +88,16 @@ services:
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
+    name: notification
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/notification:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: notification }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
     name: audit
     runtime: image
     image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/audit:main" }
@@ -73,6 +105,16 @@ services:
     envVars:
       - fromGroup: logicpath-shared
       - { key: SERVICE_NAME, value: audit }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: classroom
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/classroom:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: classroom }
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
@@ -129,9 +171,12 @@ services:
       - { key: CORS_ORIGINS, sync: false }
       - { key: IDENTITY_URL, value: "http://identity:8080" }
       - { key: PROFILE_URL, value: "http://profile:8080" }
+      - { key: CONSENT_URL, value: "http://consent:8080" }
       - { key: CONTENT_URL, value: "http://content:8080" }
       - { key: AUTHORING_URL, value: "http://authoring:8080" }
+      - { key: NOTIFICATION_URL, value: "http://notification:8080" }
       - { key: AUDIT_URL, value: "http://audit:8080" }
+      - { key: CLASSROOM_URL, value: "http://classroom:8080" }
       - { key: SEARCH_URL, value: "http://search:8080" }
       - { key: MEDIA_URL, value: "http://media:8080" }
       - { key: FLAGS_URL, value: "http://flags:8080" }

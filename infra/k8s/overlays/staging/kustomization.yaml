@@ -17,9 +17,12 @@ patches:
 images:
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/identity, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/profile, newTag: main }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/consent, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/content, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/authoring, newTag: main }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/notification, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/audit, newTag: main }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/classroom, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/search, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/media, newTag: main }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/flags, newTag: main }

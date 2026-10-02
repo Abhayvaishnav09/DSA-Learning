@@ -251,6 +251,27 @@ describe('identity', () => {
     expect(self.status).toBe(403);
   });
 
+  it('hands over a person’s account for the privacy export, to services only', async () => {
+    const login = await call('POST', '/v1/auth/login', {
+      email: adult.email,
+      password: adult.password,
+    });
+    const id = login.body.user.id as string;
+    const internal = await service.app.inject({
+      method: 'GET',
+      url: `/internal/users/${id}/export`,
+      headers: { 'x-internal-token': service.ctx.config.INTERNAL_TOKEN },
+    });
+    expect(internal.statusCode).toBe(200);
+    expect(internal.json()).toMatchObject({
+      service: 'identity',
+      data: { id, email: adult.email.toLowerCase(), birthYear: adult.birthYear },
+    });
+    expect(JSON.stringify(internal.json())).not.toMatch(/password|argon2/i);
+    const anyone = await service.app.inject({ method: 'GET', url: `/internal/users/${id}/export` });
+    expect(anyone.statusCode).toBe(403);
+  });
+
   it('publishes outbox events to the bus', async () => {
     expect(await service.relay.drain()).toBeGreaterThanOrEqual(0);
     const rows = await outboxEvents(dbUrl);

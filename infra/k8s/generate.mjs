@@ -186,10 +186,10 @@ data:
   LOG_LEVEL: info
   NATS_URL: nats://nats:4222
   JWKS_URL: http://identity:8080/.well-known/jwks.json
-  CONTENT_URL: http://content:8080
-  AUTHORING_URL: http://authoring:8080
+${NAMES.map((n) => `  ${n.toUpperCase()}_URL: http://${n}:8080`).join('\n')}
   SMTP_URL: smtp://mail:1025
   PUBLIC_WEB_URL: https://logicpath.dev
+  PUBLIC_API_URL: https://api.logicpath.dev
 `,
 );
 

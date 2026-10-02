@@ -10,9 +10,12 @@ resources:
   - network-policy.yaml
   - services/identity.yaml
   - services/profile.yaml
+  - services/consent.yaml
   - services/content.yaml
   - services/authoring.yaml
+  - services/notification.yaml
   - services/audit.yaml
+  - services/classroom.yaml
   - services/search.yaml
   - services/media.yaml
   - services/flags.yaml
@@ -22,9 +25,12 @@ resources:
 images:
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/identity, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/profile, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/consent, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/content, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/authoring, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/notification, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/audit, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/classroom, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/search, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/media, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/flags, newTag: latest }

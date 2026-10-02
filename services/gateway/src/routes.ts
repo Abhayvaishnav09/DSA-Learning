@@ -1,6 +1,6 @@
-import { SERVICE_NAMES, type ServiceName } from '@logicpath/contracts';
+import { DEFAULT_PORTS, SERVICE_NAMES, type ServiceName } from '@logicpath/contracts';
 
-export { SERVICE_NAMES, type ServiceName };
+export { DEFAULT_PORTS, SERVICE_NAMES, type ServiceName };
 
 /** Public path prefix → owning service. The longest matching prefix wins. */
 export const ROUTES: { prefix: string; service: ServiceName }[] = [
@@ -45,27 +45,6 @@ export function ownerOf(path: string): ServiceName | null {
   }
   return best?.service ?? null;
 }
-
-export const DEFAULT_PORTS: Record<ServiceName, number> = {
-  identity: 4101,
-  profile: 4102,
-  consent: 4103,
-  content: 4104,
-  authoring: 4105,
-  practice: 4106,
-  progress: 4107,
-  review: 4108,
-  gamification: 4109,
-  notification: 4110,
-  analytics: 4111,
-  audit: 4112,
-  leaderboard: 4113,
-  classroom: 4114,
-  search: 4115,
-  media: 4116,
-  flags: 4117,
-  developer: 4118,
-};
 
 /** Stricter limits on endpoints attackers like (credential stuffing, email bombing). */
 export const SENSITIVE_PATHS = new Set([

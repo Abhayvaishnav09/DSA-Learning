@@ -16,10 +16,21 @@ x-service: &service
     PORT: "8080"
     NATS_URL: nats://nats:4222
     JWKS_URL: http://identity:8080/.well-known/jwks.json
+    IDENTITY_URL: http://identity:8080
+    PROFILE_URL: http://profile:8080
+    CONSENT_URL: http://consent:8080
     CONTENT_URL: http://content:8080
     AUTHORING_URL: http://authoring:8080
+    NOTIFICATION_URL: http://notification:8080
+    AUDIT_URL: http://audit:8080
+    CLASSROOM_URL: http://classroom:8080
+    SEARCH_URL: http://search:8080
+    MEDIA_URL: http://media:8080
+    FLAGS_URL: http://flags:8080
+    DEVELOPER_URL: http://developer:8080
     SMTP_URL: smtp://mailpit:1025
-    PUBLIC_WEB_URL: http://localhost:3000
+    PUBLIC_WEB_URL: ${PUBLIC_WEB_URL:-http://localhost:3000}
+    PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8080}
     INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-token-change-me}
     LOG_LEVEL: info
 
@@ -63,6 +74,16 @@ services:
       <<: *service-env
       SERVICE_NAME: profile
       DATABASE_URL: postgres://profile:profile@postgres:5432/profile
+  consent:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: consent }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: consent
+      DATABASE_URL: postgres://consent:consent@postgres:5432/consent
   content:
     <<: *service
     build:
@@ -83,6 +104,16 @@ services:
       <<: *service-env
       SERVICE_NAME: authoring
       DATABASE_URL: postgres://authoring:authoring@postgres:5432/authoring
+  notification:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: notification }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: notification
+      DATABASE_URL: postgres://notification:notification@postgres:5432/notification
   audit:
     <<: *service
     build:
@@ -93,6 +124,16 @@ services:
       <<: *service-env
       SERVICE_NAME: audit
       DATABASE_URL: postgres://audit:audit@postgres:5432/audit
+  classroom:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: classroom }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: classroom
+      DATABASE_URL: postgres://classroom:classroom@postgres:5432/classroom
   search:
     <<: *service
     build:
@@ -149,9 +190,12 @@ services:
       CORS_ORIGINS: http://localhost:3000
       IDENTITY_URL: http://identity:8080
       PROFILE_URL: http://profile:8080
+      CONSENT_URL: http://consent:8080
       CONTENT_URL: http://content:8080
       AUTHORING_URL: http://authoring:8080
+      NOTIFICATION_URL: http://notification:8080
       AUDIT_URL: http://audit:8080
+      CLASSROOM_URL: http://classroom:8080
       SEARCH_URL: http://search:8080
       MEDIA_URL: http://media:8080
       FLAGS_URL: http://flags:8080
