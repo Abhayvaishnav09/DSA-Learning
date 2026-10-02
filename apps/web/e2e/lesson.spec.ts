@@ -151,6 +151,8 @@ test('a lesson can be completed with the keyboard alone', async ({ page }) => {
   await page.getByTestId('visualizer').focus();
   for (let i = 0; i < 13; i++) await page.keyboard.press('ArrowRight');
   await expect(page.getByTestId('viz-caption')).toHaveText('The program has finished.');
+  // Next unlocks once the visualizer reports its last frame; a disabled button can't take focus.
+  await expect(page.getByTestId('beat-next')).toBeEnabled();
   await page.getByTestId('beat-next').focus();
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('beat-title')).toHaveText('Predict');
