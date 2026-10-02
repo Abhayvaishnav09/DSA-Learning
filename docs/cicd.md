@@ -8,7 +8,7 @@ pull request ──► CI (ci.yml) ── must pass to merge
 
 merge to main ──► CD (cd.yml)
                    CI again ─► images :main, :sha-abc1234 (GHCR, signed provenance + SBOM, Trivy scan)
-                            ─► demo on GitHub Pages
+                            ─► website on Vercel (free plan)
                             ─► staging   (Kubernetes and/or Render, if connected)
 
 tag v1.2.3 ────► CD (cd.yml)
@@ -33,9 +33,14 @@ tag v1.2.3 ────► CD (cd.yml)
 
 ## One-time setup (repository settings)
 
-1. **Default branch**: Settings → General → Default branch → `main`. Dependabot, release notes and the Pages environment all follow the default branch.
+1. **Default branch**: Settings → General → Default branch → `main`. Dependabot and release notes follow the default branch.
 2. **Branch protection** for `main`: Settings → Branches → require the `CI passed` check and a review.
-3. **GitHub Pages**: Settings → Pages → Source: **GitHub Actions**. The demo is then published on every merge to main. Until then, the Pages job passes and says "Demo not published" in the run summary.
+3. **Website on Vercel** (free Hobby plan, nothing to install):
+   1. Sign up at vercel.com with **Continue with GitHub**.
+   2. Account Settings → **Tokens** → create a token and copy it.
+   3. Here: Settings → Secrets and variables → Actions → **New repository secret** `VERCEL_TOKEN`.
+
+   The next push to main (or **Run workflow** on CD) creates the Vercel project `logicpath` and deploys the website. The address appears in the run summary and under the repository's **Deployments → website**. Don't import the repository in Vercel's dashboard: CD deploys only after CI passes, and `apps/web/vercel.json` turns off Vercel's own Git deploys. Until the API is hosted, the website uses the in-browser backend with the demo accounts. Without the secret, the job passes and says "Website not deployed".
 4. **Environments**: Settings → Environments → create `staging` and `production`. On `production`, add **required reviewers** so deploys wait for approval. In each environment, add a variable `PUBLIC_URL` (for example `https://staging.logicpath.dev`) to enable the post-deploy smoke test.
 5. **Packages**: after the first CD run, open each package under the repository's Packages and set its visibility (public is simplest for Render; for a private registry, give Render and the cluster a pull credential).
 6. **Dependabot** and **code scanning** are on by default once the files are merged.

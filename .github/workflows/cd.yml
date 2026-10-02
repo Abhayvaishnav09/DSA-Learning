@@ -1,5 +1,5 @@
 # Continuous delivery (docs/cicd.md):
-#   push to main  → CI → images :main and :sha-…  → demo on GitHub Pages → staging
+#   push to main  → CI → images :main and :sha-…  → website on Vercel → staging
 #   tag v1.2.3    → CI → images :1.2.3, :1.2 and :latest → GitHub Release → production (approval)
 # Kubernetes and Render deploys run only when their secrets exist, so the pipeline is green
 # before any cloud account is connected.
@@ -105,53 +105,85 @@ jobs:
           ignore-unfixed: true
           exit-code: ${{ needs.plan.outputs.release == 'true' && '1' || '0' }}
 
-  pages:
-    name: Demo on GitHub Pages
+  website:
+    # The website runs on Vercel's free plan, with the in-browser backend until the API is hosted.
+    # Optional like the other targets: without the VERCEL_TOKEN secret it passes and says so.
+    name: Website on Vercel
     if: github.ref == 'refs/heads/main'
     needs: ci
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+    timeout-minutes: 20
     environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      name: website
+      url: ${{ steps.deploy.outputs.url }}
+    concurrency:
+      group: website
+      cancel-in-progress: false
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT: logicpath
+      VERCEL_TELEMETRY_DISABLED: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+      TURBO_TELEMETRY_DISABLED: '1'
     steps:
-      # Like the deploy targets, Pages is optional: until it is turned on (docs/cicd.md),
-      # the job passes and says so in the run summary.
-      - name: Is GitHub Pages turned on?
-        id: enabled
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Is Vercel connected?
+        id: connected
         run: |
-          status=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" \
-            -H 'Accept: application/vnd.github+json' "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")
-          case "$status" in
-            200) echo "pages=true" >> "$GITHUB_OUTPUT" ;;
-            404)
-              echo "pages=false" >> "$GITHUB_OUTPUT"
-              echo "::notice::Demo not published: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions)."
-              echo "### Demo not published: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions)" >> "$GITHUB_STEP_SUMMARY" ;;
-            *) echo "::error::Could not read the Pages settings (HTTP $status)" && exit 1 ;;
-          esac
-      - if: steps.enabled.outputs.pages == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "vercel=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "vercel=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Website not deployed: add the VERCEL_TOKEN secret (docs/cicd.md)."
+            echo "### Website not deployed: add the VERCEL_TOKEN secret (docs/cicd.md)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: steps.connected.outputs.vercel == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - if: steps.connected.outputs.vercel == 'true'
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - if: steps.connected.outputs.vercel == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          name: demo
-          path: site
-      - name: Demo page as the site's index
-        if: steps.enabled.outputs.pages == 'true'
-        run: mv site/logicpath.html site/index.html
-      - if: steps.enabled.outputs.pages == 'true'
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-      - if: steps.enabled.outputs.pages == 'true'
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-        with:
-          path: site
-      - id: deploy
-        if: steps.enabled.outputs.pages == 'true'
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Vercel project (created on the first deploy)
+        if: steps.connected.outputs.vercel == 'true'
+        run: |
+          npm install --global --no-audit --no-fund vercel@62.2.0
+          api=https://api.vercel.com
+          project=$(curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" "$api/v9/projects/$VERCEL_PROJECT")
+          if jq -e '.error.code == "not_found"' <<<"$project" > /dev/null; then
+            project=$(curl -sS -X POST -H "Authorization: Bearer $VERCEL_TOKEN" -H 'Content-Type: application/json' \
+              "$api/v11/projects" \
+              -d "{\"name\":\"$VERCEL_PROJECT\",\"framework\":\"nextjs\",\"rootDirectory\":\"apps/web\",\"nodeVersion\":\"22.x\"}")
+          fi
+          if ! jq -e '.id' <<<"$project" > /dev/null; then
+            echo "::error::Vercel: $(jq -r '.error.message // "unexpected response"' <<<"$project")" && exit 1
+          fi
+          mkdir -p .vercel && jq '{projectId: .id, orgId: .accountId}' <<<"$project" > .vercel/project.json
+      - name: Build (apps/web/vercel.json)
+        if: steps.connected.outputs.vercel == 'true'
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy
+        id: deploy
+        if: steps.connected.outputs.vercel == 'true'
+        run: |
+          deployment=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          # The public address is the production alias; the per-deployment URL is login-protected.
+          alias=$(curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v13/deployments/${deployment#https://}" | jq -r '(.alias // []) | sort_by(length) | .[0] // empty')
+          url=${alias:+https://$alias}
+          echo "url=${url:-$deployment}" >> "$GITHUB_OUTPUT"
+          echo "### Website: ${url:-$deployment}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Smoke test
+        if: steps.connected.outputs.vercel == 'true'
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for path in / /learn /learn/loops.counter /login; do
+            curl -fsS -o /dev/null --retry 5 --retry-all-errors --retry-delay 5 "$URL$path" && echo "ok $path"
+          done
 
   staging:
     name: Deploy to staging
