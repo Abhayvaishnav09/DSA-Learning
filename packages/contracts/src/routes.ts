@@ -20,8 +20,10 @@ import type { ServiceName } from './services';
  *   table and the running services cannot drift apart.
  */
 
-export type Auth = 'public' | 'user' | 'writer' | 'admin' | 'apiKey';
-export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+import type { Auth, Method } from './route-types';
+
+export type { Auth, Method } from './route-types';
+export { pathFor } from './meta';
 
 export interface Endpoint {
   method: Method;
@@ -894,15 +896,6 @@ export type BodyOf<K extends EndpointId> = Endpoints[K] extends { body: infer S 
   ? InputOf<S>
   : undefined;
 export type ResponseOf<K extends EndpointId> = z.output<Endpoints[K]['response']>;
-
-/** Fills `:name` segments: pathFor('/v1/classes/:id', { id }) → /v1/classes/123 */
-export function pathFor(path: string, params?: Record<string, string | number>): string {
-  return path.replace(/:([A-Za-z]+)/g, (_, name: string) => {
-    const value = params?.[name];
-    if (value === undefined) throw new Error(`missing path parameter ${name} for ${path}`);
-    return encodeURIComponent(String(value));
-  });
-}
 
 /** Implemented rows owned by one service, as "METHOD path" (used by the contract tests). */
 export function routesOf(service: ServiceName | 'gateway'): string[] {

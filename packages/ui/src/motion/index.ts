@@ -1,5 +1,6 @@
 export { MotionProvider, useMotionPrefs, type MotionMode } from './MotionProvider';
 export {
+  Burst,
   CountUp,
   PageTransition,
   PopSwap,

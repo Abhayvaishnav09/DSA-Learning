@@ -5,15 +5,20 @@ import { PageTransition } from '@logicpath/ui/motion';
 import { Bell, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useT } from '@/shared/i18n/useT';
 import { routes } from '@/shared/routing/routes';
 import { useSession } from '@/shared/session/store';
-import { CommandMenu, LanguageSelect, SearchButton, UserMenu } from './Controls';
+import dynamic from 'next/dynamic';
+import { LanguageSelect, SearchButton, UserMenu } from './Controls';
 import { RouteGuard } from './Guard';
 import { Logo } from './Logo';
 import { AREA_HOME, type Area } from './nav';
 import { BottomTabs, SideNav } from './Navigation';
+import { useSmoothScroll } from './useSmoothScroll';
+
+// The palette (cmdk) loads the first time someone opens it, not with every page.
+const CommandMenu = dynamic(() => import('./Controls').then((m) => m.CommandMenu), { ssr: false });
 
 function SkipLink() {
   const t = useT();
@@ -35,6 +40,23 @@ export function AppShell({ area, children }: { area: Area; children: ReactNode }
   const t = useT();
   const pathname = usePathname();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteRequested, setPaletteRequested] = useState(false);
+  const openPalette = () => {
+    setPaletteRequested(true);
+    setPaletteOpen(true);
+  };
+  // ⌘K / Ctrl+K works before the palette's code has loaded.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey) && !paletteRequested) {
+        e.preventDefault();
+        setPaletteRequested(true);
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [paletteRequested]);
   const signedIn = useSession((s) => s.status === 'signedIn');
 
   return (
@@ -46,7 +68,7 @@ export function AppShell({ area, children }: { area: Area; children: ReactNode }
           <div className="flex h-16 items-center gap-2 px-4 tablet:px-6">
             <Logo href={AREA_HOME[area]} label={t.nav.home} className="tablet:hidden" compact />
             <div className="flex-1" />
-            <SearchButton onClick={() => setPaletteOpen(true)} />
+            <SearchButton onClick={openPalette} />
             <LanguageSelect />
             {signedIn && (
               <IconButton label={t.nav.notifications} asChild>
@@ -67,7 +89,7 @@ export function AppShell({ area, children }: { area: Area; children: ReactNode }
         </main>
       </div>
       <BottomTabs area={area} />
-      <CommandMenu open={paletteOpen} onOpenChange={setPaletteOpen} />
+      {paletteRequested && <CommandMenu open={paletteOpen} onOpenChange={setPaletteOpen} />}
     </div>
   );
 }
@@ -99,6 +121,7 @@ export function FocusShell({ children }: { children: ReactNode }) {
 /** Public pages: glass header with the main calls to action, rich footer. */
 export function MarketingShell({ children }: { children: ReactNode }) {
   const t = useT();
+  useSmoothScroll();
   const pathname = usePathname();
   const signedIn = useSession((s) => s.status === 'signedIn');
   const links = [

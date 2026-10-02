@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./local": "./src/local-entry.ts",
     "./react": "./src/react.tsx"
   },
   "scripts": {

@@ -1,10 +1,6 @@
 import bundleJson from '@logicpath/content/bundle.json';
-import {
-  createClient,
-  localTransport,
-  memoryTokenStore,
-  type ApiError,
-} from '@logicpath/api-client';
+import { createClient, memoryTokenStore, type ApiError } from '@logicpath/api-client';
+import { localTransport } from '@logicpath/api-client/local';
 import type { ContentBundle, ItemOf } from '@logicpath/content-schema';
 import { describe, expect, it } from 'vitest';
 import { createLocalBackend, DEMO_ACCOUNTS, DEMO_PASSWORD, memoryStorage } from './index';

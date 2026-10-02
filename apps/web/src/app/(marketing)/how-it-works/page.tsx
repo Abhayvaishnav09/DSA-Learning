@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { HowItWorks } from '@/features/marketing/HowItWorks';
 
 export const metadata: Metadata = { title: 'How it works' };
 
 export default function Page() {
-  return <ComingSoon title="howItWorks" />;
+  return <HowItWorks />;
 }

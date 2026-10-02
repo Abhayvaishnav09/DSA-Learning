@@ -116,6 +116,109 @@ export const en = {
         body: 'Questions come back on later days, so the logic stays in your head.',
       },
     ],
+    eyebrow: 'Free · English and Hinglish · Zero to interview prep',
+    titleLead: 'Learn to',
+    titleAccent: 'think',
+    titleTail: 'like a programmer.',
+    ctaSecondary: 'See how it works',
+    highlights: ['5-minute lessons', 'Starts from absolute zero', 'Works offline'],
+    watchTitle: 'Watch the logic run',
+    watchBody:
+      'Programs come alive one step at a time. Boxes fill, the screen updates, and a plain-words caption says what just happened.',
+    watchPoints: [
+      'Step forward and back at your own speed',
+      'Pause and predict before you see the answer',
+      'Every visual has a text caption, for screen readers too',
+    ],
+    roadmapTitle: 'From your first idea to interview problems',
+    roadmapBody:
+      'Each stage builds on the last. You unlock the next idea once the one before it sticks.',
+    roadmapNow: 'Available now',
+    roadmapNext: 'Coming next',
+    laterStages: ['Data structures', 'Algorithms', 'Interview preparation'],
+    audiencesTitle: 'Built for everyone around learning',
+    audiences: [
+      {
+        title: 'Learners',
+        body: 'Short lessons, instant feedback, reviews that come back right before you forget.',
+        cta: 'Start learning',
+      },
+      {
+        title: 'Teachers and schools',
+        body: 'Create a class, share a join code, and see who needs help with which idea.',
+        cta: 'How classes work',
+      },
+      {
+        title: 'Developers',
+        body: 'A public API for the curriculum, with keys, quotas and clear documentation.',
+        cta: 'Read the API docs',
+      },
+    ],
+    faqTitle: 'Questions people ask',
+    faq: [
+      {
+        q: 'Do I need to know any programming?',
+        a: 'No. Stage 0 starts with everyday thinking: steps, decisions and patterns. Code comes later, one idea at a time.',
+      },
+      {
+        q: 'Which language does it teach?',
+        a: 'Logic first, in simple pseudocode that reads like English. Real languages are easy once the logic is in your head.',
+      },
+      {
+        q: 'Can I learn in Hinglish?',
+        a: 'Yes. Every lesson, question and hint is written in both English and Hinglish. Switch any time from the top bar.',
+      },
+      {
+        q: 'Is it free?',
+        a: 'Yes. You can even start without an account; your progress stays on your device until you sign up.',
+      },
+      {
+        q: 'I am under 18. Can I join?',
+        a: 'Yes, with a parent or guardian. We email them, and your account starts once they approve, as Indian law requires.',
+      },
+    ],
+    finalTitle: 'Your first lesson takes five minutes.',
+    finalBody: 'No signup, no setup. Just open it and start thinking.',
+  },
+  howItWorks: {
+    eyebrow: 'The method',
+    title: 'Built on how people actually learn',
+    intro:
+      'Every lesson follows the same five beats. Each one is there because research on teaching beginners shows it works.',
+    beats: [
+      {
+        title: 'A story first',
+        body: 'New ideas stick better when they start from something you already know: counting people at a gate, sorting cards, making tea.',
+        evidence: 'Concrete before abstract',
+      },
+      {
+        title: 'See it run',
+        body: 'You watch the program run one step at a time. Words and pictures together are easier to understand than either alone.',
+        evidence: 'Dual coding',
+      },
+      {
+        title: 'Predict, then check',
+        body: 'Before the answer appears, you guess. Committing to a prediction makes you think, and a wrong guess shows exactly what to fix.',
+        evidence: 'Prediction and retrieval',
+      },
+      {
+        title: 'Hints that teach',
+        body: 'Stuck? Hints go from a gentle nudge to the full step. Wrong answers get a name, like "counting one pass too many", so the mistake becomes a lesson.',
+        evidence: 'Worked examples and named misconceptions',
+      },
+      {
+        title: 'Review on later days',
+        body: 'Questions come back just before you would forget them. An idea counts as mastered only when you still remember it on a later day.',
+        evidence: 'Spaced repetition',
+      },
+    ],
+    pathTitle: 'Mastery unlocks the path',
+    pathBody:
+      'Ideas build on each other. When an idea is strong, the next ones open. Your map shows where you are and what comes next.',
+    teachersTitle: 'For teachers and schools',
+    teachersBody:
+      'Create a class, share a six-letter code, and see which ideas each student has mastered and who might need help.',
+    cta: 'Try the first lesson',
   },
   home: {
     title: 'Your learning path',
@@ -146,6 +249,19 @@ export const en = {
     knowledge: (pct: number) => `Knowledge ${pct}%`,
     recallPending: 'Strong today. Remember it on a later day to master it.',
     minutes: (m: number) => `${m} min`,
+    mapTitle: 'Your map',
+    mapHint:
+      'Drag to look around, scroll or pinch to zoom. Arrow keys move between ideas, Enter opens one.',
+    mapHintFlat: 'Tap or click an idea to open it.',
+    view3d: '3D map',
+    view2d: 'Flat map',
+    viewLabel: 'Map view',
+    buildsOn: 'Builds on',
+    startsHere: 'Nothing. Start here!',
+    open: 'Open lesson',
+    lockedHint: 'Learn the ideas it builds on first.',
+    soonHint: 'This lesson is being written.',
+    announce: (title: string, status: string) => `${title}: ${status}`,
   },
   lesson: {
     beats: { story: 'Story', see: 'See it', predict: 'Predict', practice: 'Do it', recap: 'Recap' },
@@ -326,6 +442,109 @@ export const hiLatn: Messages = {
         body: 'Sawaal baad ke dino mein wapas aate hain, taaki logic dimaag mein baith jaaye.',
       },
     ],
+    eyebrow: 'Free · English aur Hinglish · Zero se interview prep tak',
+    titleLead: 'Programmer ki tarah',
+    titleAccent: 'sochna',
+    titleTail: 'seekho.',
+    ctaSecondary: 'Dekho kaise kaam karta hai',
+    highlights: ['5 minute ke lessons', 'Bilkul zero se shuru', 'Offline bhi chalta hai'],
+    watchTitle: 'Logic ko chalte hue dekho',
+    watchBody:
+      'Program ek ek step mein zinda hota hai. Boxes bharte hain, screen badalti hai, aur ek simple caption batata hai ki abhi kya hua.',
+    watchPoints: [
+      'Apni speed se aage peeche jao',
+      'Jawab dekhne se pehle ruko aur andaaza lagao',
+      'Har visual ka text caption hai, screen readers ke liye bhi',
+    ],
+    roadmapTitle: 'Pehle idea se interview problems tak',
+    roadmapBody:
+      'Har stage pichhle par banti hai. Agla idea tab khulta hai jab pichhla pakka ho jaye.',
+    roadmapNow: 'Abhi available',
+    roadmapNext: 'Jaldi aa raha hai',
+    laterStages: ['Data structures', 'Algorithms', 'Interview ki taiyari'],
+    audiencesTitle: 'Seekhne se jude har insaan ke liye',
+    audiences: [
+      {
+        title: 'Learners',
+        body: 'Chhote lessons, turant feedback, aur revision jo bhoolne se theek pehle wapas aata hai.',
+        cta: 'Seekhna shuru karo',
+      },
+      {
+        title: 'Teachers aur schools',
+        body: 'Class banao, join code share karo, aur dekho kis idea mein kise madad chahiye.',
+        cta: 'Classes kaise kaam karti hain',
+      },
+      {
+        title: 'Developers',
+        body: 'Curriculum ke liye public API, keys, quotas aur saaf documentation ke saath.',
+        cta: 'API docs padho',
+      },
+    ],
+    faqTitle: 'Log yeh poochte hain',
+    faq: [
+      {
+        q: 'Kya mujhe programming aani chahiye?',
+        a: 'Nahi. Stage 0 roz ki soch se shuru hota hai: steps, decisions aur patterns. Code baad mein aata hai, ek ek idea karke.',
+      },
+      {
+        q: 'Kaunsi language sikhata hai?',
+        a: 'Pehle logic, simple pseudocode mein jo English jaisa padhta hai. Logic dimaag mein ho to asli languages aasaan lagti hain.',
+      },
+      {
+        q: 'Kya main Hinglish mein seekh sakta hoon?',
+        a: 'Haan. Har lesson, sawaal aur hint English aur Hinglish dono mein hai. Top bar se kabhi bhi badlo.',
+      },
+      {
+        q: 'Kya yeh free hai?',
+        a: 'Haan. Bina account ke bhi shuru kar sakte ho; sign up tak progress tumhare device par rehti hai.',
+      },
+      {
+        q: 'Main 18 se chhota hoon. Kya join kar sakta hoon?',
+        a: 'Haan, parent ya guardian ke saath. Hum unhe email karte hain, aur unke approve karne par account shuru hota hai, jaisa Indian law kehta hai.',
+      },
+    ],
+    finalTitle: 'Pehla lesson paanch minute ka hai.',
+    finalBody: 'Na sign up, na setup. Bas kholo aur sochna shuru karo.',
+  },
+  howItWorks: {
+    eyebrow: 'Tareeka',
+    title: 'Log asal mein kaise seekhte hain, usi par bana',
+    intro:
+      'Har lesson ke paanch hisse hote hain. Har hissa isliye hai kyunki beginners ko padhane par research yahi kehti hai.',
+    beats: [
+      {
+        title: 'Pehle kahani',
+        body: 'Naye ideas tab yaad rehte hain jab woh kisi jaani pehchaani cheez se shuru hon: gate par log ginna, cards lagana, chai banana.',
+        evidence: 'Pehle concrete, phir abstract',
+      },
+      {
+        title: 'Chalte hue dekho',
+        body: 'Program ek ek step chalta hai aur tum dekhte ho. Shabd aur tasveer saath mein akele kisi ek se zyada samajh aate hain.',
+        evidence: 'Dual coding',
+      },
+      {
+        title: 'Andaaza lagao, phir check karo',
+        body: 'Jawab aane se pehle tum guess karte ho. Guess karna sochne par majboor karta hai, aur galat guess dikhata hai ki kya theek karna hai.',
+        evidence: 'Prediction aur retrieval',
+      },
+      {
+        title: 'Hints jo sikhate hain',
+        body: 'Atke? Hints halke ishaare se poore step tak jaate hain. Galat jawab ko naam milta hai, jaise "ek pass zyada ginna", taaki galti bhi lesson ban jaye.',
+        evidence: 'Worked examples aur misconceptions ke naam',
+      },
+      {
+        title: 'Agle dinon mein revision',
+        body: 'Sawaal bhoolne se theek pehle wapas aate hain. Idea tabhi master maana jaata hai jab tumhe woh agle din bhi yaad ho.',
+        evidence: 'Spaced repetition',
+      },
+    ],
+    pathTitle: 'Mastery se raasta khulta hai',
+    pathBody:
+      'Ideas ek doosre par bante hain. Jab ek idea pakka hota hai, agle khul jaate hain. Map dikhata hai tum kahan ho aur aage kya hai.',
+    teachersTitle: 'Teachers aur schools ke liye',
+    teachersBody:
+      'Class banao, chhe letter ka code share karo, aur dekho har student ne kaunse ideas master kiye aur kise madad chahiye.',
+    cta: 'Pehla lesson try karo',
   },
   home: {
     title: 'Tumhara learning path',
@@ -354,6 +573,19 @@ export const hiLatn: Messages = {
     knowledge: (pct) => `Samajh ${pct}%`,
     recallPending: 'Aaj achha kiya. Baad ke din yaad rakho, tab pakka hoga.',
     minutes: (m) => `${m} min`,
+    mapTitle: 'Tumhara map',
+    mapHint:
+      'Ghumane ke liye drag karo, zoom ke liye scroll ya pinch. Arrow keys se ideas badlo, Enter se kholo.',
+    mapHintFlat: 'Kisi idea par tap ya click karo, woh khul jayega.',
+    view3d: '3D map',
+    view2d: 'Flat map',
+    viewLabel: 'Map view',
+    buildsOn: 'Iske pehle',
+    startsHere: 'Kuch nahi. Yahin se shuru karo!',
+    open: 'Lesson kholo',
+    lockedHint: 'Pehle woh ideas seekho jin par yeh bana hai.',
+    soonHint: 'Yeh lesson likha ja raha hai.',
+    announce: (title, status) => `${title}: ${status}`,
   },
   lesson: {
     beats: { story: 'Kahani', see: 'Dekho', predict: 'Andaaza', practice: 'Karo', recap: 'Saar' },

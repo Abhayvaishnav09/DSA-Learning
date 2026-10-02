@@ -33,3 +33,25 @@ describe('endpoint table', () => {
     expect(learning.Answer.safeParse({ type: 'truth-table', rows: [['yes']] }).success).toBe(false);
   });
 });
+
+describe('generated endpoint metadata', () => {
+  it('matches the endpoint table (run `pnpm --filter @logicpath/contracts gen` after changing it)', async () => {
+    const { ENDPOINT_META } = await import('./meta');
+    const expected = Object.fromEntries(
+      Object.entries(ENDPOINTS as Record<string, Endpoint>).map(([id, e]) => [
+        id,
+        {
+          method: e.method,
+          path: e.path,
+          service: e.service,
+          auth: e.auth,
+          status: e.status,
+          summary: e.summary,
+          ...(e.bodyType ? { bodyType: e.bodyType } : {}),
+          ...(e.planned ? { planned: e.planned } : {}),
+        },
+      ]),
+    );
+    expect(ENDPOINT_META).toEqual(expected);
+  });
+});

@@ -145,7 +145,13 @@ export function DataTable<T>({
     );
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-raised">
+    // Focusable so keyboard users can scroll wide tables sideways (WCAG 2.1.1).
+    <div
+      tabIndex={0}
+      role="region"
+      aria-label={caption}
+      className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-raised"
+    >
       <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="border-b border-border bg-surface-2/60 text-xs uppercase tracking-wide text-muted">

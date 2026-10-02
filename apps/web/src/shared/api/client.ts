@@ -3,7 +3,6 @@
 import {
   createClient,
   httpTransport,
-  localTransport,
   memoryTokenStore,
   type ApiClient,
   type TokenStore,
@@ -73,13 +72,14 @@ export function getApiClient(): ApiClient {
     );
   } else {
     const tokens = localTokenStore();
-    const transport = getLocalBackend().then((backend) =>
-      localTransport({
-        backend,
-        tokens,
-        latencyMs: 120,
-        validateResponses: process.env.NODE_ENV !== 'production',
-      }),
+    const transport = Promise.all([getLocalBackend(), import('@logicpath/api-client/local')]).then(
+      ([backend, { localTransport }]) =>
+        localTransport({
+          backend,
+          tokens,
+          latencyMs: 120,
+          validateResponses: process.env.NODE_ENV !== 'production',
+        }),
     );
     // Every call waits for the backend to load and seed (demo accounts, curriculum) once.
     client = createClient({ request: async (...args) => (await transport).request(...args) });

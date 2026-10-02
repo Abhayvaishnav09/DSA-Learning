@@ -1,4 +1,4 @@
-import { fail, type LocalHandler, type LocalUser } from '@logicpath/api-client';
+import { fail, type LocalHandler, type LocalUser } from '@logicpath/api-client/local';
 import type { identity, ParamsOf, Role } from '@logicpath/contracts';
 import type { LocalDb, UserRow } from '../db';
 import {

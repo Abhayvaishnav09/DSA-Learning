@@ -3,6 +3,9 @@ import { LoginScreen } from '@/features/auth/LoginScreen';
 import { Landing } from '@/features/landing/Landing';
 import { LessonPlayer } from '@/features/lesson-player/LessonPlayer';
 import { LearnHome } from '@/features/map/LearnHome';
+import { Developers } from '@/features/marketing/Developers';
+import { HowItWorks } from '@/features/marketing/HowItWorks';
+import { Privacy, Terms } from '@/features/marketing/Legal';
 import { ComingSoon } from '@/features/placeholder/ComingSoon';
 import { ReviewHeader } from '@/features/review/ReviewHeader';
 import { ReviewSession } from '@/features/review/ReviewSession';
@@ -18,10 +21,10 @@ type Screen = (params: Record<string, string>) => ReactNode;
  */
 export const SCREENS: Record<RoutePattern, Screen> = {
   '/': () => <Landing />,
-  '/how-it-works': () => <ComingSoon title="howItWorks" />,
-  '/developers': () => <ComingSoon title="developers" />,
-  '/legal/privacy': () => <ComingSoon title="privacy" />,
-  '/legal/terms': () => <ComingSoon title="terms" />,
+  '/how-it-works': () => <HowItWorks />,
+  '/developers': () => <Developers />,
+  '/legal/privacy': () => <Privacy />,
+  '/legal/terms': () => <Terms />,
   '/login': () => <LoginScreen />,
   '/signup': () => <ComingSoon title="signUp" />,
   '/forgot-password': () => <ComingSoon title="signIn" />,

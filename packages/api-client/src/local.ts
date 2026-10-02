@@ -1,4 +1,11 @@
-import { pathFor, type Endpoint, type EndpointId, type Role } from '@logicpath/contracts';
+import {
+  ENDPOINTS,
+  pathFor,
+  type Endpoint,
+  type EndpointId,
+  type Role,
+} from '@logicpath/contracts';
+import type { EndpointMeta } from '@logicpath/contracts/meta';
 import { z } from 'zod';
 import { ApiError, problem, type RequestInput, type Transport } from './client';
 import { memoryTokenStore, type TokenStore } from './http';
@@ -69,7 +76,9 @@ export function localTransport(options: LocalOptions): Transport {
   const now = options.now ?? (() => new Date());
 
   return {
-    async request(id: EndpointId, endpoint: Endpoint, input: RequestInput) {
+    async request(id: EndpointId, _meta: EndpointMeta, input: RequestInput) {
+      // The full row, with schemas: the local backend validates like the services do.
+      const endpoint = (ENDPOINTS as Record<string, Endpoint>)[id]!;
       if (options.latencyMs) await new Promise((r) => setTimeout(r, options.latencyMs));
       if (input.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 

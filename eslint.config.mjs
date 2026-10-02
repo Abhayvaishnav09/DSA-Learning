@@ -39,7 +39,15 @@ export default tseslint.config(
       'packages/ui/**/*.{ts,tsx}',
     ],
     plugins: { 'react-hooks': reactHooks, 'jsx-a11y-x': jsxA11y },
-    rules: { ...reactHooks.configs.recommended.rules, ...jsxA11y.configs.strict.rules },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      ...jsxA11y.configs.strict.rules,
+      // Scrollable regions and code blocks must be focusable to scroll by keyboard (WCAG 2.1.1).
+      'jsx-a11y-x/no-noninteractive-tabindex': [
+        'error',
+        { roles: ['tabpanel', 'region'], tags: ['pre'] },
+      ],
+    },
   },
   {
     // Type-aware rules for backend and library code: the bugs types can catch but tsc doesn't.

@@ -1,6 +1,7 @@
 'use client';
 
 import { nextDue } from '@logicpath/learning-engine';
+import { m, transitions, useMotionPrefs } from '@logicpath/ui/motion';
 import { useMachine } from '@xstate/react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -63,6 +64,7 @@ function LessonRun({ conceptId }: { conceptId: string }) {
     heading.current?.focus({ preventScroll: true });
   }, [beat, practiceIndex]);
 
+  const { allowMovement } = useMotionPrefs();
   const next = () => send({ type: 'NEXT' });
   const back = () => send({ type: 'BACK' });
   const beatProps = { lesson, locale, t, onNext: next, onBack: back };
@@ -71,9 +73,6 @@ function LessonRun({ conceptId }: { conceptId: string }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
       <div className="flex items-center gap-3">
-        <Link href="/learn" className="lp-btn-icon" aria-label={t.lesson.exit}>
-          ✕
-        </Link>
         <BeatProgress
           beat={beat}
           practiceIndex={practiceIndex}
@@ -95,7 +94,13 @@ function LessonRun({ conceptId }: { conceptId: string }) {
         </h1>
       </div>
 
-      <div>
+      {/* Each beat and question slides in; the exit is instant so moving on never waits. */}
+      <m.div
+        key={`${beat}-${practiceIndex}`}
+        initial={{ opacity: 0, x: allowMovement ? 28 : 0 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={transitions.slow}
+      >
         {beat === 'story' && <StoryBeat {...beatProps} onBack={undefined} />}
         {beat === 'see' && <SeeBeat {...beatProps} />}
         {beat === 'predict' && <PredictBeat {...beatProps} />}
@@ -109,7 +114,7 @@ function LessonRun({ conceptId }: { conceptId: string }) {
           />
         )}
         {beat === 'recap' && <Recap conceptId={conceptId} />}
-      </div>
+      </m.div>
     </div>
   );
 }

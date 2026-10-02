@@ -1,12 +1,11 @@
-import {
-  ENDPOINTS,
-  type BodyOf,
-  type Endpoint,
-  type EndpointId,
-  type ParamsOf,
-  type Problem,
-  type QueryOf,
-  type ResponseOf,
+import { ENDPOINT_META, type EndpointMeta } from '@logicpath/contracts/meta';
+import type {
+  BodyOf,
+  EndpointId,
+  ParamsOf,
+  Problem,
+  QueryOf,
+  ResponseOf,
 } from '@logicpath/contracts';
 
 /** What a call needs, depending on the endpoint: path params, query string, body. */
@@ -33,7 +32,7 @@ export interface RequestInput {
 
 /** Moves a request to a backend: the real gateway (http) or the in-browser one (local). */
 export interface Transport {
-  request(id: EndpointId, endpoint: Endpoint, input: RequestInput): Promise<unknown>;
+  request(id: EndpointId, endpoint: EndpointMeta, input: RequestInput): Promise<unknown>;
 }
 
 /** A failed call, carrying the RFC 9457 problem the server sent. */
@@ -84,7 +83,7 @@ export function createClient(transport: Transport): ApiClient {
   return {
     transport,
     async call(id, ...args) {
-      const endpoint = (ENDPOINTS as Record<string, Endpoint>)[id];
+      const endpoint = ENDPOINT_META[id];
       if (!endpoint) throw new Error(`unknown endpoint ${String(id)}`);
       const input = (args[0] ?? {}) as RequestInput;
       return (await transport.request(id, endpoint, input)) as never;

@@ -1,4 +1,4 @@
-import type { LocalBackend, LocalHandler } from '@logicpath/api-client';
+import type { LocalBackend, LocalHandler } from '@logicpath/api-client/local';
 import type { ContentBundle } from '@logicpath/content-schema';
 import { LocalDb, memoryStorage, type KeyValueStorage } from './db';
 import { authoringHandlers } from './domains/authoring';

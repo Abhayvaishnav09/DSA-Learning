@@ -3,6 +3,7 @@
 import type { Item, Locale } from '@logicpath/content-schema';
 import { correctAnswer, displayOrder, grade, gradeExplain, type Verdict } from '@logicpath/grader';
 import type { HintLevel, ReviewCard } from '@logicpath/learning-engine';
+import { Burst, useShake } from '@logicpath/ui/motion';
 import { useMachine } from '@xstate/react';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { track } from '@/shared/analytics/track';
@@ -62,6 +63,8 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
 
   const [draft, setDraft] = useState<Draft>(() => emptyDraft(item));
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [celebrations, setCelebrations] = useState(0);
+  const [answerArea, shake] = useShake();
   const [dirty, setDirty] = useState(false);
   const [explainChoice, setExplainChoice] = useState<number | null>(null);
 
@@ -87,6 +90,8 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
     const result = grade(item, answer as never);
     setVerdict(result);
     setDirty(false);
+    if (result.correct) setCelebrations((n) => n + 1);
+    else shake();
     if (result.correct && solvedMs.current === null) solvedMs.current = msSince(startedAt.current);
 
     const attempt: AttemptInput = {
@@ -177,15 +182,17 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
       {item.code && SHOWS_CODE.has(item.type) && <CodeBlock code={item.code} />}
 
       <form onSubmit={check} className="flex flex-col gap-4">
-        <AnswerInput
-          item={item}
-          draft={draft}
-          onChange={onChange}
-          parts={parts}
-          disabled={locked}
-          locale={locale}
-          t={t}
-        />
+        <div ref={answerArea}>
+          <AnswerInput
+            item={item}
+            draft={draft}
+            onChange={onChange}
+            parts={parts}
+            disabled={locked}
+            locale={locale}
+            t={t}
+          />
+        </div>
 
         {!locked && (
           <div className="flex flex-wrap gap-2">
@@ -217,7 +224,8 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
         </ol>
       )}
 
-      <div role="status" aria-live="polite" data-testid="feedback">
+      <div role="status" aria-live="polite" data-testid="feedback" className="relative">
+        {celebrations > 0 && verdict?.correct && <Burst key={celebrations} />}
         <Feedback
           item={item}
           mode={mode}

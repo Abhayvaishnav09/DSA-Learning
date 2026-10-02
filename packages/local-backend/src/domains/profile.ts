@@ -1,4 +1,4 @@
-import type { LocalHandler } from '@logicpath/api-client';
+import type { LocalHandler } from '@logicpath/api-client/local';
 import type { profile } from '@logicpath/contracts';
 import type { LocalDb } from '../db';
 import { iso, me } from '../util';

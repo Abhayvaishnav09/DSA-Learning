@@ -1,12 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  ApiError,
-  createClient,
-  httpTransport,
-  localTransport,
-  memoryTokenStore,
-  type LocalBackend,
-} from './index';
+import { ApiError, createClient, httpTransport, memoryTokenStore } from './index';
+import { localTransport, type LocalBackend } from './local-entry';
 
 const json = (status: number, body: unknown) =>
   new Response(body === null ? null : JSON.stringify(body), {

@@ -120,7 +120,7 @@ export function Visualizer({
                 {frame.stack.map((call, depth) => (
                   <li
                     key={depth}
-                    className={`rounded-xl border-2 p-2 ${depth === current ? 'border-accent' : 'border-dashed border-border opacity-70'}`}
+                    className={`lp-push rounded-xl border-2 p-2 ${depth === current ? 'border-accent' : 'border-dashed border-border opacity-70'}`}
                     aria-current={depth === current ? 'step' : undefined}
                   >
                     <div className="mb-1 font-mono text-xs font-semibold text-accent">
@@ -257,7 +257,7 @@ function BoxList({ names, vars, changed, changedIndex, testId }: BoxListProps) {
               <ol className="flex gap-1" aria-label={`${name}: ${formatValue(value)}`}>
                 {value.length === 0 && <li className="px-2 font-mono text-sm text-muted">[ ]</li>}
                 {value.map((item, i) => (
-                  <li key={i} className="flex flex-col items-center">
+                  <li key={i} className="lp-slide flex flex-col items-center">
                     <span
                       key={formatValue(item)}
                       className={`min-w-9 rounded-md border px-1.5 py-0.5 text-center font-mono text-base font-bold ${

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { Privacy } from '@/features/marketing/Legal';
 
-export const metadata: Metadata = { title: 'Privacy' };
+export const metadata: Metadata = { title: 'Privacy policy' };
 
 export default function Page() {
-  return <ComingSoon title="privacy" />;
+  return <Privacy />;
 }

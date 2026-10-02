@@ -1,4 +1,4 @@
-import type { LocalHandler, LocalUser } from '@logicpath/api-client';
+import type { LocalHandler, LocalUser } from '@logicpath/api-client/local';
 import { decide, type DraftAction } from '@logicpath/authoring-workflow';
 import { applyToBundle, validateChanges, withVisuals } from '@logicpath/content-tools/browser';
 import type { authoring, content } from '@logicpath/contracts';

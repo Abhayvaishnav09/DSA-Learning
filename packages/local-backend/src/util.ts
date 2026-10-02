@@ -1,4 +1,5 @@
-import { ApiError, fail, problem, type LocalContext, type LocalUser } from '@logicpath/api-client';
+import { ApiError, problem } from '@logicpath/api-client';
+import { fail, type LocalContext, type LocalUser } from '@logicpath/api-client/local';
 import type { Role } from '@logicpath/contracts';
 import type { LocalDb } from './db';
 

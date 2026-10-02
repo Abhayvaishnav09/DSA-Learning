@@ -22,6 +22,7 @@ const result = await build({
     '@': join(web, 'src'),
     'next/link': join(here, 'next-link.tsx'),
     'next/navigation': join(here, 'next-navigation.ts'),
+    'next/dynamic': join(here, 'next-dynamic.tsx'),
   },
   logLevel: 'error',
 });

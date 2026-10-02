@@ -168,3 +168,40 @@ export function useShake(): [ref: React.RefObject<HTMLDivElement | null>, shake:
   };
   return [ref, shake];
 }
+
+const BURST_COLORS = ['var(--accent)', 'var(--accent-2)', 'var(--xp)', 'var(--success)'];
+
+/**
+ * A small celebratory burst (a right answer, a badge). Decorative and short; nothing when
+ * movement is reduced. Re-mount it (change its key) to play it again.
+ */
+export function Burst({ count = 14, className }: { count?: number; className?: string }) {
+  const { allowMovement } = useMotionPrefs();
+  if (!allowMovement) return null;
+  return (
+    <span
+      aria-hidden
+      className={cn('pointer-events-none absolute inset-0 overflow-visible', className)}
+    >
+      {Array.from({ length: count }, (_, i) => {
+        const angle = (i / count) * Math.PI * 2;
+        const distance = 46 + (i % 3) * 14;
+        return (
+          <m.span
+            key={i}
+            className="absolute top-1/2 left-1/2 size-2 rounded-full"
+            style={{ background: BURST_COLORS[i % BURST_COLORS.length] }}
+            initial={{ x: 0, y: 0, scale: 0.4, opacity: 1 }}
+            animate={{
+              x: Math.cos(angle) * distance,
+              y: Math.sin(angle) * distance,
+              scale: 1,
+              opacity: 0,
+            }}
+            transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+          />
+        );
+      })}
+    </span>
+  );
+}

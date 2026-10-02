@@ -1,4 +1,4 @@
-import type { LocalHandler } from '@logicpath/api-client';
+import type { LocalHandler } from '@logicpath/api-client/local';
 import type { ContentBundle } from '@logicpath/content-schema';
 import { withVisuals } from '@logicpath/content-tools/browser';
 import type { content, ParamsOf } from '@logicpath/contracts';

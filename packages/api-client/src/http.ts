@@ -1,5 +1,6 @@
 import type { identity } from '@logicpath/contracts';
-import { pathFor, type Endpoint, type EndpointId, type Problem } from '@logicpath/contracts';
+import type { EndpointId, Problem } from '@logicpath/contracts';
+import { pathFor, type EndpointMeta } from '@logicpath/contracts/meta';
 import { ApiError, problem, type RequestInput, type Transport } from './client';
 
 /** Where tokens live: memory on the web (the refresh token is an httpOnly cookie), secure storage on mobile. */
@@ -55,7 +56,7 @@ export function httpTransport(options: HttpOptions): Transport {
   const isWeb = (options.client ?? 'web') === 'web';
   let refreshing: Promise<boolean> | null = null;
 
-  async function send(endpoint: Endpoint, input: RequestInput): Promise<Response> {
+  async function send(endpoint: EndpointMeta, input: RequestInput): Promise<Response> {
     const headers: Record<string, string> = { accept: 'application/json' };
     if (isWeb) headers['x-client'] = 'web';
     const access = tokens.getAccessToken();

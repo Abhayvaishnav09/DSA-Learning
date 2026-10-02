@@ -2,12 +2,14 @@
 
 import { MASTERY_THRESHOLD } from '@logicpath/learning-engine';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { useConceptViews, useReviewQueue, type ConceptView } from '@/entities/progress/selectors';
 import { useProgress } from '@/entities/progress/store';
 import { bundle, getConcept, text } from '@/shared/content/bundle';
 import { formatDay, useLocale, useT } from '@/shared/i18n/useT';
 import { useHydrated } from '@/shared/lib/useHydrated';
 import { ProgressBar } from '@logicpath/ui';
+import { MapPanel } from './MapPanel';
 
 export function LearnHome() {
   const hydrated = useHydrated();
@@ -17,6 +19,10 @@ export function LearnHome() {
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl font-bold sm:text-3xl">{t.home.title}</h1>
       <TodayCard />
+      {/* The map reads ?concept= from the URL, which needs a Suspense boundary when prerendered. */}
+      <Suspense>
+        <MapPanel />
+      </Suspense>
       <ConceptMap />
     </div>
   );
