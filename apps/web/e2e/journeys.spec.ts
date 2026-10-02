@@ -1,5 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { seriousProblems as serious } from './a11y';
 
 /** What each role can do from start to finish, on the demo backend that runs in the browser. */
 
@@ -24,16 +24,6 @@ async function signOut(page: Page) {
 async function stepToEnd(page: Page) {
   const forward = page.getByRole('button', { name: 'Step forward' });
   while (await forward.isEnabled()) await forward.click();
-}
-
-async function serious(page: Page) {
-  await page.waitForLoadState('networkidle');
-  const { violations } = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-    .analyze();
-  return violations
-    .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    .map((v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
 }
 
 test('learning on an account is counted: XP, a badge and the league follow', async ({ page }) => {

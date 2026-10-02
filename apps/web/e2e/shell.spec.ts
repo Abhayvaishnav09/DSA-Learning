@@ -1,5 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { seriousProblems } from './a11y';
 
 /** App frame, routing and access rules (docs/03-frontend.md, ADR-0019). */
 
@@ -81,15 +81,6 @@ for (const path of ['/login', '/home', '/studio']) {
       await page.getByTestId(path === '/studio' ? 'demo-writer' : 'demo-student').click();
       await page.waitForURL(`**${path}`);
     }
-    await page.waitForLoadState('networkidle');
-    const { violations } = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-      .analyze();
-    const serious = violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
-    expect(
-      serious.map(
-        (v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`,
-      ),
-    ).toEqual([]);
+    expect(await seriousProblems(page)).toEqual([]);
   });
 }

@@ -1,5 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { seriousProblems } from './a11y';
 
 /** 3D, motion and their fallbacks (ADR-0020), plus the marketing pages. */
 
@@ -83,15 +83,6 @@ for (const path of [
 ]) {
   test(`no serious accessibility problems: ${path}`, async ({ page }) => {
     await page.goto(path);
-    await page.waitForLoadState('networkidle');
-    const { violations } = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-      .analyze();
-    const serious = violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
-    expect(
-      serious.map(
-        (v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`,
-      ),
-    ).toEqual([]);
+    expect(await seriousProblems(page)).toEqual([]);
   });
 }
