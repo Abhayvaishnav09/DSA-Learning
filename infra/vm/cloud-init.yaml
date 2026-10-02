@@ -1,0 +1,37 @@
+#cloud-config
+# Paste this when creating the Oracle Cloud VM ("Show advanced options" → Management → cloud-init).
+# It installs Docker, opens ports 80/443 on the machine's own firewall, and writes /opt/logicpath/.env
+# with fresh random secrets. Nothing secret is stored in this file or in git.
+package_update: true
+packages: [curl, ca-certificates, openssl, rsync]
+write_files:
+  - path: /usr/local/sbin/logicpath-setup
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      curl -fsSL https://get.docker.com | sh
+      usermod -aG docker ubuntu || true
+      # Oracle's Ubuntu images ship with iptables rules that reject everything but SSH.
+      iptables -I INPUT 5 -p tcp --dport 80 -j ACCEPT
+      iptables -I INPUT 6 -p tcp --dport 443 -j ACCEPT
+      iptables -I INPUT 7 -p udp --dport 443 -j ACCEPT
+      command -v netfilter-persistent >/dev/null && netfilter-persistent save || true
+      install -d -o ubuntu -g ubuntu /opt/logicpath
+      ip=$(curl -fsS https://api.ipify.org)
+      env=/opt/logicpath/.env
+      if [ ! -f "$env" ]; then
+        cat > "$env" <<ENV
+      TAG=main
+      DOMAIN=${ip//./-}.sslip.io
+      WEB_ORIGIN=https://logicpath-seven.vercel.app
+      INTERNAL_TOKEN=$(openssl rand -hex 32)
+      POSTGRES_PASSWORD=$(openssl rand -hex 24)
+      ADMIN_EMAIL=admin@logicpath.dev
+      ADMIN_PASSWORD=$(openssl rand -base64 18 | tr -d '/+=')
+      # SMTP_URL=smtps://user:password@smtp-relay.example.com:465   (without it, mails are only logged)
+      ENV
+        chown ubuntu:ubuntu "$env"; chmod 600 "$env"
+      fi
+runcmd:
+  - [bash, /usr/local/sbin/logicpath-setup]

@@ -32,6 +32,8 @@ export const env = {
     .enum(['true', 'false'])
     .default('true')
     .transform((v) => v === 'true'),
+  /** `none` when the website and the API live on different sites (Vercel and the server). */
+  COOKIE_SAMESITE: z.enum(['strict', 'lax', 'none']).default('strict'),
   ADMIN_EMAIL: z.email().optional(),
   ADMIN_PASSWORD: z.string().min(8).optional(),
   ADULT_AGE: z.coerce.number().int().default(18),
@@ -198,7 +200,7 @@ function registerRoutes(
       reply.setCookie(REFRESH_COOKIE, secret, {
         httpOnly: true,
         secure: config.COOKIE_SECURE,
-        sameSite: 'strict',
+        sameSite: config.COOKIE_SAMESITE,
         path: '/v1/auth',
         maxAge: REFRESH_DAYS * 86_400,
       });
@@ -460,7 +462,11 @@ function registerRoutes(
             );
         }
       }
-      reply.clearCookie(REFRESH_COOKIE, { path: '/v1/auth' });
+      reply.clearCookie(REFRESH_COOKIE, {
+        path: '/v1/auth',
+        secure: config.COOKIE_SECURE,
+        sameSite: config.COOKIE_SAMESITE,
+      });
       return { ok: true as const };
     },
   );

@@ -17,4 +17,12 @@ const images = [
   })),
   { name: 'web', dockerfile: 'infra/docker/web.Dockerfile', service: '' },
 ];
-process.stdout.write(JSON.stringify({ include: images }));
+// `--arch`: one entry per image and CPU type, built on a native runner of that type (no emulation).
+// The Oracle Cloud free VM is arm64; Kubernetes and Render are usually amd64.
+const perArch = process.argv.includes('--arch')
+  ? images.flatMap((image) => [
+      { ...image, arch: 'amd64', runner: 'ubuntu-24.04' },
+      { ...image, arch: 'arm64', runner: 'ubuntu-24.04-arm' },
+    ])
+  : images;
+process.stdout.write(JSON.stringify({ include: perArch }));

@@ -1,6 +1,7 @@
 # Deploys one environment (called by cd.yml). Each target runs only if its secret exists:
 #   KUBE_CONFIG          base64 kubeconfig for the cluster      → kustomize overlay, rolling update
 #   RENDER_DEPLOY_HOOKS  JSON {"identity": "<deploy hook URL>"} → Render pulls the new images
+#   VM_HOST, VM_SSH_KEY, VM_HOST_KEY  an Oracle Cloud (or any Docker) server → compose up over SSH
 # Variable PUBLIC_URL (per environment) enables the smoke test. See docs/cicd.md.
 name: Deploy
 
@@ -13,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 env:
   IMAGE_PREFIX: ghcr.io/abhayvaishnav09/dsa-learning
@@ -37,7 +39,9 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
           RENDER_DEPLOY_HOOKS: ${{ secrets.RENDER_DEPLOY_HOOKS }}
+          VM_HOST: ${{ secrets.VM_HOST }}
         run: |
+          echo "server=$([ -n "$VM_HOST" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "kube=$([ -n "$KUBE_CONFIG" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "render=$([ -n "$RENDER_DEPLOY_HOOKS" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "images=$(node infra/ci/images.mjs | jq -c '[.include[].name]')" >> "$GITHUB_OUTPUT"
@@ -86,6 +90,34 @@ jobs:
             curl -fsS -X POST "${hook}&imgURL=${image_url}" > /dev/null
           done
 
+      # ---------- Server (Oracle Cloud Always Free VM, or any Docker host) ----------
+      - name: Deploy to the server
+        id: server
+        if: steps.targets.outputs.server == 'true'
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+          VM_HOST_KEY: ${{ secrets.VM_HOST_KEY }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "$VM_SSH_KEY" > ~/.ssh/id && chmod 600 ~/.ssh/id
+          # The host key is pinned (ssh-keyscan on your machine once), so a stranger cannot take its place.
+          echo "$VM_HOST_KEY" > ~/.ssh/known_hosts
+          ssh_opts="-i $HOME/.ssh/id -o StrictHostKeyChecking=yes -o ConnectTimeout=20"
+          rsync -az -e "ssh $ssh_opts" --exclude generate.mjs --exclude cloud-init.yaml infra/vm/ "ubuntu@$VM_HOST:/opt/logicpath/"
+          ssh $ssh_opts "ubuntu@$VM_HOST" "GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' bash /opt/logicpath/deploy.sh '${{ inputs.tag }}'"
+          echo "url=https://${VM_HOST//./-}.sslip.io" >> "$GITHUB_OUTPUT"
+      - name: Server smoke test
+        if: steps.server.outcome == 'success'
+        run: |
+          url="${{ steps.server.outputs.url }}"
+          for path in /healthz /v1/content/manifest "/v1/search?q=loops" /v1/flags; do
+            curl -fsS --retry 10 --retry-all-errors --retry-delay 6 -o /dev/null "$url$path" && echo "ok $path"
+          done
+          echo "### Backend: $url" >> "$GITHUB_STEP_SUMMARY"
+
       # ---------- checks ----------
       - name: Smoke test
         if: vars.PUBLIC_URL != '' && (steps.targets.outputs.kube == 'true' || steps.targets.outputs.render == 'true')
@@ -104,5 +136,6 @@ jobs:
             echo "| Target | Result |"
             echo "|---|---|"
             echo "| Kubernetes | ${{ steps.targets.outputs.kube == 'true' && (steps.kube.outcome || 'skipped') || 'not connected (add KUBE_CONFIG)' }} |"
+            echo "| Server | ${{ steps.targets.outputs.server == 'true' && (steps.server.outcome || 'skipped') || 'not connected (add VM_HOST, VM_SSH_KEY, VM_HOST_KEY)' }} |"
             echo "| Render | ${{ steps.targets.outputs.render == 'true' && 'hooks called' || 'not connected (add RENDER_DEPLOY_HOOKS)' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
