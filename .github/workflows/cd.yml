@@ -118,17 +118,39 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      # Like the deploy targets, Pages is optional: until it is turned on (docs/cicd.md),
+      # the job passes and says so in the run summary.
+      - name: Is GitHub Pages turned on?
+        id: enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")
+          case "$status" in
+            200) echo "pages=true" >> "$GITHUB_OUTPUT" ;;
+            404)
+              echo "pages=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::Demo not published: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions)."
+              echo "### Demo not published: turn on GitHub Pages (Settings → Pages → Source: GitHub Actions)" >> "$GITHUB_STEP_SUMMARY" ;;
+            *) echo "::error::Could not read the Pages settings (HTTP $status)" && exit 1 ;;
+          esac
+      - if: steps.enabled.outputs.pages == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: demo
           path: site
       - name: Demo page as the site's index
-        run: mv site/logicpath.html site/index.html && touch site/.nojekyll
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        if: steps.enabled.outputs.pages == 'true'
+        run: mv site/logicpath.html site/index.html
+      - if: steps.enabled.outputs.pages == 'true'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - if: steps.enabled.outputs.pages == 'true'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: site
       - id: deploy
+        if: steps.enabled.outputs.pages == 'true'
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
 
   staging:
