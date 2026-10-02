@@ -22,3 +22,4 @@ Each significant, hard-to-reverse decision gets a short record: context, decisio
 | [0016](0016-flutter-android.md) | Flutter for the Android app | Accepted |
 | [0017](0017-roles-authoring.md) | Three roles, an authoring workflow, and the database as the content source of truth | Accepted |
 | [0018](0018-dpdp-parental-consent.md) | Parental consent for learners under 18 (DPDP Rules 2025) | Accepted |
+| [0019](0019-learning-record-ownership.md) | Who owns the learning record | Accepted |

@@ -13,7 +13,8 @@
     },
     "services/*": {
       "entry": ["test/**/*.ts"],
-      "project": ["src/**/*.ts"]
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["@logicpath/content"]
     },
     "packages/*": {
       "project": ["src/**/*.{ts,tsx}"]

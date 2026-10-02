@@ -827,6 +827,15 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@logicpath/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@logicpath/content-schema':
+        specifier: workspace:*
+        version: link:../../packages/content-schema
+      '@logicpath/grader':
+        specifier: workspace:*
+        version: link:../../packages/grader
       '@types/node':
         specifier: ^26.6.4
         version: 26.6.4

@@ -653,7 +653,6 @@ export const ENDPOINT_META: Record<string, EndpointMeta> = {
     auth: 'apiKey',
     status: 200,
     summary: 'Stages and concepts',
-    planned: 'M9',
   },
   'public.concept': {
     method: 'GET',
@@ -662,7 +661,6 @@ export const ENDPOINT_META: Record<string, EndpointMeta> = {
     auth: 'apiKey',
     status: 200,
     summary: 'One concept and its lesson',
-    planned: 'M9',
   },
   'public.items': {
     method: 'GET',
@@ -671,7 +669,6 @@ export const ENDPOINT_META: Record<string, EndpointMeta> = {
     auth: 'apiKey',
     status: 200,
     summary: 'Questions for a concept (no answers)',
-    planned: 'M9',
   },
   home: {
     method: 'GET',

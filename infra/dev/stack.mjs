@@ -183,6 +183,8 @@ export function serviceEnv(name) {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL ?? 'admin@logicpath.dev',
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ?? 'admin-password-1',
     COOKIE_SECURE: 'false',
+    // A laptop has one address: tests sign in and register far more often than the production limit.
+    SENSITIVE_LIMIT_PER_MINUTE: process.env.SENSITIVE_LIMIT_PER_MINUTE ?? '1000',
   };
 }
 

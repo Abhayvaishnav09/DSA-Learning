@@ -12,6 +12,7 @@ import {
   content,
   Id,
   Problem,
+  pub,
   type EventData,
   type EventEnvelope,
 } from '@logicpath/contracts';
@@ -206,6 +207,93 @@ export function contentService(config: ContentConfig): ServiceDefinition<Content
             publishedAt: version.publishedAt.toISOString(),
             concepts: version.bundle.concepts.filter((c) => c.published).length,
             items: Object.keys(version.bundle.items).length,
+          };
+        },
+      );
+
+      // ---------- the public API for outside developers (the gateway checks the API key) ----------
+
+      const publicConcept = (c: ContentBundle['concepts'][number]): pub.PublicConcept => ({
+        id: c.id,
+        stage: c.stage,
+        title: c.title,
+        prerequisites: [...c.prerequisites],
+        published: c.published,
+      });
+
+      app.get(
+        '/public/v1/curriculum',
+        {
+          schema: {
+            tags: ['public'],
+            summary: 'Stages and concepts',
+            description: 'Needs an `X-API-Key` header. Read-only; answers are never included.',
+            security: [{ apiKey: [] }],
+            response: { 200: pub.PublicCurriculum },
+          },
+        },
+        async () => {
+          const { bundle } = await currentVersion(ctx);
+          return {
+            version: bundle.version,
+            stages: bundle.stages.map((s) => ({ id: s.id, title: s.title })),
+            concepts: bundle.concepts.map(publicConcept),
+          };
+        },
+      );
+
+      app.get(
+        '/public/v1/concepts/:id',
+        {
+          schema: {
+            tags: ['public'],
+            summary: 'One concept and its lesson',
+            security: [{ apiKey: [] }],
+            params: z.object({ id: z.string() }),
+            response: { 200: pub.PublicLesson, 404: Problem },
+          },
+        },
+        async (req) => {
+          const { bundle } = await currentVersion(ctx);
+          const concept = bundle.concepts.find((c) => c.id === req.params.id);
+          const lesson = bundle.lessons[req.params.id];
+          if (!concept || !lesson) throw notFound('Concept');
+          return {
+            concept: publicConcept(concept),
+            minutes: lesson.minutes,
+            story: { title: lesson.story.title, body: lesson.story.body },
+            code: lesson.see.code,
+            recap: lesson.recap,
+            itemCount: Object.values(bundle.items).filter((i) => i.concept === concept.id).length,
+          };
+        },
+      );
+
+      app.get(
+        '/public/v1/items',
+        {
+          schema: {
+            tags: ['public'],
+            summary: 'Questions for a concept (no answers)',
+            security: [{ apiKey: [] }],
+            querystring: z.object({ concept: z.string() }),
+            response: { 200: pub.PublicItemList, 404: Problem },
+          },
+        },
+        async (req) => {
+          const { bundle } = await currentVersion(ctx);
+          if (!bundle.concepts.some((c) => c.id === req.query.concept)) throw notFound('Concept');
+          return {
+            items: Object.values(bundle.items)
+              .filter((i) => i.concept === req.query.concept)
+              .map((i) => ({
+                id: i.id,
+                conceptId: i.concept,
+                type: i.type,
+                difficulty: i.difficulty,
+                prompt: i.prompt,
+                code: 'code' in i && typeof i.code === 'string' ? i.code : null,
+              })),
           };
         },
       );

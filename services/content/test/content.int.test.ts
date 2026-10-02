@@ -1,7 +1,7 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { ContentBundle } from '@logicpath/content-schema';
-import { makeEvent, routesOf } from '@logicpath/contracts';
+import { makeEvent, pub, routesOf } from '@logicpath/contracts';
 import { loadConfig, startService, type RunningService } from '@logicpath/service-kit';
 import {
   baseTestEnv,
@@ -188,6 +188,69 @@ describe('content', () => {
     expect((await outboxEvents(dbUrl, 'audit.recorded')).at(-1)?.data).toMatchObject({
       action: 'content.rollback',
     });
+  });
+});
+
+describe('the public API for outside developers', () => {
+  const get = async (url: string) => {
+    const res = await service.app.inject({ method: 'GET', url });
+    return { status: res.statusCode, body: res.json() as Record<string, any> };
+  };
+
+  it('lists stages and concepts', async () => {
+    const res = await get('/public/v1/curriculum');
+    expect(res.status).toBe(200);
+    expect(pub.PublicCurriculum.safeParse(res.body).success).toBe(true);
+    expect(res.body.stages.length).toBeGreaterThan(0);
+    const counter = res.body.concepts.find((c: { id: string }) => c.id === 'loops.counter');
+    expect(counter).toMatchObject({ published: true, title: { en: 'Loops with a counter' } });
+    expect(res.body.concepts.some((c: { published: boolean }) => !c.published)).toBe(true);
+  });
+
+  it('shows a concept with its lesson, and says so when there is none', async () => {
+    const res = await get('/public/v1/concepts/loops.counter');
+    expect(res.status).toBe(200);
+    expect(pub.PublicLesson.safeParse(res.body).success).toBe(true);
+    expect(res.body).toMatchObject({
+      concept: { id: 'loops.counter' },
+      itemCount: expect.any(Number),
+    });
+    expect(res.body.itemCount).toBeGreaterThan(3);
+    expect(res.body.code.length).toBeGreaterThan(10);
+    expect((await get('/public/v1/concepts/no.such')).status).toBe(404);
+    // a concept still being written has no lesson to show
+    const unwritten = (await get('/public/v1/curriculum')).body.concepts.find(
+      (c: { published: boolean }) => !c.published,
+    );
+    expect((await get(`/public/v1/concepts/${unwritten.id}`)).status).toBe(404);
+  });
+
+  it('lists a concept’s questions without ever giving away the answers', async () => {
+    const res = await get('/public/v1/items?concept=loops.counter');
+    expect(res.status).toBe(200);
+    expect(pub.PublicItemList.safeParse(res.body).success).toBe(true);
+    expect(res.body.items.length).toBeGreaterThan(3);
+    expect(res.body.items[0]).toEqual({
+      id: expect.any(String),
+      conceptId: 'loops.counter',
+      type: expect.any(String),
+      difficulty: expect.any(Number),
+      prompt: { en: expect.any(String), 'hi-Latn': expect.any(String) },
+      code: expect.toSatisfy((c: unknown) => c === null || typeof c === 'string'),
+    });
+    const text = JSON.stringify(res.body);
+    for (const secret of [
+      '"answer"',
+      '"correct"',
+      '"explanation"',
+      '"hints"',
+      '"options"',
+      '"blanks"',
+    ]) {
+      expect(text).not.toContain(secret);
+    }
+    expect((await get('/public/v1/items?concept=no.such')).status).toBe(404);
+    expect((await get('/public/v1/items')).status).toBe(400);
   });
 });
 

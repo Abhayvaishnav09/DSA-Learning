@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json",
     "test:integration": "vitest run",
-    "test": "vitest run --config vitest.unit.config.ts"
+    "test": "vitest run --config vitest.unit.config.ts",
+    "test:stack": "vitest run --config vitest.stack.config.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
@@ -23,6 +24,9 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@logicpath/api-client": "workspace:*",
+    "@logicpath/content-schema": "workspace:*",
+    "@logicpath/grader": "workspace:*",
     "@types/node": "^26.6.4",
     "tsx": "^4.23.15",
     "vitest": "^5.0.3"

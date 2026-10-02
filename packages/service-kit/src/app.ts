@@ -196,7 +196,10 @@ export async function startService<C extends BaseConfig>(
       openapi: '3.1.0',
       info: { title: def.title, description: def.description, version: def.version ?? '1.0.0' },
       components: {
-        securitySchemes: { bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } },
+        securitySchemes: {
+          bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+          apiKey: { type: 'apiKey', in: 'header', name: 'X-API-Key' },
+        },
       },
     },
     transform: jsonSchemaTransform,
