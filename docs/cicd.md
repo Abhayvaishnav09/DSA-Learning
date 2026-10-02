@@ -33,11 +33,12 @@ tag v1.2.3 ────► CD (cd.yml)
 
 ## One-time setup (repository settings)
 
-1. **Branch protection** for `main`: Settings → Branches → require the `CI passed` check and a review.
-2. **GitHub Pages**: Settings → Pages → Source: **GitHub Actions**. The demo is then published on every merge to main.
-3. **Environments**: Settings → Environments → create `staging` and `production`. On `production`, add **required reviewers** so deploys wait for approval. In each environment, add a variable `PUBLIC_URL` (for example `https://staging.logicpath.dev`) to enable the post-deploy smoke test.
-4. **Packages**: after the first CD run, open each package under the repository's Packages and set its visibility (public is simplest for Render; for a private registry, give Render and the cluster a pull credential).
-5. **Dependabot** and **code scanning** are on by default once the files are merged.
+1. **Default branch**: Settings → General → Default branch → `main`. Dependabot, release notes and the Pages environment all follow the default branch.
+2. **Branch protection** for `main`: Settings → Branches → require the `CI passed` check and a review.
+3. **GitHub Pages**: Settings → Pages → Source: **GitHub Actions**. The demo is then published on every merge to main. Until then, the Pages job passes and says "Demo not published" in the run summary.
+4. **Environments**: Settings → Environments → create `staging` and `production`. On `production`, add **required reviewers** so deploys wait for approval. In each environment, add a variable `PUBLIC_URL` (for example `https://staging.logicpath.dev`) to enable the post-deploy smoke test.
+5. **Packages**: after the first CD run, open each package under the repository's Packages and set its visibility (public is simplest for Render; for a private registry, give Render and the cluster a pull credential).
+6. **Dependabot** and **code scanning** are on by default once the files are merged.
 
 ## Connecting deploy targets
 
@@ -72,6 +73,8 @@ Steps:
 CD sets every image to the commit (staging) or version (production) tag and applies the overlay. It waits for each rollout and rolls back automatically if one fails.
 
 ### Render
+
+Cost: Render's free instances are for web services only, so each private service, NATS and the gateway need at least the Starter plan (about $7 a month each), plus Key Value and Postgres. With today's four services that is roughly $60–70 a month, and it grows with each service you add. Check render.com/pricing before you start.
 
 1. In Render: **New → Blueprint**, then pick this repository. `render.yaml` creates the services, NATS with a disk, and a Key Value store for Redis.
 2. Create one database per service in a Render Postgres instance (`infra/compose/postgres-init.sh` lists them). Fill each service's `DATABASE_URL`, plus `ADMIN_EMAIL`, `ADMIN_PASSWORD` and the gateway's `CORS_ORIGINS`.
