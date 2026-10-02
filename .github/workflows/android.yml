@@ -1,0 +1,55 @@
+# Builds the Android app (the website in a native shell, see mobile/) and publishes the APK:
+#   - as a workflow artifact on every run,
+#   - as the "android-latest" GitHub Release on main, so it can be downloaded with one link.
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['mobile/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    name: Build APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --no-audit --no-fund
+      - run: npx cap sync android
+      - name: Build the release APK
+        working-directory: mobile/android
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64"
+          ./gradlew --no-daemon assembleRelease
+      - name: Name it
+        run: cp android/app/build/outputs/apk/release/app-release.apk ../LogicPath.apk
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: LogicPath-apk
+          path: LogicPath.apk
+      - name: Publish as the latest app
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        with:
+          tag_name: android-latest
+          name: LogicPath for Android (latest)
+          body: |
+            Download **LogicPath.apk** on your phone and open it (allow "install unknown apps" for your browser when asked).
+            It opens the live LogicPath website in an app. Updates install over the old version.
+          files: LogicPath.apk
+          make_latest: false

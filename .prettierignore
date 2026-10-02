@@ -14,3 +14,4 @@ services/*/assets
 render.yaml
 infra/k8s/base
 infra/k8s/overlays
+mobile

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LogicPath</string>
+    <string name="title_activity_main">LogicPath</string>
+    <string name="package_name">dev.logicpath.app</string>
+    <string name="custom_url_scheme">dev.logicpath.app</string>
+</resources>

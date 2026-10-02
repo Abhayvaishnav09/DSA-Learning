@@ -1,0 +1,11 @@
+{
+  "appId": "dev.logicpath.app",
+  "appName": "LogicPath",
+  "webDir": "www",
+  "server": {
+    "url": "https://logicpath-seven.vercel.app/home",
+    "cleartext": false,
+    "allowNavigation": ["logicpath-seven.vercel.app", "*.sslip.io"]
+  },
+  "android": { "backgroundColor": "#0c0c18" }
+}
