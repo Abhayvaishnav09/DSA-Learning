@@ -1,0 +1,31 @@
+{
+  "name": "@logicpath/content-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "seed": "pnpm --filter @logicpath/content build && node -e \"require('node:fs').copyFileSync('../../content/dist/bundle.json','assets/seed-bundle.json')\"",
+    "build": "pnpm seed && node ../../infra/build-service.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:integration": "vitest run",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@logicpath/content-schema": "workspace:*",
+    "@logicpath/content-tools": "workspace:*",
+    "@logicpath/contracts": "workspace:*",
+    "@logicpath/service-kit": "workspace:*",
+    "drizzle-orm": "^0.45.3",
+    "fastify": "^5.12.5",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@logicpath/content": "workspace:*",
+    "@types/node": "^26.6.4",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.3"
+  }
+}

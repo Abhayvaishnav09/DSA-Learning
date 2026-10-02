@@ -176,6 +176,7 @@ export function serviceEnv(name) {
     SMTP_URL: `smtp://127.0.0.1:${INFRA.mailpit.smtp}`,
     REDIS_URL: `redis://127.0.0.1:${INFRA.redis.port}`,
     CONTENT_URL: `http://127.0.0.1:${SERVICES.content}`,
+    AUTHORING_URL: `http://127.0.0.1:${SERVICES.authoring}`,
     PUBLIC_WEB_URL: process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000',
     LOG_LEVEL: process.env.LOG_LEVEL ?? 'info',
     // Dev-only bootstrap admin and http cookies; production sets these from secrets.
@@ -186,6 +187,13 @@ export function serviceEnv(name) {
 }
 
 async function startServices() {
+  // The content service imports the YAML curriculum (compiled to a bundle) on first start.
+  if (!existsSync(join(root, 'content', 'dist', 'bundle.json'))) {
+    execFileSync('pnpm', ['--filter', '@logicpath/content', 'build'], {
+      cwd: root,
+      stdio: 'inherit',
+    });
+  }
   // identity first: everyone else fetches its JWKS.
   const order = [
     'identity',

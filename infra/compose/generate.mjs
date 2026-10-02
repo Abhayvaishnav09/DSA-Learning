@@ -29,6 +29,7 @@ w('    PORT: "8080"');
 w('    NATS_URL: nats://nats:4222');
 w('    JWKS_URL: http://identity:8080/.well-known/jwks.json');
 w('    CONTENT_URL: http://content:8080');
+w('    AUTHORING_URL: http://authoring:8080');
 w('    SMTP_URL: smtp://mailpit:1025');
 w('    PUBLIC_WEB_URL: http://localhost:3000');
 w('    INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-token-change-me}');

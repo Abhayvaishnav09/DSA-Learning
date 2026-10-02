@@ -1,8 +1,11 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = Number(process.env.PORT ?? 3100);
 // Environments with a preinstalled Chromium (e.g. cloud dev boxes) can point at it instead of downloading.
-const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
+const executablePath =
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ??
+  (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 
 export default defineConfig({
   testDir: './e2e',

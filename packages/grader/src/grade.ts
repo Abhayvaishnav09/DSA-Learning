@@ -12,7 +12,8 @@ export type Answer =
   | { type: 'predict-output'; text: string }
   | { type: 'arrange-steps'; order: number[] }
   | { type: 'fill-blank'; blanks: string[] }
-  | { type: 'trace-table'; rows: string[][] };
+  | { type: 'trace-table'; rows: string[][] }
+  | { type: 'truth-table'; rows: ('true' | 'false')[][] };
 
 export type AnswerOf<T extends ItemType> = Extract<Answer, { type: T }>;
 
@@ -70,11 +71,15 @@ function gradePredict(
   return verdict(false, { misconception: known?.misconception ?? null });
 }
 
+/** How many things an arrange item has to put in order. */
+export const arrangeCount = (item: ItemOf<'arrange-steps'>) =>
+  item.lines?.length ?? item.steps?.length ?? 0;
+
 function gradeArrange(
   item: ItemOf<'arrange-steps'>,
   { order }: AnswerOf<'arrange-steps'>,
 ): Verdict {
-  const n = item.lines.length;
+  const n = arrangeCount(item);
   const isPermutation =
     order.length === n && new Set(order).size === n && order.every((i) => i >= 0 && i < n);
   if (!isPermutation) throw new RangeError(`order must use each of the ${n} lines once`);
@@ -83,17 +88,41 @@ function gradeArrange(
   const guessProbability = 0.05;
   if (parts.every(Boolean)) return verdict(true, { parts, guessProbability });
 
-  // Logic first: any order that works the same way is right.
-  const expected = tryOutput(item.lines.join('\n'));
-  const actual = tryOutput(order.map((i) => item.lines[i]!).join('\n'));
+  if (!item.lines) {
+    // Plain-language steps: right if it is one of the orders the author allows.
+    const allowed = item.alsoCorrect.some(
+      (alt) => alt.length === n && alt.every((v, i) => v === order[i]),
+    );
+    return verdict(allowed, { parts: allowed ? parts.map(() => true) : parts, guessProbability });
+  }
+
+  // Logic first: any order of program lines that works the same way is right.
+  const lines = item.lines;
+  const expected = tryOutput(lines.join('\n'));
+  const actual = tryOutput(order.map((i) => lines[i]!).join('\n'));
   const equivalent =
     !!expected &&
     !!actual &&
-    sameSequence(actual.output, item.expectedOutput) &&
+    sameSequence(actual.output, item.expectedOutput ?? expected.output) &&
     sameVars(actual.vars, expected.vars);
   return verdict(equivalent, {
     parts: equivalent ? parts.map(() => true) : parts,
     guessProbability,
+  });
+}
+
+function gradeTruthTable(item: ItemOf<'truth-table'>, { rows }: AnswerOf<'truth-table'>): Verdict {
+  const parts = item.rows.map((row, r) => row.map((value, c) => rows[r]?.[c] === value));
+  const correct = parts.every((row) => row.every(Boolean));
+  const known = correct
+    ? undefined
+    : item.wrongAnswers.find((w) =>
+        w.match.every((row, r) => row.every((v, c) => rows[r]?.[c] === v)),
+      );
+  return verdict(correct, {
+    parts,
+    misconception: known?.misconception ?? null,
+    guessProbability: 0.5 ** Math.min(8, item.rows.length * item.outputs.length),
   });
 }
 
@@ -156,6 +185,8 @@ export function grade(item: Item, answer: Answer): Verdict {
       return gradeFill(item, answer as AnswerOf<'fill-blank'>);
     case 'trace-table':
       return gradeTrace(item, answer as AnswerOf<'trace-table'>);
+    case 'truth-table':
+      return gradeTruthTable(item, answer as AnswerOf<'truth-table'>);
   }
 }
 
@@ -174,10 +205,15 @@ export function correctAnswer(item: Item): Answer {
     case 'predict-output':
       return { type: 'predict-output', text: item.answer };
     case 'arrange-steps':
-      return { type: 'arrange-steps', order: item.lines.map((_, i) => i) };
+      return {
+        type: 'arrange-steps',
+        order: Array.from({ length: arrangeCount(item) }, (_, i) => i),
+      };
     case 'fill-blank':
       return { type: 'fill-blank', blanks: item.blanks.map((b) => b.accept[0]!) };
     case 'trace-table':
       return { type: 'trace-table', rows: item.rows };
+    case 'truth-table':
+      return { type: 'truth-table', rows: item.rows };
   }
 }

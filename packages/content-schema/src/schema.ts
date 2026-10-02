@@ -111,10 +111,42 @@ export const PredictOutputItem = z.strictObject({
 export const ArrangeStepsItem = z.strictObject({
   ...ItemBase,
   type: z.literal('arrange-steps'),
-  /** Program lines in the correct order, indentation included. Shown shuffled. */
-  lines: z.array(z.string().min(1)).min(2).max(10),
-  /** What the arranged program must show. Any order that runs and shows this is accepted. */
-  expectedOutput: z.array(z.string()),
+  /** Program lines in the correct order, indentation included. Shown shuffled. Graded by behaviour. */
+  lines: z.array(z.string().min(1)).min(2).max(10).optional(),
+  /** Plain-language steps in the correct order (Stage 0). Graded by order. */
+  steps: z.array(LocalizedText).min(2).max(8).optional(),
+  /** Other orders of `steps` that are also right, as index lists. */
+  alsoCorrect: z.array(z.array(z.number().int().min(0))).default([]),
+  /** What the arranged program must show (required with `lines`). Any order that runs and shows this is accepted. */
+  expectedOutput: z.array(z.string()).optional(),
+  /**
+   * Subgoal labels (research: they help novices solve Parsons problems): a heading shown
+   * before the line or step at `before` in the correct order.
+   */
+  subgoals: z
+    .array(z.strictObject({ before: z.number().int().min(0), label: LocalizedText }))
+    .default([]),
+});
+
+/** AND / OR / NOT practice: every combination of the inputs, learner fills each output. */
+export const TruthTableItem = z.strictObject({
+  ...ItemBase,
+  type: z.literal('truth-table'),
+  /** 1 to 3 input names; rows list every true/false combination, false first. */
+  inputs: z
+    .array(z.string().regex(/^[a-z][a-z0-9_]*$/))
+    .min(1)
+    .max(3),
+  outputs: z
+    .array(z.strictObject({ label: z.string().min(1), expression: z.string().min(1) }))
+    .min(1)
+    .max(3),
+  /** Expected outputs, one row per input combination: "true" / "false". Checked by evaluating. */
+  rows: z
+    .array(z.array(z.enum(['true', 'false'])))
+    .min(2)
+    .max(8),
+  wrongAnswers: z.array(WrongAnswer(z.array(z.array(z.enum(['true', 'false']))))).default([]),
 });
 
 export const FillBlankItem = z.strictObject({
@@ -153,6 +185,7 @@ export const Item = z.discriminatedUnion('type', [
   ArrangeStepsItem,
   FillBlankItem,
   TraceTableItem,
+  TruthTableItem,
 ]);
 export type Item = z.infer<typeof Item>;
 export type ItemType = Item['type'];
@@ -200,4 +233,21 @@ export interface ContentBundle {
   misconceptions: Record<string, Misconception>;
   lessons: Record<string, Lesson>;
   items: Record<string, Item>;
+  /**
+   * Precomputed program runs for each lesson's "see" beat, so apps without the interpreter
+   * (Flutter) render the same frames and narration. Added by the content service.
+   */
+  visuals?: Record<string, LessonVisual>;
+}
+
+export interface LessonVisual {
+  frames: unknown[];
+  captions: Record<Locale, string[]>;
+}
+
+/** Input combinations of a truth table, false first: [[false,false],[false,true],...]. */
+export function truthTableInputs(count: number): boolean[][] {
+  return Array.from({ length: 2 ** count }, (_, row) =>
+    Array.from({ length: count }, (_, col) => ((row >> (count - 1 - col)) & 1) === 1),
+  );
 }

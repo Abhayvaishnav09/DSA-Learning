@@ -201,3 +201,47 @@ describe('displayOrder', () => {
     );
   });
 });
+
+describe('stage 0 and logic item types', () => {
+  const steps = make<'arrange-steps'>({
+    id: 'tea',
+    type: 'arrange-steps',
+    steps: [t('Boil water'), t('Add tea leaves'), t('Add milk'), t('Pour into a cup')],
+    alsoCorrect: [[0, 2, 1, 3]],
+  });
+
+  it('grades plain steps by order, allowing listed alternatives', () => {
+    expect(grade(steps, { type: 'arrange-steps', order: [0, 1, 2, 3] }).correct).toBe(true);
+    expect(grade(steps, { type: 'arrange-steps', order: [0, 2, 1, 3] }).correct).toBe(true);
+    expect(grade(steps, { type: 'arrange-steps', order: [3, 2, 1, 0] })).toMatchObject({
+      correct: false,
+      parts: [false, false, false, false],
+    });
+    expect(grade(steps, correctAnswer(steps) as never).correct).toBe(true);
+  });
+
+  const truth = make<'truth-table'>({
+    id: 'and',
+    type: 'truth-table',
+    inputs: ['a', 'b'],
+    outputs: [{ label: 'a and b', expression: 'a and b' }],
+    rows: [['false'], ['false'], ['false'], ['true']],
+    wrongAnswers: [
+      { match: [['false'], ['true'], ['true'], ['true']], misconception: 'logic.and-or-swap' },
+    ],
+  });
+
+  it('grades truth tables cell by cell and spots AND/OR mix-ups', () => {
+    expect(
+      grade(truth, { type: 'truth-table', rows: [['false'], ['false'], ['false'], ['true']] })
+        .correct,
+    ).toBe(true);
+    const swapped = grade(truth, {
+      type: 'truth-table',
+      rows: [['false'], ['true'], ['true'], ['true']],
+    });
+    expect(swapped).toMatchObject({ correct: false, misconception: 'logic.and-or-swap' });
+    expect(swapped.parts).toEqual([[true], [false], [false], [true]]);
+    expect(swapped.guessProbability).toBeCloseTo(1 / 16);
+  });
+});

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, type KeyboardEvent } from 'react';
-import { caption as autoCaption, formatValue, run, type Frame, type Locale } from '../engine';
+import {
+  caption as autoCaption,
+  formatValue,
+  run,
+  type Frame,
+  type Locale,
+  type Value,
+} from '../engine';
 import { LABELS } from './labels';
 import { SPEEDS_MS, usePlayer } from './usePlayer';
 
@@ -51,7 +58,9 @@ export function Visualizer({
     event.preventDefault();
   };
 
-  const varNames = Object.keys(frames.at(-1)!.vars);
+  // Every top-level box that ever exists, in the order it first appears.
+  const varNames = [...new Set(frames.flatMap((f) => Object.keys(f.vars)))];
+  const current = frame.stack.length - 1;
 
   return (
     <section
@@ -91,29 +100,40 @@ export function Visualizer({
             <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
               {labels.boxes}
             </h3>
-            <ul className="flex flex-wrap gap-2" data-testid="viz-vars">
-              {varNames.map((name) => {
-                const value = frame.vars[name];
-                const changed = frame.changed === name;
-                return (
-                  <li
-                    key={name}
-                    className={`min-w-16 rounded-xl border-2 px-3 py-1 text-center transition-colors ${
-                      changed ? 'border-accent bg-accent-soft' : 'border-border'
-                    } ${value === undefined ? 'opacity-40' : ''}`}
-                  >
-                    <div className="font-mono text-xs text-muted">{name}</div>
-                    <div
-                      key={value === undefined ? '-' : String(value)}
-                      className={`font-mono text-xl font-bold ${changed ? 'lp-pop' : ''}`}
-                    >
-                      {value === undefined ? '–' : formatValue(value)}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <BoxList
+              testId="viz-vars"
+              names={varNames}
+              vars={frame.vars}
+              changed={current === -1 ? frame.changed : null}
+              changedIndex={frame.changedIndex}
+            />
           </div>
+          {frame.stack.length > 0 && (
+            <div data-testid="viz-stack">
+              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+                {labels.calls}
+              </h3>
+              <ol className="flex flex-col gap-2">
+                {frame.stack.map((call, depth) => (
+                  <li
+                    key={depth}
+                    className={`rounded-xl border-2 p-2 ${depth === current ? 'border-accent' : 'border-dashed border-border opacity-70'}`}
+                    aria-current={depth === current ? 'step' : undefined}
+                  >
+                    <div className="mb-1 font-mono text-xs font-semibold text-accent">
+                      {call.name}( )
+                    </div>
+                    <BoxList
+                      names={Object.keys(call.vars)}
+                      vars={call.vars}
+                      changed={depth === current ? frame.changed : null}
+                      changedIndex={frame.changedIndex}
+                    />
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
           <div>
             <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
               {labels.screen}
@@ -205,5 +225,71 @@ export function Visualizer({
         </span>
       </div>
     </section>
+  );
+}
+
+interface BoxListProps {
+  names: string[];
+  vars: Record<string, Value>;
+  changed: string | null;
+  changedIndex: number | null;
+  testId?: string;
+}
+
+/** Variables as labelled boxes; lists as a strip of numbered cells. */
+function BoxList({ names, vars, changed, changedIndex, testId }: BoxListProps) {
+  return (
+    <ul className="flex flex-wrap gap-2" data-testid={testId}>
+      {names.map((name) => {
+        const value = vars[name];
+        const isChanged = changed === name;
+        if (Array.isArray(value)) {
+          return (
+            <li
+              key={name}
+              className={`rounded-xl border-2 px-2 py-1 ${isChanged ? 'border-accent bg-accent-soft' : 'border-border'}`}
+            >
+              <div className="font-mono text-xs text-muted">{name}</div>
+              <ol className="flex gap-1" aria-label={`${name}: ${formatValue(value)}`}>
+                {value.length === 0 && <li className="px-2 font-mono text-sm text-muted">[ ]</li>}
+                {value.map((item, i) => (
+                  <li key={i} className="flex flex-col items-center">
+                    <span
+                      key={formatValue(item)}
+                      className={`min-w-9 rounded-md border px-1.5 py-0.5 text-center font-mono text-base font-bold ${
+                        isChanged && changedIndex === i
+                          ? 'lp-pop border-accent bg-surface'
+                          : 'border-border bg-surface'
+                      }`}
+                    >
+                      {formatValue(item)}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted" aria-hidden>
+                      {i}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </li>
+          );
+        }
+        return (
+          <li
+            key={name}
+            className={`min-w-16 rounded-xl border-2 px-3 py-1 text-center transition-colors ${
+              isChanged ? 'border-accent bg-accent-soft' : 'border-border'
+            } ${value === undefined ? 'opacity-40' : ''}`}
+          >
+            <div className="font-mono text-xs text-muted">{name}</div>
+            <div
+              key={value === undefined ? '-' : String(value)}
+              className={`font-mono text-xl font-bold ${isChanged ? 'lp-pop' : ''}`}
+            >
+              {value === undefined ? '–' : formatValue(value)}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

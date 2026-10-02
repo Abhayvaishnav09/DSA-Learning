@@ -6,3 +6,6 @@ pnpm-lock.yaml
 **/playwright-report
 *.md
 content/dist
+infra/compose/docker-compose.yml
+infra/compose/prometheus.yml
+services/*/drizzle/meta

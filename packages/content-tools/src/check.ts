@@ -1,5 +1,11 @@
-import { LOCALES, type Item, type LocalizedText } from '@logicpath/content-schema';
 import {
+  LOCALES,
+  truthTableInputs,
+  type Item,
+  type LocalizedText,
+} from '@logicpath/content-schema';
+import {
+  arrangeCount,
   correctAnswer,
   displayOrder,
   grade,
@@ -7,7 +13,13 @@ import {
   sameSequence,
   tokens,
 } from '@logicpath/grader';
-import { PseudoError, outputOf, run, traceRows } from '@logicpath/visualizer/engine';
+import {
+  PseudoError,
+  evaluateExpression,
+  outputOf,
+  run,
+  traceRows,
+} from '@logicpath/visualizer/engine';
 import type { Issue, LoadedContent } from './load';
 
 /**
@@ -179,18 +191,73 @@ function checkItem(
     }
 
     case 'arrange-steps': {
-      const output = attempt(file, 'lines', () => outputOf(item.lines.join('\n')), error);
-      if (output && !sameSequence(output, item.expectedOutput)) {
+      const count = arrangeCount(item);
+      if (!!item.lines === !!item.steps) {
         error(
           file,
-          `lines show [${output.join(', ')}], expected [${item.expectedOutput.join(', ')}]`,
+          'an arrange item needs either "lines" (code) or "steps" (plain words), not both',
         );
+        break;
       }
-      if (
-        grade(item, { type: 'arrange-steps', order: displayOrder(item.id, item.lines.length) })
-          .correct
-      ) {
+      if (item.lines) {
+        if (!item.expectedOutput) error(file, 'arrange items with code lines need expectedOutput');
+        const output = attempt(file, 'lines', () => outputOf(item.lines!.join('\n')), error);
+        if (output && item.expectedOutput && !sameSequence(output, item.expectedOutput)) {
+          error(
+            file,
+            `lines show [${output.join(', ')}], expected [${item.expectedOutput.join(', ')}]`,
+          );
+        }
+      }
+      for (const alt of item.alsoCorrect) {
+        const isPermutation =
+          alt.length === count && new Set(alt).size === count && alt.every((v) => v < count);
+        if (!isPermutation)
+          error(file, `alsoCorrect ${JSON.stringify(alt)} must use each step once`);
+      }
+      for (const subgoal of item.subgoals) {
+        if (subgoal.before >= count)
+          error(file, `subgoal "before" ${subgoal.before} is past the last step`);
+      }
+      if (grade(item, { type: 'arrange-steps', order: displayOrder(item.id, count) }).correct) {
         error(file, 'the shuffled order is already a correct answer; change the lines or the id');
+      }
+      break;
+    }
+
+    case 'truth-table': {
+      item.wrongAnswers.forEach((w) => checkMisconception(file, w.misconception));
+      const combos = truthTableInputs(item.inputs.length);
+      if (item.rows.length !== combos.length) {
+        error(
+          file,
+          `${item.inputs.length} inputs need ${combos.length} rows, found ${item.rows.length}`,
+        );
+        break;
+      }
+      combos.forEach((combo, r) => {
+        const vars = Object.fromEntries(item.inputs.map((name, i) => [name, combo[i]!]));
+        item.outputs.forEach((output, c) => {
+          const value = attempt(
+            file,
+            `expression "${output.expression}"`,
+            () => evaluateExpression(output.expression, vars),
+            error,
+          );
+          if (value === null) return;
+          if (typeof value !== 'boolean') {
+            error(file, `"${output.expression}" must give true or false`);
+          } else if (item.rows[r]?.[c] !== String(value)) {
+            error(
+              file,
+              `row ${r + 1} (${item.inputs.map((n, i) => `${n}=${combo[i]}`).join(', ')}): "${output.label}" is ${value}, not ${item.rows[r]?.[c]}`,
+            );
+          }
+        });
+      });
+      for (const w of item.wrongAnswers) {
+        if (grade(item, { type: 'truth-table', rows: w.match }).correct)
+          error(file, 'a wrong answer is graded as correct');
       }
       break;
     }

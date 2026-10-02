@@ -1,25 +1,30 @@
 /**
- * Parser for the beginner pseudocode used in Stages 0 to 2 (ADR-0009).
+ * Parser for the beginner pseudocode used in Stages 0 to 3 (ADR-0009).
  *
- *   count = 0
- *   for i from 1 to 3:
- *       count = count + 1
- *       say i
- *   if count > 2:
- *       say "big"
- *   else:
- *       say "small"
- *   while count > 0:
+ *   count = 0                      nums = [3, 8, 1]
+ *   for i from 1 to 3:             for each n in nums:
+ *       count = count + 1              say n
+ *   if count > 2:                  nums[0] = 5
+ *       say "big"                  add(nums, 9)
+ *   else if count > 1:             say len(nums)
+ *       say "medium"
+ *   else:                          define double(x):
+ *       say "small"                    return x * 2
+ *   while count > 0:               say double(4)
  *       count = count - 1
  *
- * Blocks are indented under a line ending in ":". `#` starts a comment.
+ * Blocks are indented under a line ending in ":". `#` starts a comment. Lists are values:
+ * `b = a` copies the list (beginners meet references later, with real languages).
  */
 
-export type Value = number | string | boolean;
+export type Value = number | string | boolean | Value[];
 
 export type Expr =
   | { kind: 'literal'; value: Value }
   | { kind: 'name'; name: string }
+  | { kind: 'list'; items: Expr[] }
+  | { kind: 'index'; target: Expr; index: Expr }
+  | { kind: 'call'; name: string; args: Expr[] }
   | { kind: 'unary'; op: '-' | 'not'; operand: Expr }
   | { kind: 'binary'; op: BinaryOp; left: Expr; right: Expr };
 
@@ -27,9 +32,10 @@ export type BinaryOp =
   '+' | '-' | '*' | '/' | '%' | '==' | '!=' | '<' | '<=' | '>' | '>=' | 'and' | 'or';
 
 export type Stmt =
-  | { kind: 'assign'; line: number; name: string; expr: Expr }
+  | { kind: 'assign'; line: number; name: string; index: Expr | null; expr: Expr }
   | { kind: 'say'; line: number; expr: Expr }
   | { kind: 'for'; line: number; name: string; from: Expr; to: Expr; body: Stmt[] }
+  | { kind: 'foreach'; line: number; name: string; list: Expr; body: Stmt[] }
   | { kind: 'while'; line: number; cond: Expr; body: Stmt[] }
   | {
       kind: 'if';
@@ -38,7 +44,10 @@ export type Stmt =
       then: Stmt[];
       otherwise: Stmt[] | null;
       elseLine: number | null;
-    };
+    }
+  | { kind: 'define'; line: number; name: string; params: string[]; body: Stmt[] }
+  | { kind: 'return'; line: number; expr: Expr | null }
+  | { kind: 'call'; line: number; expr: Extract<Expr, { kind: 'call' }> };
 
 export class PseudoError extends Error {
   constructor(
@@ -57,8 +66,10 @@ interface SourceLine {
 }
 
 const NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
-const KEYWORDS = new Set([
+export const KEYWORDS = new Set([
   'for',
+  'each',
+  'in',
   'from',
   'to',
   'while',
@@ -70,7 +81,11 @@ const KEYWORDS = new Set([
   'not',
   'true',
   'false',
+  'define',
+  'return',
 ]);
+/** Functions every program has. */
+export const BUILTINS = new Set(['len', 'add']);
 
 function stripComment(text: string): string {
   let inString = false;
@@ -125,9 +140,11 @@ function tokenize(text: string, line: number): Token[] {
       if (['==', '!=', '<=', '>='].includes(two)) {
         tokens.push({ type: 'op', value: two });
         i += 2;
-      } else if ('+-*/%<>()'.includes(ch)) {
+      } else if ('+-*/%<>()[],'.includes(ch)) {
         tokens.push({ type: 'op', value: ch });
         i++;
+      } else if (ch === '=') {
+        throw new PseudoError(line, 'use == to compare; a single = puts a value in a box');
       } else {
         throw new PseudoError(line, `unexpected "${ch}"`);
       }
@@ -145,6 +162,10 @@ export function parseExpr(text: string, line: number): Expr {
     const t = peek();
     return !!t && (t.type === 'op' || t.type === 'word') && ops.includes(t.value as string);
   };
+  const expect = (op: string, message: string) => {
+    if (!isOp(op)) throw new PseudoError(line, message);
+    pos++;
+  };
 
   const binaryLevel = (ops: BinaryOp[], next: () => Expr) => (): Expr => {
     let left = next();
@@ -155,7 +176,25 @@ export function parseExpr(text: string, line: number): Expr {
     return left;
   };
 
-  const primary = (): Expr => {
+  /** Comma-separated expressions up to `close`. */
+  const list = (close: string): Expr[] => {
+    const items: Expr[] = [];
+    if (isOp(close)) {
+      pos++;
+      return items;
+    }
+    for (;;) {
+      items.push(or());
+      if (isOp(',')) {
+        pos++;
+        continue;
+      }
+      expect(close, `missing ${close}`);
+      return items;
+    }
+  };
+
+  const atom = (): Expr => {
     const t = tokens[pos++];
     if (!t) throw new PseudoError(line, 'expression ends too early');
     if (t.type === 'num' || t.type === 'str') return { kind: 'literal', value: t.value };
@@ -163,22 +202,36 @@ export function parseExpr(text: string, line: number): Expr {
       if (t.value === 'true' || t.value === 'false')
         return { kind: 'literal', value: t.value === 'true' };
       if (KEYWORDS.has(t.value)) throw new PseudoError(line, `"${t.value}" can't be used here`);
+      if (isOp('(')) {
+        pos++;
+        return { kind: 'call', name: t.value, args: list(')') };
+      }
       return { kind: 'name', name: t.value };
     }
     if (t.value === '(') {
       const inner = or();
-      if (!isOp(')')) throw new PseudoError(line, 'missing )');
-      pos++;
+      expect(')', 'missing )');
       return inner;
     }
+    if (t.value === '[') return { kind: 'list', items: list(']') };
     throw new PseudoError(line, `unexpected "${t.value}"`);
+  };
+  const postfix = (): Expr => {
+    let expr = atom();
+    while (isOp('[')) {
+      pos++;
+      const index = or();
+      expect(']', 'missing ]');
+      expr = { kind: 'index', target: expr, index };
+    }
+    return expr;
   };
   const unary = (): Expr => {
     if (isOp('-')) {
       pos++;
       return { kind: 'unary', op: '-', operand: unary() };
     }
-    return primary();
+    return postfix();
   };
   const multiplicative = binaryLevel(['*', '/', '%'], unary);
   const additive = binaryLevel(['+', '-'], multiplicative);
@@ -191,7 +244,7 @@ export function parseExpr(text: string, line: number): Expr {
     return comparison();
   };
   const and = binaryLevel(['and'], not);
-  const or = binaryLevel(['or'], and);
+  const or: () => Expr = binaryLevel(['or'], and);
 
   const expr = or();
   if (pos < tokens.length)
@@ -204,6 +257,7 @@ export function parseExpr(text: string, line: number): Expr {
 export function parseProgram(source: string): Stmt[] {
   const lines = sourceLines(source);
   let pos = 0;
+  let functionDepth = 0;
 
   const block = (indent: number): Stmt[] => {
     const stmts: Stmt[] = [];
@@ -224,12 +278,62 @@ export function parseProgram(source: string): Stmt[] {
     return block(next.indent);
   };
 
+  const checkName = (name: string, line: number) => {
+    if (!NAME.test(name) || KEYWORDS.has(name))
+      throw new PseudoError(line, `"${name}" is not a valid name`);
+    if (BUILTINS.has(name)) throw new PseudoError(line, `"${name}" is a built-in command`);
+  };
+
+  /** if / else if / else chain; `else if` becomes a nested if inside `otherwise`. */
+  const ifChain = (header: SourceLine, condText: string): Stmt => {
+    const cond = parseExpr(condText, header.line);
+    const then = body(header);
+    const next = lines[pos];
+    if (next && next.indent === header.indent) {
+      if (next.text === 'else:') {
+        pos++;
+        return {
+          kind: 'if',
+          line: header.line,
+          cond,
+          then,
+          otherwise: body(next),
+          elseLine: next.line,
+        };
+      }
+      const elseIf = /^else\s+if\s+(.+):$/.exec(next.text);
+      if (elseIf) {
+        pos++;
+        return {
+          kind: 'if',
+          line: header.line,
+          cond,
+          then,
+          otherwise: [ifChain(next, elseIf[1]!)],
+          elseLine: next.line,
+        };
+      }
+    }
+    return { kind: 'if', line: header.line, cond, then, otherwise: null, elseLine: null };
+  };
+
   const statement = (current: SourceLine): Stmt => {
     pos++;
     const { line, text } = current;
     let m: RegExpExecArray | null;
 
+    if ((m = /^for\s+each\s+([A-Za-z_]\w*)\s+in\s+(.+):$/.exec(text))) {
+      checkName(m[1]!, line);
+      return {
+        kind: 'foreach',
+        line,
+        name: m[1]!,
+        list: parseExpr(m[2]!, line),
+        body: body(current),
+      };
+    }
     if ((m = /^for\s+([A-Za-z_]\w*)\s+from\s+(.+)\s+to\s+(.+):$/.exec(text))) {
+      checkName(m[1]!, line);
       return {
         kind: 'for',
         line,
@@ -242,25 +346,42 @@ export function parseProgram(source: string): Stmt[] {
     if ((m = /^while\s+(.+):$/.exec(text))) {
       return { kind: 'while', line, cond: parseExpr(m[1]!, line), body: body(current) };
     }
-    if ((m = /^if\s+(.+):$/.exec(text))) {
-      const cond = parseExpr(m[1]!, line);
-      const then = body(current);
-      const next = lines[pos];
-      if (next && next.indent === current.indent && next.text === 'else:') {
-        pos++;
-        return { kind: 'if', line, cond, then, otherwise: body(next), elseLine: next.line };
-      }
-      return { kind: 'if', line, cond, then, otherwise: null, elseLine: null };
+    if ((m = /^if\s+(.+):$/.exec(text))) return ifChain(current, m[1]!);
+    if (text === 'else:' || /^else\s+if\b/.test(text))
+      throw new PseudoError(line, '"else" must follow an "if" block');
+    if ((m = /^define\s+([A-Za-z_]\w*)\s*\((.*)\)\s*:$/.exec(text))) {
+      if (functionDepth > 0)
+        throw new PseudoError(line, 'define functions at the top level, not inside another block');
+      checkName(m[1]!, line);
+      const params = m[2]!.trim() === '' ? [] : m[2]!.split(',').map((p) => p.trim());
+      params.forEach((p) => checkName(p, line));
+      if (new Set(params).size !== params.length)
+        throw new PseudoError(line, 'two inputs have the same name');
+      functionDepth++;
+      const fnBody = body(current);
+      functionDepth--;
+      return { kind: 'define', line, name: m[1]!, params, body: fnBody };
     }
-    if (text === 'else:') throw new PseudoError(line, '"else:" must follow an "if" block');
+    if ((m = /^return(?:\s+(.+))?$/.exec(text))) {
+      if (functionDepth === 0) throw new PseudoError(line, '"return" only works inside a function');
+      return { kind: 'return', line, expr: m[1] ? parseExpr(m[1], line) : null };
+    }
     if ((m = /^say\s+(.+)$/.exec(text))) {
       return { kind: 'say', line, expr: parseExpr(m[1]!, line) };
     }
-    if ((m = /^([^=]+?)\s*=(?!=)\s*(.+)$/.exec(text))) {
-      const name = m[1]!;
-      if (!NAME.test(name) || KEYWORDS.has(name))
-        throw new PseudoError(line, `"${name}" is not a valid name`);
-      return { kind: 'assign', line, name, expr: parseExpr(m[2]!, line) };
+    if ((m = /^([A-Za-z_]\w*)(?:\[(.+)\])?\s*=(?!=)\s*(.+)$/.exec(text))) {
+      checkName(m[1]!, line);
+      return {
+        kind: 'assign',
+        line,
+        name: m[1]!,
+        index: m[2] !== undefined ? parseExpr(m[2], line) : null,
+        expr: parseExpr(m[3]!, line),
+      };
+    }
+    if (/^[A-Za-z_]\w*\s*\(.*\)$/.test(text)) {
+      const expr = parseExpr(text, line);
+      if (expr.kind === 'call') return { kind: 'call', line, expr };
     }
     throw new PseudoError(line, `I don't understand "${text}"`);
   };

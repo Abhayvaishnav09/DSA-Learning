@@ -13,10 +13,11 @@ x-service: &service
     nats: { condition: service_started }
   environment: &service-env
     HOST: 0.0.0.0
-    PORT: '8080'
+    PORT: "8080"
     NATS_URL: nats://nats:4222
     JWKS_URL: http://identity:8080/.well-known/jwks.json
     CONTENT_URL: http://content:8080
+    AUTHORING_URL: http://authoring:8080
     SMTP_URL: smtp://mailpit:1025
     PUBLIC_WEB_URL: http://localhost:3000
     INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-token-change-me}
@@ -29,16 +30,16 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
-    healthcheck: { test: ['CMD', 'pg_isready', '-U', 'postgres'], interval: 5s, retries: 20 }
+    healthcheck: { test: ["CMD", "pg_isready", "-U", "postgres"], interval: 5s, retries: 20 }
   nats:
     image: nats:2.12-alpine
-    command: ['-js', '-sd', '/data', '-m', '8222']
+    command: ["-js", "-sd", "/data", "-m", "8222"]
     volumes: [natsdata:/data]
   redis:
     image: valkey/valkey:8-alpine
   mailpit:
     image: axllent/mailpit:latest
-    ports: ['8025:8025']
+    ports: ["8025:8025"]
   identity:
     <<: *service
     build:
@@ -51,7 +52,7 @@ services:
       DATABASE_URL: postgres://identity:identity@postgres:5432/identity
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@logicpath.dev}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin-password-1}
-      COOKIE_SECURE: 'false'
+      COOKIE_SECURE: "false"
   profile:
     <<: *service
     build:
@@ -168,12 +169,12 @@ services:
       dockerfile: infra/docker/service.Dockerfile
       args: { SERVICE: gateway }
     restart: unless-stopped
-    ports: ['8080:8080']
+    ports: ["8080:8080"]
     depends_on: [identity, redis]
     environment:
       SERVICE_NAME: gateway
       HOST: 0.0.0.0
-      PORT: '8080'
+      PORT: "8080"
       REDIS_URL: redis://redis:6379
       CORS_ORIGINS: http://localhost:3000
       IDENTITY_URL: http://identity:8080
@@ -192,7 +193,7 @@ services:
     build:
       context: ../..
       dockerfile: infra/docker/web.Dockerfile
-    ports: ['3000:3000']
+    ports: ["3000:3000"]
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8080
     depends_on: [gateway]
@@ -203,16 +204,16 @@ services:
   jaeger:
     image: jaegertracing/jaeger:latest
     profiles: [observability]
-    ports: ['16686:16686']
+    ports: ["16686:16686"]
   prometheus:
     image: prom/prometheus:latest
     profiles: [observability]
     volumes: [./prometheus.yml:/etc/prometheus/prometheus.yml:ro]
-    ports: ['9090:9090']
+    ports: ["9090:9090"]
   grafana:
     image: grafana/grafana:latest
     profiles: [observability]
-    ports: ['3001:3000']
+    ports: ["3001:3000"]
 
 volumes:
   pgdata: {}

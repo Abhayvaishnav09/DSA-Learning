@@ -110,6 +110,13 @@ export const en = {
     cell: (row: number, column: string) => `Row ${row}, ${column}`,
     row: 'Pass',
     given: 'given',
+    stepsPool: 'Steps to use (tap in order)',
+    stepsAnswer: 'Your order',
+    truthTableHint: 'Tap a cell to switch between true and false.',
+    truthCell: (row: number, column: string, value: string) =>
+      `Row ${row}, ${column}: ${value || 'not set'}`,
+    trueWord: 'true',
+    falseWord: 'false',
   },
   review: {
     title: 'Review',
@@ -229,6 +236,12 @@ export const hiLatn: Messages = {
     cell: (row, column) => `Row ${row}, ${column}`,
     row: 'Pass',
     given: 'diya hua',
+    stepsPool: 'Steps (order mein tap karo)',
+    stepsAnswer: 'Tumhara order',
+    truthTableHint: 'Cell tap karo, true aur false ke beech badlega.',
+    truthCell: (row, column, value) => `Row ${row}, ${column}: ${value || 'khaali'}`,
+    trueWord: 'true',
+    falseWord: 'false',
   },
   review: {
     title: 'Revision',

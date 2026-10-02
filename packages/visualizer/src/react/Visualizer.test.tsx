@@ -76,3 +76,22 @@ describe('Visualizer', () => {
     );
   });
 });
+
+describe('Visualizer with lists and functions', () => {
+  it('draws list cells with positions and the call stack', () => {
+    render(
+      <Visualizer
+        source={'nums = [3, 8]\ndefine twice(x):\n    return x * 2\nsay twice(nums[1])'}
+        locale="en"
+      />,
+    );
+    // start → nums = [3, 8] → define → call
+    for (let i = 0; i < 3; i++)
+      fireEvent.click(screen.getByRole('button', { name: 'Step forward' }));
+    expect(screen.getByLabelText('nums: [3, 8]')).toBeTruthy();
+    expect(screen.getByTestId('viz-stack').textContent).toContain('twice( )');
+    expect(screen.getByTestId('viz-caption').textContent).toBe(
+      'Run twice with x = 8. It gets its own boxes.',
+    );
+  });
+});

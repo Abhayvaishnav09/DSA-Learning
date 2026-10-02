@@ -16,6 +16,7 @@ import { FillBlankAnswer } from './answers/FillBlankAnswer';
 import { McqAnswer } from './answers/McqAnswer';
 import { PredictAnswer } from './answers/PredictAnswer';
 import { TraceTableAnswer } from './answers/TraceTableAnswer';
+import { TruthTableAnswer } from './answers/TruthTableAnswer';
 import { draftFromAnswer, emptyDraft, isGiven, toAnswer, type Draft, type DraftOf } from './draft';
 import { canShowSolution, itemMachine, type ItemMode } from './itemMachine';
 
@@ -278,6 +279,8 @@ function AnswerInput({ item, draft, ...rest }: AnswerInputProps) {
       return <FillBlankAnswer item={item} draft={draft as DraftOf<'fill-blank'>} {...rest} />;
     case 'trace-table':
       return <TraceTableAnswer item={item} draft={draft as DraftOf<'trace-table'>} {...rest} />;
+    case 'truth-table':
+      return <TruthTableAnswer item={item} draft={draft as DraftOf<'truth-table'>} {...rest} />;
   }
 }
 

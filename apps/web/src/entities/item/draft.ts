@@ -1,5 +1,5 @@
 import type { Item, ItemOf, ItemType } from '@logicpath/content-schema';
-import type { Answer, AnswerOf } from '@logicpath/grader';
+import { arrangeCount, type Answer, type AnswerOf } from '@logicpath/grader';
 
 /** What the learner is building before they press Check. */
 export type Draft =
@@ -7,7 +7,10 @@ export type Draft =
   | { type: 'predict-output'; text: string }
   | { type: 'arrange-steps'; order: number[] }
   | { type: 'fill-blank'; blanks: string[] }
-  | { type: 'trace-table'; rows: string[][] };
+  | { type: 'trace-table'; rows: string[][] }
+  | { type: 'truth-table'; rows: TruthCell[][] };
+
+export type TruthCell = 'true' | 'false' | '';
 
 export type DraftOf<T extends ItemType> = Extract<Draft, { type: T }>;
 
@@ -23,6 +26,8 @@ export function emptyDraft(item: Item): Draft {
       return { type: 'fill-blank', blanks: item.blanks.map(() => '') };
     case 'trace-table':
       return { type: 'trace-table', rows: tableWithGivens(item) };
+    case 'truth-table':
+      return { type: 'truth-table', rows: item.rows.map((row) => row.map(() => '' as const)) };
   }
 }
 
@@ -44,7 +49,7 @@ export function toAnswer(item: Item, draft: Draft): Answer | null {
     case 'predict-output':
       return draft.text.trim() === '' ? null : { type: 'predict-output', text: draft.text };
     case 'arrange-steps':
-      return item.type === 'arrange-steps' && draft.order.length === item.lines.length
+      return item.type === 'arrange-steps' && draft.order.length === arrangeCount(item)
         ? { type: 'arrange-steps', order: draft.order }
         : null;
     case 'fill-blank':
@@ -54,6 +59,10 @@ export function toAnswer(item: Item, draft: Draft): Answer | null {
     case 'trace-table':
       return draft.rows.every((row) => row.every((cell) => cell.trim() !== ''))
         ? { type: 'trace-table', rows: draft.rows }
+        : null;
+    case 'truth-table':
+      return draft.rows.every((row) => row.every((cell) => cell !== ''))
+        ? { type: 'truth-table', rows: draft.rows as ('true' | 'false')[][] }
         : null;
   }
 }
