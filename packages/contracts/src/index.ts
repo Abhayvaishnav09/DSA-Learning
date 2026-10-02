@@ -1,6 +1,13 @@
 export * from './common';
 export * from './events';
+export * from './routes';
+export * from './services';
 export * as authoring from './http/authoring';
 export * as content from './http/content';
+export * as engagement from './http/engagement';
+export * as home from './http/home';
 export * as identity from './http/identity';
+export * as learning from './http/learning';
+export * as platform from './http/platform';
 export * as profile from './http/profile';
+export * as pub from './http/public';

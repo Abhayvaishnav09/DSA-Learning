@@ -1,3 +1,4 @@
+import { routesOf } from '@logicpath/contracts';
 import { createServer } from 'node:net';
 import type { ContentBundle, ItemOf } from '@logicpath/content-schema';
 import { loadConfig, startService, type RunningService } from '@logicpath/service-kit';
@@ -8,6 +9,7 @@ import {
   outboxEvents,
   testKeys,
   testPrefix,
+  documentedRoutes,
 } from '@logicpath/service-kit/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { contentService, env as contentEnv } from '../../content/src/service';
@@ -226,5 +228,11 @@ describe('authoring workflow', () => {
     expect((await call('DELETE', `/v1/studio/drafts/${created.body.id}`, w)).body).toEqual({
       ok: true,
     });
+  });
+});
+
+describe('authoring contract', () => {
+  it('documents exactly its rows of the shared endpoint table', async () => {
+    expect(await documentedRoutes(authoring.app)).toEqual(routesOf('authoring'));
   });
 });

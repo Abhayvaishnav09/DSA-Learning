@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    ".": {
+      "entry": ["infra/**/*.mjs"],
+      "ignoreDependencies": ["tsx"]
+    },
+    "apps/web": {
+      "entry": ["demo/*.{ts,tsx,mjs}", "e2e/**/*.ts"],
+      "project": ["src/**/*.{ts,tsx}", "demo/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["tailwindcss"]
+    },
+    "services/*": {
+      "entry": ["test/**/*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/*": { "project": ["src/**/*.{ts,tsx}"] },
+    "content": {}
+  }
+}

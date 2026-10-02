@@ -160,7 +160,7 @@ export function parseExpr(text: string, line: number): Expr {
   const peek = () => tokens[pos];
   const isOp = (...ops: string[]) => {
     const t = peek();
-    return !!t && (t.type === 'op' || t.type === 'word') && ops.includes(t.value as string);
+    return !!t && (t.type === 'op' || t.type === 'word') && ops.includes(t.value);
   };
   const expect = (op: string, message: string) => {
     if (!isOp(op)) throw new PseudoError(line, message);

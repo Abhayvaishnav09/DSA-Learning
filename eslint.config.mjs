@@ -1,5 +1,6 @@
 // @ts-check
 import js from '@eslint/js';
+import jsxA11y from 'eslint-plugin-jsx-a11y-x';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -32,9 +33,33 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/web/**/*.{ts,tsx}', 'packages/visualizer/**/*.{ts,tsx}'],
-    plugins: { 'react-hooks': reactHooks },
-    rules: reactHooks.configs.recommended.rules,
+    files: [
+      'apps/web/**/*.{ts,tsx}',
+      'packages/visualizer/**/*.{ts,tsx}',
+      'packages/ui/**/*.{ts,tsx}',
+    ],
+    plugins: { 'react-hooks': reactHooks, 'jsx-a11y-x': jsxA11y },
+    rules: { ...reactHooks.configs.recommended.rules, ...jsxA11y.configs.strict.rules },
+  },
+  {
+    // Type-aware rules for backend and library code: the bugs types can catch but tsc doesn't.
+    files: ['packages/*/src/**/*.ts', 'services/*/src/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    languageOptions: { parserOptions: { projectService: true } },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { arguments: false } },
+      ],
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': [
+        'error',
+        { considerDefaultExhaustiveForUnions: true },
+      ],
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/return-await': ['error', 'in-try-catch'],
+    },
   },
   {
     // Tests poke at loosely-typed JSON responses.
@@ -52,6 +77,15 @@ export default tseslint.config(
             layer('@/features/*', 'shared/ must not import features/'),
           ],
         },
+      ],
+    },
+  },
+  {
+    files: ['apps/web/src/features/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [layer('@/app/*', 'features/ must not import app/')] },
       ],
     },
   },

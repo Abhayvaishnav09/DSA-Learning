@@ -9,12 +9,13 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "ts-fsrs": "^5.4.2"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.3",
     "fast-check": "^4.10.2",
     "vitest": "^5.0.3"
   }

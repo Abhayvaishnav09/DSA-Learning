@@ -2,4 +2,4 @@ global: { scrape_interval: 15s }
 scrape_configs:
   - job_name: logicpath
     static_configs:
-      - targets: ["identity:8080", "profile:8080", "consent:8080", "content:8080", "authoring:8080", "practice:8080", "progress:8080", "review:8080", "gamification:8080", "notification:8080", "analytics:8080", "audit:8080", "gateway:8080"]
+      - targets: ["identity:8080", "profile:8080", "content:8080", "authoring:8080", "gateway:8080"]

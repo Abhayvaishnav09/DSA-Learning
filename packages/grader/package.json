@@ -9,13 +9,14 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@logicpath/content-schema": "workspace:*",
     "@logicpath/visualizer": "workspace:*"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.3",
     "fast-check": "^4.10.2",
     "vitest": "^5.0.3"
   }

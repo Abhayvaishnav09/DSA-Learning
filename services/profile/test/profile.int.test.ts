@@ -1,4 +1,4 @@
-import { makeEvent } from '@logicpath/contracts';
+import { makeEvent, routesOf } from '@logicpath/contracts';
 import { loadConfig, startService, type RunningService } from '@logicpath/service-kit';
 import {
   baseTestEnv,
@@ -8,6 +8,7 @@ import {
   testBus,
   testKeys,
   testPrefix,
+  documentedRoutes,
 } from '@logicpath/service-kit/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { env, profileService, type ProfileConfig } from '../src/service';
@@ -126,5 +127,11 @@ describe('profile', () => {
         (e) => (e.data as { requestId: string }).requestId === requestId,
       ),
     );
+  });
+});
+
+describe('profile contract', () => {
+  it('documents exactly its rows of the shared endpoint table', async () => {
+    expect(await documentedRoutes(service.app)).toEqual(routesOf('profile'));
   });
 });

@@ -112,3 +112,23 @@ export async function testBus(prefix: string) {
   const pino = (await import('pino')).default;
   return EventBus.connect(TEST_NATS_URL, prefix, pino({ level: 'silent' }));
 }
+
+/**
+ * Contract test (ADR-0022): the routes a service documents in its OpenAPI must be exactly its
+ * rows in the shared endpoint table, so clients generated from the table always match.
+ */
+export async function documentedRoutes(app: {
+  ready: () => PromiseLike<unknown>;
+  swagger: () => unknown;
+}): Promise<string[]> {
+  await app.ready();
+  const spec = app.swagger() as { paths?: Record<string, Record<string, unknown>> };
+  const methods = ['get', 'post', 'put', 'patch', 'delete'];
+  return Object.entries(spec.paths ?? {})
+    .flatMap(([path, ops]) =>
+      Object.keys(ops)
+        .filter((m) => methods.includes(m))
+        .map((m) => `${m.toUpperCase()} ${path.replace(/\{([^}]+)\}/g, ':$1')}`),
+    )
+    .sort();
+}

@@ -430,7 +430,7 @@ function registerRoutes(
         ctx.log.warn({ userId }, 'refresh token reuse detected; family revoked');
         throw unauthorized('Session ended for safety. Please sign in again');
       }
-      return outcome.session!;
+      return outcome.session;
     },
   );
 

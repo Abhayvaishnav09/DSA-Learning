@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { availableActions, decide, type Actor, type DraftRef } from './index';
+import { availableActions, canView, decide, type Actor, type DraftRef } from './index';
 
 const writer: Actor = { id: 'w', role: 'writer' };
 const other: Actor = { id: 'w2', role: 'writer' };
@@ -47,6 +47,13 @@ describe('authoring workflow', () => {
       message: 'cannot approve a draft that is draft',
     });
     expect(decide('delete', draft('published'), writer).ok).toBe(false);
+  });
+
+  it('shows drafts to their author and to admins only', () => {
+    expect(canView(writer, draft('draft'))).toBe(true);
+    expect(canView(other, draft('draft'))).toBe(false);
+    expect(canView(admin, draft('draft'))).toBe(true);
+    expect(canView({ id: 'w', role: 'student' }, draft('draft'))).toBe(false);
   });
 
   it('lists what the UI can offer', () => {

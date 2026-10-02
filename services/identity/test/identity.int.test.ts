@@ -1,4 +1,4 @@
-import { makeEvent } from '@logicpath/contracts';
+import { makeEvent, routesOf } from '@logicpath/contracts';
 import {
   createVerifier,
   loadConfig,
@@ -12,6 +12,7 @@ import {
   outboxEvents,
   testBus,
   testPrefix,
+  documentedRoutes,
 } from '@logicpath/service-kit/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { env, identityService, type IdentityConfig } from '../src/service';
@@ -246,5 +247,11 @@ describe('identity', () => {
     expect(await service.relay.drain()).toBeGreaterThanOrEqual(0);
     const rows = await outboxEvents(dbUrl);
     expect(rows.length).toBeGreaterThan(3);
+  });
+});
+
+describe('identity contract', () => {
+  it('documents exactly its rows of the shared endpoint table', async () => {
+    expect(await documentedRoutes(service.app)).toEqual(routesOf('identity'));
   });
 });

@@ -24,6 +24,12 @@ export const SERVICES = {
   notification: 4110,
   analytics: 4111,
   audit: 4112,
+  leaderboard: 4113,
+  classroom: 4114,
+  search: 4115,
+  media: 4116,
+  flags: 4117,
+  developer: 4118,
 };
 
 export const serviceUrl = (name, host = '127.0.0.1') => `http://${host}:${SERVICES[name]}`;

@@ -131,6 +131,35 @@ export const EVENTS = {
   'review.card.scheduled': z.object({ userId: Id, cardId: z.string(), due: IsoDateTime }),
   'gamification.badge.earned': z.object({ userId: Id, badgeId: z.string(), at: IsoDateTime }),
   'gamification.level.up': z.object({ userId: Id, level: z.number().int(), xp: z.number().int() }),
+  'gamification.xp.awarded': z.object({
+    userId: Id,
+    amount: z.number().int(),
+    reason: z.string(),
+    weekStart: LocalDate,
+    at: IsoDateTime,
+  }),
+
+  // community
+  'leaderboard.week.closed': z.object({
+    userId: Id,
+    weekStart: LocalDate,
+    tier: z.string(),
+    rank: z.number().int(),
+    result: z.enum(['promoted', 'stayed', 'demoted']),
+  }),
+  'classroom.member.joined': z.object({
+    classId: Id,
+    userId: Id,
+    ownerId: Id,
+    className: z.string(),
+  }),
+
+  // platform
+  'media.asset.created': z.object({ assetId: Id, uploadedBy: Id }),
+  'media.asset.deleted': z.object({ assetId: Id }),
+  'flags.changed': z.object({ key: z.string(), enabled: z.boolean() }),
+  'developer.key.created': z.object({ keyId: Id, ownerId: Id, prefix: z.string() }),
+  'developer.key.revoked': z.object({ keyId: Id, ownerId: Id, prefix: z.string() }),
 
   // audit trail of privileged actions, published by any service
   'audit.recorded': z.object({
@@ -177,6 +206,11 @@ export const DOMAINS = [
   'progress',
   'review',
   'gamification',
+  'leaderboard',
+  'classroom',
+  'media',
+  'flags',
+  'developer',
   'audit',
 ] as const;
 export type Domain = (typeof DOMAINS)[number];
@@ -207,5 +241,5 @@ export function parseEvent(raw: unknown): EventEnvelope {
     ...envelope,
     type: envelope.type as EventType,
     data: schema.parse(envelope.data),
-  } as EventEnvelope;
+  };
 }

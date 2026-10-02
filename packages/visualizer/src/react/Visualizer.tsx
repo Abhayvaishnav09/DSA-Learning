@@ -62,6 +62,9 @@ export function Visualizer({
   const varNames = [...new Set(frames.flatMap((f) => Object.keys(f.vars)))];
   const current = frame.stack.length - 1;
 
+  // The player is one focusable region with arrow-key and space shortcuts (like a media
+  // player); every shortcut also has a visible button, so nothing is keyboard-only.
+  /* eslint-disable jsx-a11y-x/no-noninteractive-element-interactions, jsx-a11y-x/no-noninteractive-tabindex */
   return (
     <section
       className={`lp-viz rounded-2xl border border-border bg-surface p-3 sm:p-4 ${className}`}
@@ -226,6 +229,7 @@ export function Visualizer({
       </div>
     </section>
   );
+  /* eslint-enable jsx-a11y-x/no-noninteractive-element-interactions, jsx-a11y-x/no-noninteractive-tabindex */
 }
 
 interface BoxListProps {

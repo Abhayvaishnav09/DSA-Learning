@@ -1,7 +1,7 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { ContentBundle } from '@logicpath/content-schema';
-import { makeEvent } from '@logicpath/contracts';
+import { makeEvent, routesOf } from '@logicpath/contracts';
 import { loadConfig, startService, type RunningService } from '@logicpath/service-kit';
 import {
   baseTestEnv,
@@ -11,6 +11,7 @@ import {
   testBus,
   testKeys,
   testPrefix,
+  documentedRoutes,
 } from '@logicpath/service-kit/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { contentService, env, type ContentConfig } from '../src/service';
@@ -187,5 +188,11 @@ describe('content', () => {
     expect((await outboxEvents(dbUrl, 'audit.recorded')).at(-1)?.data).toMatchObject({
       action: 'content.rollback',
     });
+  });
+});
+
+describe('content contract', () => {
+  it('documents exactly its rows of the shared endpoint table', async () => {
+    expect(await documentedRoutes(service.app)).toEqual(routesOf('content'));
   });
 });

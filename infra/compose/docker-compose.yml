@@ -63,16 +63,6 @@ services:
       <<: *service-env
       SERVICE_NAME: profile
       DATABASE_URL: postgres://profile:profile@postgres:5432/profile
-  consent:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: consent }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: consent
-      DATABASE_URL: postgres://consent:consent@postgres:5432/consent
   content:
     <<: *service
     build:
@@ -93,76 +83,6 @@ services:
       <<: *service-env
       SERVICE_NAME: authoring
       DATABASE_URL: postgres://authoring:authoring@postgres:5432/authoring
-  practice:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: practice }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: practice
-      DATABASE_URL: postgres://practice:practice@postgres:5432/practice
-  progress:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: progress }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: progress
-      DATABASE_URL: postgres://progress:progress@postgres:5432/progress
-  review:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: review }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: review
-      DATABASE_URL: postgres://review:review@postgres:5432/review
-  gamification:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: gamification }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: gamification
-      DATABASE_URL: postgres://gamification:gamification@postgres:5432/gamification
-  notification:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: notification }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: notification
-      DATABASE_URL: postgres://notification:notification@postgres:5432/notification
-  analytics:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: analytics }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: analytics
-      DATABASE_URL: postgres://analytics:analytics@postgres:5432/analytics
-  audit:
-    <<: *service
-    build:
-      context: ../..
-      dockerfile: infra/docker/service.Dockerfile
-      args: { SERVICE: audit }
-    environment:
-      <<: *service-env
-      SERVICE_NAME: audit
-      DATABASE_URL: postgres://audit:audit@postgres:5432/audit
   gateway:
     build:
       context: ../..
@@ -179,16 +99,8 @@ services:
       CORS_ORIGINS: http://localhost:3000
       IDENTITY_URL: http://identity:8080
       PROFILE_URL: http://profile:8080
-      CONSENT_URL: http://consent:8080
       CONTENT_URL: http://content:8080
       AUTHORING_URL: http://authoring:8080
-      PRACTICE_URL: http://practice:8080
-      PROGRESS_URL: http://progress:8080
-      REVIEW_URL: http://review:8080
-      GAMIFICATION_URL: http://gamification:8080
-      NOTIFICATION_URL: http://notification:8080
-      ANALYTICS_URL: http://analytics:8080
-      AUDIT_URL: http://audit:8080
   web:
     build:
       context: ../..

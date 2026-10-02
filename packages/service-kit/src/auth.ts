@@ -31,7 +31,7 @@ export function createVerifier(
     resolved ??= (async (): Promise<KeyInput> => {
       if (keys) return keys;
       if (config.JWT_PUBLIC_JWK)
-        return (await importJWK(JSON.parse(config.JWT_PUBLIC_JWK) as JWK, 'EdDSA')) as KeyInput;
+        return importJWK(JSON.parse(config.JWT_PUBLIC_JWK) as JWK, 'EdDSA');
       if (config.JWKS_URL)
         return createRemoteJWKSet(new URL(config.JWKS_URL), { cacheMaxAge: 10 * 60_000 });
       throw new Error('no JWKS_URL or JWT_PUBLIC_JWK configured');
