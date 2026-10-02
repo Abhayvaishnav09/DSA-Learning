@@ -154,7 +154,7 @@ jobs:
           if jq -e '.error.code == "not_found"' <<<"$project" > /dev/null; then
             project=$(curl -sS -X POST -H "Authorization: Bearer $VERCEL_TOKEN" -H 'Content-Type: application/json' \
               "$api/v11/projects" \
-              -d "{\"name\":\"$VERCEL_PROJECT\",\"framework\":\"nextjs\",\"rootDirectory\":\"apps/web\",\"nodeVersion\":\"22.x\"}")
+              -d "{\"name\":\"$VERCEL_PROJECT\",\"framework\":\"nextjs\",\"rootDirectory\":\"apps/web\"}")
           fi
           if ! jq -e '.id' <<<"$project" > /dev/null; then
             echo "::error::Vercel: $(jq -r '.error.message // "unexpected response"' <<<"$project")" && exit 1
