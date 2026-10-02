@@ -1,5 +1,5 @@
 import { hash32 } from '@logicpath/flags-rules';
-import { addDays, weekStart } from '@logicpath/gamification-rules';
+import { addDays, istDate, startOfIstDay, weekStart } from '@logicpath/gamification-rules';
 import { emptyState } from '@logicpath/progress-rules';
 import type { LocalDb } from './db';
 import { createUser } from './domains/identity';
@@ -29,16 +29,6 @@ const LEARNERS: readonly { name: string; activity: number; skill: number; daysOl
   { name: 'Tara Bose', activity: 0.7, skill: 0.83, daysOld: 5 },
   { name: 'Yash Patil', activity: 0.45, skill: 0.68, daysOld: 3 },
 ];
-
-/** Leagues and classes count days in India, where the app is first aimed. */
-const IST_OFFSET_MS = 5.5 * 3_600_000;
-
-export const istDate = (at: Date): string =>
-  new Date(at.getTime() + IST_OFFSET_MS).toISOString().slice(0, 10);
-
-/** The moment a local (IST) day starts. */
-export const startOfIstDay = (date: string): Date =>
-  new Date(Date.parse(`${date}T00:00:00Z`) - IST_OFFSET_MS);
 
 function random(seed: string): () => number {
   let a = hash32(seed);

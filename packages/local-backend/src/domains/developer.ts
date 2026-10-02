@@ -1,8 +1,7 @@
 import type { LocalHandler } from '@logicpath/api-client/local';
 import type { ParamsOf, platform } from '@logicpath/contracts';
-import { addDays } from '@logicpath/gamification-rules';
+import { addDays, istDate } from '@logicpath/gamification-rules';
 import type { ApiKeyRow, LocalDb } from '../db';
-import { istDate } from '../demo';
 import {
   audit,
   conflict,

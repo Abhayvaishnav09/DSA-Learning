@@ -1,13 +1,15 @@
-export { BADGES, emptyStats, newBadges } from './badges';
-export type { BadgeDef, LearnerStats } from './badges';
+export { BADGES, emptyStats, newBadges, statsAfterAttempt } from './badges';
+export type { AttemptFacts, BadgeDef, LearnerStats } from './badges';
 export {
   LEAGUE_SIZE,
   LEAGUE_TIERS,
   addDays,
   demoteCount,
+  istDate,
   moveTier,
   promoteCount,
   rank,
+  startOfIstDay,
   weekStart,
   zoneFor,
 } from './leagues';

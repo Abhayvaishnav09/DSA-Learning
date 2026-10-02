@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { bucket, compareVersions, evaluateAll, hash32, isOn, type FlagDef } from './index';
+import {
+  DEFAULT_FLAGS,
+  bucket,
+  compareVersions,
+  evaluateAll,
+  hash32,
+  isOn,
+  type FlagDef,
+} from './index';
 
 const flag = (patch: Partial<FlagDef> = {}): FlagDef => ({
   key: 'new-map',
@@ -79,5 +87,26 @@ describe('evaluateAll', () => {
     const result = evaluateAll([flag(), flag({ key: 'off', enabled: false })], me);
     expect(result['new-map']).toEqual({ on: true, value: { theme: 'dark' } });
     expect(result['off']).toEqual({ on: false, value: null });
+  });
+});
+
+describe('the flags a new installation starts with', () => {
+  it('have unique, well-formed keys and sensible rollouts', () => {
+    const keys = DEFAULT_FLAGS.map((f) => f.key);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const f of DEFAULT_FLAGS) {
+      expect(f.key).toMatch(/^[a-z][a-z0-9-]*(\.[a-z0-9-]+)*$/);
+      expect(f.description.length).toBeGreaterThan(10);
+      expect(f.rolloutPercent).toBeGreaterThanOrEqual(0);
+      expect(f.rolloutPercent).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('hide the studio flag from students and show it to writers', () => {
+    const ask = (role: 'student' | 'writer') =>
+      evaluateAll(DEFAULT_FLAGS, { userId: 'u1', role, platform: 'web', appVersion: null });
+    expect(ask('student')['studio.media']!.on).toBe(false);
+    expect(ask('writer')['studio.media']!.on).toBe(true);
+    expect(ask('student')['config.daily-goal-options']!.value).toEqual([5, 10, 20, 30]);
   });
 });

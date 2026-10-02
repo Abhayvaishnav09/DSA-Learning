@@ -355,6 +355,9 @@ importers:
       '@fastify/swagger':
         specifier: ^9.9.1
         version: 9.9.1
+      '@logicpath/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
       '@logicpath/contracts':
         specifier: workspace:*
         version: link:../contracts

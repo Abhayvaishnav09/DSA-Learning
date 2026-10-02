@@ -31,6 +31,32 @@ export const emptyStats = (): LearnerStats => ({
   classesJoined: 0,
 });
 
+/** The facts of one answer that the counters care about. */
+export interface AttemptFacts {
+  correct: boolean;
+  hintLevel: number;
+  source: 'lesson' | 'predict' | 'review';
+  solutionShown: boolean;
+}
+
+/**
+ * The counters after one answer: right answers, the clean run, reviews done. Predictions and
+ * answers shown to the learner prove nothing, so they leave the counters alone (a miss still
+ * ends the run).
+ */
+export function statsAfterAttempt(stats: LearnerStats, attempt: AttemptFacts): LearnerStats {
+  const next = { ...stats };
+  const predict = attempt.source === 'predict';
+  if (attempt.correct && !predict && !attempt.solutionShown) {
+    next.correctTotal += 1;
+    next.unaidedRun = attempt.hintLevel === 0 ? next.unaidedRun + 1 : 0;
+    if (attempt.source === 'review') next.reviewsDone += 1;
+  } else if (!predict && !attempt.correct) {
+    next.unaidedRun = 0;
+  }
+  return next;
+}
+
 interface Rule extends BadgeDef {
   earned: (stats: LearnerStats) => boolean;
 }

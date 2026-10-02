@@ -1,8 +1,8 @@
 import type { LocalHandler } from '@logicpath/api-client/local';
 import type { engagement, ParamsOf } from '@logicpath/contracts';
-import { addDays, weekStart } from '@logicpath/gamification-rules';
+import { addDays, istDate, weekStart } from '@logicpath/gamification-rules';
 import type { ClassRow, LocalDb } from '../db';
-import { istDate, simulateDemo } from '../demo';
+import { simulateDemo } from '../demo';
 import { audit, conflict, iso, me, notFound, paginate, uuid } from '../util';
 import { grantBadges, learnerOf, localeOf, notify, say } from './engage';
 

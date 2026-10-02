@@ -4,18 +4,21 @@ import type { learning } from '@logicpath/contracts';
 import { correctAnswer } from '@logicpath/grader';
 import { describe, expect, it } from 'vitest';
 import {
+  applyGraded,
   buildGraph,
   cardKey,
   completeLesson,
   dueQueue,
   emptyState,
   engineState,
+  gradeAttempt,
   InvalidAnswerError,
   nextStreak,
   processAttempt,
   progressMap,
   reviewSummary,
   saveLessonPosition,
+  scheduleCompletion,
 } from './index';
 
 const bundle = bundleJson as unknown as ContentBundle;
@@ -242,6 +245,50 @@ describe('views', () => {
       'masteredAt',
       'streak',
     ]);
+  });
+});
+
+describe('the same attempt, in the pieces the services use', () => {
+  it('grading then applying gives exactly what processAttempt gives', () => {
+    const req = request(plain, { hintLevel: 1 });
+    const whole = processAttempt(emptyState(), req, ctx(plain));
+    const graded = gradeAttempt(plain, req);
+    expect(graded).toMatchObject({ correct: true, explainedCorrectly: null });
+    expect(applyGraded(emptyState(), req, graded, ctx(plain))).toEqual(whole);
+  });
+
+  it('leaves the cards to the review service when asked, and reports what finished', () => {
+    const req = request(plain);
+    const out = processAttempt(emptyState(), req, { ...ctx(plain), schedule: false });
+    expect(out.state.cards).toEqual({});
+    expect(out.completion).toEqual({
+      cardId: cardKey(plain),
+      firstTryCorrect: true,
+      hintLevel: 0,
+      durationMs: 20_000,
+      expectedMs: plain.estSeconds * 1000,
+      solutionShown: false,
+      at: NOW.toISOString(),
+    });
+    // Scheduling that completion afterwards gives the card the all-in-one path would have kept.
+    const kept = processAttempt(emptyState(), req, ctx(plain)).state.cards[cardKey(plain)];
+    expect(scheduleCompletion(undefined, out.completion!)).toEqual(kept);
+  });
+
+  it('reports no completion while a question is still open', () => {
+    expect(processAttempt(emptyState(), request(item), ctx(item)).completion).toBeNull();
+    expect(
+      processAttempt(emptyState(), request(plain, { answer: wrong(plain) }), ctx(plain)).completion,
+    ).toBeNull();
+  });
+
+  it('ignores a completion older than the last review of its card', () => {
+    const first = processAttempt(emptyState(), request(plain), ctx(plain));
+    const card = first.state.cards[cardKey(plain)]!;
+    const earlier = { ...first.completion!, at: new Date(NOW.getTime() - 60_000).toISOString() };
+    expect(scheduleCompletion(card, earlier)).toBeNull();
+    const later = { ...first.completion!, at: new Date(NOW.getTime() + 60_000).toISOString() };
+    expect(scheduleCompletion(card, later)?.reps).toBe(2);
   });
 });
 

@@ -1,66 +1,17 @@
 import type { LocalHandler } from '@logicpath/api-client/local';
 import type { ParamsOf, platform } from '@logicpath/contracts';
-import { evaluateAll } from '@logicpath/flags-rules';
+import { DEFAULT_FLAGS, evaluateAll } from '@logicpath/flags-rules';
 import type { LocalDb } from '../db';
 import { audit, iso, me, notFound } from '../util';
 
-/** Flags every installation starts with (the real service seeds the same list). */
-export const DEFAULT_FLAGS: Omit<platform.Flag, 'updatedAt'>[] = [
-  {
-    key: 'map.3d',
-    description: 'Show the 3D learning map (devices that cannot draw it get the flat map anyway).',
-    enabled: true,
-    rolloutPercent: 100,
-    roles: [],
-    platforms: [],
-    minAppVersion: null,
-    value: null,
-  },
-  {
-    key: 'lesson.celebrations',
-    description: 'Burst animation after a right answer.',
-    enabled: true,
-    rolloutPercent: 100,
-    roles: [],
-    platforms: [],
-    minAppVersion: null,
-    value: null,
-  },
-  {
-    key: 'config.daily-goal-options',
-    description: 'Daily goal choices offered in Settings (minutes).',
-    enabled: true,
-    rolloutPercent: 100,
-    roles: [],
-    platforms: [],
-    minAppVersion: null,
-    value: [5, 10, 20, 30],
-  },
-  {
-    key: 'studio.media',
-    description: 'Image library in the studio.',
-    enabled: true,
-    rolloutPercent: 100,
-    roles: ['writer', 'admin'],
-    platforms: [],
-    minAppVersion: null,
-    value: null,
-  },
-  {
-    key: 'beta.review-nudges',
-    description: 'Try-out: gentle nudges when reviews are waiting. Rolling out slowly.',
-    enabled: true,
-    rolloutPercent: 30,
-    roles: ['student'],
-    platforms: [],
-    minAppVersion: null,
-    value: null,
-  },
-];
-
 export function seedFlags(db: LocalDb, now: Date) {
   if (db.t.flags.length > 0) return;
-  db.t.flags = DEFAULT_FLAGS.map((flag) => ({ ...flag, updatedAt: iso(now) }));
+  db.t.flags = DEFAULT_FLAGS.map((flag) => ({
+    ...flag,
+    roles: [...flag.roles],
+    platforms: [...flag.platforms],
+    updatedAt: iso(now),
+  }));
   db.touch();
 }
 

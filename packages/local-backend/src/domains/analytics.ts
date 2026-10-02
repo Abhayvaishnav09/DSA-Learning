@@ -1,8 +1,8 @@
 import type { LocalHandler } from '@logicpath/api-client/local';
 import type { platform } from '@logicpath/contracts';
-import { addDays } from '@logicpath/gamification-rules';
+import { addDays, istDate } from '@logicpath/gamification-rules';
 import type { AttemptRow, LocalDb } from '../db';
-import { istDate, simulateDemo } from '../demo';
+import { simulateDemo } from '../demo';
 import { paginate } from '../util';
 
 const round = (n: number, digits = 1) => Math.round(n * 10 ** digits) / 10 ** digits;

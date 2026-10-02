@@ -11,6 +11,12 @@ const UserStatus = z.enum(['active', 'pending_consent', 'suspended']);
 
 const ContentIssue = z.object({ file: z.string(), message: z.string() });
 
+/** One payment of XP and why: the learner's progress decides it, gamification records it. */
+const XpPart = z.object({
+  amount: z.number().int().min(1),
+  reason: z.enum(['attempt', 'daily-goal', 'streak', 'lesson']),
+});
+
 export const EVENTS = {
   // identity
   'identity.user.registered': z.object({
@@ -106,6 +112,8 @@ export const EVENTS = {
     misconception: z.string().nullable(),
     durationMs: z.number().int(),
     source: z.enum(['lesson', 'predict', 'review']),
+    solutionShown: z.boolean(),
+    xp: z.array(XpPart),
     at: IsoDateTime,
   }),
   'practice.item.completed': z.object({
@@ -120,7 +128,12 @@ export const EVENTS = {
     solutionShown: z.boolean(),
     at: IsoDateTime,
   }),
-  'progress.lesson.completed': z.object({ userId: Id, conceptId: z.string(), at: IsoDateTime }),
+  'progress.lesson.completed': z.object({
+    userId: Id,
+    conceptId: z.string(),
+    xp: z.array(XpPart),
+    at: IsoDateTime,
+  }),
   'progress.concept.mastered': z.object({ userId: Id, conceptId: z.string(), at: IsoDateTime }),
   'progress.streak.updated': z.object({
     userId: Id,

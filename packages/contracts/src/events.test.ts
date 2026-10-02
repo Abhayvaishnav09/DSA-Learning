@@ -11,7 +11,12 @@ describe('event catalog', () => {
   it('builds envelopes that parse back, and validates payloads both ways', () => {
     const event = makeEvent(
       'progress.lesson.completed',
-      { userId: crypto.randomUUID(), conceptId: 'loops.counter', at: new Date().toISOString() },
+      {
+        userId: crypto.randomUUID(),
+        conceptId: 'loops.counter',
+        xp: [{ amount: 20, reason: 'lesson' }],
+        at: new Date().toISOString(),
+      },
       'progress',
     );
     expect(event).toMatchObject({

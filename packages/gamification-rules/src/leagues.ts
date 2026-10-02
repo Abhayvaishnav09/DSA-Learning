@@ -52,3 +52,14 @@ export function addDays(localDate: string, days: number): string {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+
+/** Leagues and classes count days and weeks in India time, where the app is first aimed. */
+const IST_OFFSET_MS = 5.5 * 3_600_000;
+
+/** The India-time calendar date (YYYY-MM-DD) of a moment. */
+export const istDate = (at: Date): string =>
+  new Date(at.getTime() + IST_OFFSET_MS).toISOString().slice(0, 10);
+
+/** The moment an India-time calendar day starts. */
+export const startOfIstDay = (date: string): Date =>
+  new Date(Date.parse(`${date}T00:00:00Z`) - IST_OFFSET_MS);

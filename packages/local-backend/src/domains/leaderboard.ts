@@ -3,14 +3,16 @@ import type { engagement } from '@logicpath/contracts';
 import {
   LEAGUE_SIZE,
   addDays,
+  istDate,
   moveTier,
   rank,
+  startOfIstDay,
   weekStart,
   zoneFor,
   type LeagueTier,
 } from '@logicpath/gamification-rules';
 import type { LocalDb } from '../db';
-import { istDate, simulateDemo, startOfIstDay } from '../demo';
+import { simulateDemo } from '../demo';
 import { iso, me } from '../util';
 import { grantBadges, learnerOf, localeOf, notify, say } from './engage';
 

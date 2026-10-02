@@ -5,6 +5,7 @@ import {
   addDays,
   demoteCount,
   emptyStats,
+  istDate,
   levelFloorXp,
   levelFor,
   levelInfo,
@@ -12,6 +13,8 @@ import {
   newBadges,
   promoteCount,
   rank,
+  startOfIstDay,
+  statsAfterAttempt,
   weekStart,
   xpForAttempt,
   zoneFor,
@@ -115,5 +118,50 @@ describe('leagues', () => {
     expect(weekStart('2026-09-28')).toBe('2026-09-28');
     expect(weekStart('2026-10-04')).toBe('2026-09-28'); // Sunday
     expect(addDays('2026-09-28', 7)).toBe('2026-10-05');
+  });
+});
+
+describe('counters after an answer', () => {
+  const facts = { correct: true, hintLevel: 0, source: 'lesson' as const, solutionShown: false };
+
+  it('counts right answers and keeps a clean run going while no hint is used', () => {
+    let stats = emptyStats();
+    stats = statsAfterAttempt(stats, facts);
+    stats = statsAfterAttempt(stats, facts);
+    expect(stats).toMatchObject({ correctTotal: 2, unaidedRun: 2, reviewsDone: 0 });
+    stats = statsAfterAttempt(stats, { ...facts, hintLevel: 1 });
+    expect(stats).toMatchObject({ correctTotal: 3, unaidedRun: 0 });
+  });
+
+  it('counts reviews, and a miss ends the run without counting', () => {
+    const run = { ...emptyStats(), unaidedRun: 4 };
+    expect(statsAfterAttempt(run, { ...facts, source: 'review' })).toMatchObject({
+      reviewsDone: 1,
+      unaidedRun: 5,
+    });
+    expect(statsAfterAttempt(run, { ...facts, correct: false })).toMatchObject({
+      correctTotal: 0,
+      unaidedRun: 0,
+    });
+  });
+
+  it('ignores predictions and shown solutions, and never changes its input', () => {
+    const run = { ...emptyStats(), unaidedRun: 4 };
+    expect(statsAfterAttempt(run, { ...facts, source: 'predict' })).toEqual(run);
+    expect(statsAfterAttempt(run, { ...facts, source: 'predict', correct: false })).toEqual(run);
+    expect(statsAfterAttempt(run, { ...facts, solutionShown: true })).toEqual(run);
+    expect(run.unaidedRun).toBe(4);
+  });
+});
+
+describe('India time', () => {
+  it('turns over at 18:30 UTC, when it is midnight in India', () => {
+    expect(istDate(new Date('2026-10-02T18:29:59Z'))).toBe('2026-10-02');
+    expect(istDate(new Date('2026-10-02T18:30:00Z'))).toBe('2026-10-03');
+  });
+
+  it('knows the moment a day starts', () => {
+    expect(startOfIstDay('2026-10-03').toISOString()).toBe('2026-10-02T18:30:00.000Z');
+    expect(istDate(startOfIstDay('2026-10-03'))).toBe('2026-10-03');
   });
 });

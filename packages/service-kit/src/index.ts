@@ -3,6 +3,8 @@ export type { RunningService, ServiceContext, ServiceDefinition, ZApp } from './
 export { bearerToken, createVerifier, requireInternal, requireRole, requireUser } from './auth';
 export type { AuthUser, VerifyToken } from './auth';
 export { EventBus } from './bus';
+export { ContentCache } from './content';
+export type { ContentSource, LiveContent } from './content';
 export type { ConsumerSpec } from './bus';
 export { BaseEnv, loadConfig } from './config';
 export type { BaseConfig } from './config';
