@@ -14,6 +14,9 @@ data:
   CONSENT_URL: http://consent:8080
   CONTENT_URL: http://content:8080
   AUTHORING_URL: http://authoring:8080
+  PRACTICE_URL: http://practice:8080
+  PROGRESS_URL: http://progress:8080
+  REVIEW_URL: http://review:8080
   NOTIFICATION_URL: http://notification:8080
   AUDIT_URL: http://audit:8080
   CLASSROOM_URL: http://classroom:8080

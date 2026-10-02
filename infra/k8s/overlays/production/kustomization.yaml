@@ -26,6 +26,9 @@ images:
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/consent, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/content, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/authoring, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/practice, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/progress, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/review, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/notification, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/audit, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/classroom, newTag: latest }

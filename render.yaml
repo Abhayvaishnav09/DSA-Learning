@@ -11,6 +11,9 @@ envVarGroups:
       - { key: CONSENT_URL, value: "http://consent:8080" }
       - { key: CONTENT_URL, value: "http://content:8080" }
       - { key: AUTHORING_URL, value: "http://authoring:8080" }
+      - { key: PRACTICE_URL, value: "http://practice:8080" }
+      - { key: PROGRESS_URL, value: "http://progress:8080" }
+      - { key: REVIEW_URL, value: "http://review:8080" }
       - { key: NOTIFICATION_URL, value: "http://notification:8080" }
       - { key: AUDIT_URL, value: "http://audit:8080" }
       - { key: CLASSROOM_URL, value: "http://classroom:8080" }
@@ -85,6 +88,36 @@ services:
     envVars:
       - fromGroup: logicpath-shared
       - { key: SERVICE_NAME, value: authoring }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: practice
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/practice:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: practice }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: progress
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/progress:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: progress }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: review
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/review:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: review }
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
@@ -174,6 +207,9 @@ services:
       - { key: CONSENT_URL, value: "http://consent:8080" }
       - { key: CONTENT_URL, value: "http://content:8080" }
       - { key: AUTHORING_URL, value: "http://authoring:8080" }
+      - { key: PRACTICE_URL, value: "http://practice:8080" }
+      - { key: PROGRESS_URL, value: "http://progress:8080" }
+      - { key: REVIEW_URL, value: "http://review:8080" }
       - { key: NOTIFICATION_URL, value: "http://notification:8080" }
       - { key: AUDIT_URL, value: "http://audit:8080" }
       - { key: CLASSROOM_URL, value: "http://classroom:8080" }

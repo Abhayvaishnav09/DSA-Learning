@@ -12,7 +12,7 @@ const UserStatus = z.enum(['active', 'pending_consent', 'suspended']);
 const ContentIssue = z.object({ file: z.string(), message: z.string() });
 
 /** One payment of XP and why: the learner's progress decides it, gamification records it. */
-const XpPart = z.object({
+export const XpPart = z.object({
   amount: z.number().int().min(1),
   reason: z.enum(['attempt', 'daily-goal', 'streak', 'lesson']),
 });

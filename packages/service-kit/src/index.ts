@@ -23,6 +23,6 @@ export {
 export { emit, handleOnce, OutboxRelay } from './outbox';
 export { problems } from './problems';
 export { decodeCursor, encodeCursor } from './cursor';
-export { internalFetch } from './internal';
+export { InternalCallError, internalFetch } from './internal';
 export { serviceUrl, serviceUrls } from './urls';
 export { retry } from './retry';

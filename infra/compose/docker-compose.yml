@@ -21,6 +21,9 @@ x-service: &service
     CONSENT_URL: http://consent:8080
     CONTENT_URL: http://content:8080
     AUTHORING_URL: http://authoring:8080
+    PRACTICE_URL: http://practice:8080
+    PROGRESS_URL: http://progress:8080
+    REVIEW_URL: http://review:8080
     NOTIFICATION_URL: http://notification:8080
     AUDIT_URL: http://audit:8080
     CLASSROOM_URL: http://classroom:8080
@@ -104,6 +107,36 @@ services:
       <<: *service-env
       SERVICE_NAME: authoring
       DATABASE_URL: postgres://authoring:authoring@postgres:5432/authoring
+  practice:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: practice }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: practice
+      DATABASE_URL: postgres://practice:practice@postgres:5432/practice
+  progress:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: progress }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: progress
+      DATABASE_URL: postgres://progress:progress@postgres:5432/progress
+  review:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: review }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: review
+      DATABASE_URL: postgres://review:review@postgres:5432/review
   notification:
     <<: *service
     build:
@@ -193,6 +226,9 @@ services:
       CONSENT_URL: http://consent:8080
       CONTENT_URL: http://content:8080
       AUTHORING_URL: http://authoring:8080
+      PRACTICE_URL: http://practice:8080
+      PROGRESS_URL: http://progress:8080
+      REVIEW_URL: http://review:8080
       NOTIFICATION_URL: http://notification:8080
       AUDIT_URL: http://audit:8080
       CLASSROOM_URL: http://classroom:8080
