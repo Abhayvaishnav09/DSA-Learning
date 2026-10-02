@@ -21,3 +21,4 @@ export {
 export { emit, handleOnce, OutboxRelay } from './outbox';
 export { decodeCursor, encodeCursor } from './cursor';
 export { internalFetch } from './internal';
+export { retry } from './retry';

@@ -1,9 +1,26 @@
+import { fileURLToPath } from 'node:url';
 import type { NextConfig } from 'next';
+
+/** In containers the web server forwards API paths to the gateway, so the browser stays same-origin. */
+const apiTarget = process.env.API_PROXY_TARGET;
+const API_PATHS = ['/v1/:path*', '/public/:path*', '/.well-known/:path*', '/media/:path*'];
 
 const config: NextConfig = {
   reactStrictMode: true,
   // The Docker image runs the self-contained server (infra/docker/web.Dockerfile).
-  ...(process.env.NEXT_OUTPUT === 'standalone' ? { output: 'standalone' as const } : {}),
+  ...(process.env.NEXT_OUTPUT === 'standalone'
+    ? {
+        output: 'standalone' as const,
+        // Trace workspace packages from the monorepo root into the standalone server.
+        outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)),
+      }
+    : {}),
+  ...(apiTarget
+    ? {
+        rewrites: async () =>
+          API_PATHS.map((source) => ({ source, destination: `${apiTarget}${source}` })),
+      }
+    : {}),
   // Workspace packages ship TypeScript source (docs/02-architecture.md §9).
   transpilePackages: [
     '@logicpath/api-client',

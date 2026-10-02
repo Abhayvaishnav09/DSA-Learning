@@ -10,3 +10,6 @@ infra/compose/docker-compose.yml
 infra/compose/prometheus.yml
 services/*/drizzle/meta
 services/*/assets
+render.yaml
+infra/k8s/base
+infra/k8s/overlays

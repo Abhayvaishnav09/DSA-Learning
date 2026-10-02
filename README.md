@@ -1,5 +1,7 @@
 # LogicPath (DSA-Learning)
 
+[![CD](https://github.com/Abhayvaishnav09/DSA-Learning/actions/workflows/cd.yml/badge.svg)](https://github.com/Abhayvaishnav09/DSA-Learning/actions/workflows/cd.yml) [![Security](https://github.com/Abhayvaishnav09/DSA-Learning/actions/workflows/security.yml/badge.svg)](https://github.com/Abhayvaishnav09/DSA-Learning/actions/workflows/security.yml)
+
 A website that teaches programming logic from zero, one small step at a time, all the way to interview-level data structures and algorithms.
 
 **Status:** R0 prototype. One complete concept (*Loops with a counter*) runs end to end in English and Hinglish, with progress saved on the device. The full plan is in [`docs/`](docs/README.md).

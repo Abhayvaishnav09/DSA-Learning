@@ -19,6 +19,7 @@ import type { BaseConfig } from './config';
 import { openDatabase, prepareDatabase, type Database, type Db, type Tx } from './db';
 import { HttpProblem, problemType } from './errors';
 import { emit, handleOnce, OutboxRelay } from './outbox';
+import { retry } from './retry';
 
 export type ZApp = ReturnType<typeof zodApp>;
 export const zodApp = (app: FastifyInstance) => app.withTypeProvider<ZodTypeProvider>();
@@ -76,8 +77,18 @@ export async function startService<C extends BaseConfig>(
 
   if (!config.DATABASE_URL) throw new Error('DATABASE_URL is required');
   const database = openDatabase(config.DATABASE_URL);
-  await prepareDatabase(database, def.migrationsFolder);
-  const bus = await EventBus.connect(config.NATS_URL, config.EVENT_PREFIX, log);
+  const onRetry = (step: string) => (error: unknown, attempt: number, waitMs: number) =>
+    log.warn({ err: error, attempt, waitMs }, `${step} not ready yet, retrying`);
+  await retry('database', () => prepareDatabase(database, def.migrationsFolder), {
+    onRetry: onRetry('database'),
+  });
+  const bus = await retry(
+    'message bus',
+    () => EventBus.connect(config.NATS_URL, config.EVENT_PREFIX, log),
+    {
+      onRetry: onRetry('message bus'),
+    },
+  );
   const relay = new OutboxRelay(database.pool, bus, log);
 
   const ctx: ServiceContext<C> = {

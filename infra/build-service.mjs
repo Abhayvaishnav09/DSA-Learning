@@ -5,10 +5,10 @@
 import { build } from 'esbuild';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { NATIVE } from './docker/natives.mjs';
 
 const cwd = process.cwd();
 const pkg = JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf8'));
-const NATIVE = ['@node-rs/argon2', 'pg-native', 'pino-pretty'];
 
 await build({
   entryPoints: [join(cwd, 'src/main.ts')],

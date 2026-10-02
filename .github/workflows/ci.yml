@@ -1,20 +1,29 @@
-# Quality gates from docs/09-infrastructure-devops.md §4 and docs/11-quality-testing.md §3.
+# Continuous integration: every pull request must pass all of this, and CD runs it again
+# before anything ships (cd.yml calls this workflow on main and on tags).
+# Jobs run in parallel; the `ci-passed` job is the single required check for branch protection.
+# Quality gates: docs/09-infrastructure-devops.md §4, docs/11-quality-testing.md §3.
 name: CI
 
 on:
   pull_request:
-  push:
-    branches: [main]
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # The caller's workflow name keeps CD's run of CI separate from pull-request runs.
+  group: ${{ github.workflow }}-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
+env:
+  TURBO_TELEMETRY_DISABLED: '1'
+  NEXT_TELEMETRY_DISABLED: '1'
+
 jobs:
-  verify:
+  quality:
+    name: Lint, types, unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -25,7 +34,6 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - name: Content check (schema, graph, answer keys verified by running the code)
@@ -34,17 +42,132 @@ jobs:
       - name: Unused files, exports and dependencies
         run: pnpm knip
       - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - name: Unit tests (with coverage thresholds on the rule packages)
+        run: pnpm test
 
+  integration:
+    name: Service integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TEST_PG_URL: postgres://postgres@127.0.0.1:55432/postgres
+      TEST_NATS_URL: nats://127.0.0.1:4222
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # Real Postgres, NATS JetStream and Redis, the same versions as docker compose.
+      - name: Start Postgres, NATS and Redis
+        run: |
+          docker run -d --name pg -p 55432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:16-alpine
+          docker run -d --name nats -p 4222:4222 nats:2.12-alpine -js
+          docker run -d --name redis -p 56379:6379 valkey/valkey:8-alpine
+          for i in $(seq 1 30); do docker exec pg pg_isready -U postgres && break; sleep 1; done
+      - run: pnpm install --frozen-lockfile
+      - name: Content bundle (the content service imports it on first start)
+        run: pnpm --filter @logicpath/content build
+      - name: Integration and contract tests
+        run: pnpm test:integration
+
+  build:
+    name: Build everything
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Single-file demo
+        run: pnpm --filter @logicpath/web build:demo
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: demo
+          path: apps/web/demo/dist/logicpath.html
+          retention-days: 14
+
+  e2e:
+    name: End-to-end, accessibility and budgets
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @logicpath/content build && pnpm --filter @logicpath/web build
       - name: Install Playwright browser
         run: pnpm --filter @logicpath/web exec playwright install --with-deps chromium
-      - name: End-to-end and accessibility tests
-        run: pnpm test:e2e
-
+      - name: End-to-end tests (desktop and phone)
+        run: pnpm --filter @logicpath/web test:e2e
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
           name: playwright-results
           path: apps/web/test-results
           retention-days: 7
+
+  infra:
+    name: Infrastructure as code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - name: Generated files are up to date (compose, postgres init, Kubernetes, Render)
+        run: |
+          npm run infra:generate
+          git diff --exit-code -- infra/ render.yaml || (echo "::error::Run 'pnpm infra:generate' and commit the result" && exit 1)
+      - name: Install kustomize and kubeconform
+        run: |
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.2/kustomize_v5.8.2_linux_amd64.tar.gz | sudo tar xz -C /usr/local/bin kustomize
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz | sudo tar xz -C /usr/local/bin kubeconform
+      - name: Kubernetes manifests are valid
+        run: |
+          for overlay in staging production; do
+            kustomize build infra/k8s/overlays/$overlay | kubeconform -strict -summary -
+          done
+      - name: Compose file is valid
+        run: docker compose -f infra/compose/docker-compose.yml config --quiet
+
+  docker:
+    name: Container images build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [identity, gateway, web]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: infra/docker/${{ matrix.image == 'web' && 'web' || 'service' }}.Dockerfile
+          build-args: SERVICE=${{ matrix.image }}
+          push: false
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [quality, integration, build, e2e, infra, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All jobs succeeded
+        run: |
+          echo '${{ toJSON(needs) }}' | jq -e 'all(.[]; .result == "success")'

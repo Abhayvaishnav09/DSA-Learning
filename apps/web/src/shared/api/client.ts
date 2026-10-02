@@ -64,6 +64,7 @@ export function getApiClient(): ApiClient {
   if (API_MODE === 'http') {
     client = createClient(
       httpTransport({
+        // Empty means same origin (the web server or ingress forwards /v1 to the gateway).
         baseUrl: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080',
         tokens: memoryTokenStore(),
         client: 'web',

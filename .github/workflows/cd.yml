@@ -1,0 +1,182 @@
+# Continuous delivery (docs/cicd.md):
+#   push to main  → CI → images :main and :sha-…  → demo on GitHub Pages → staging
+#   tag v1.2.3    → CI → images :1.2.3, :1.2 and :latest → GitHub Release → production (approval)
+# Kubernetes and Render deploys run only when their secrets exist, so the pipeline is green
+# before any cloud account is connected.
+name: CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/abhayvaishnav09/dsa-learning
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.images.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
+      release: ${{ steps.version.outputs.release }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - id: images
+        run: echo "matrix=$(node infra/ci/images.mjs)" >> "$GITHUB_OUTPUT"
+      - id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  images:
+    name: Image ${{ matrix.name }}
+    needs: [ci, plan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.images) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}/${{ matrix.name }}
+          tags: |
+            type=sha,format=short,prefix=sha-
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ needs.plan.outputs.release == 'true' }}
+      - id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          build-args: |
+            SERVICE=${{ matrix.service }}
+            VERSION=${{ needs.plan.outputs.version }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+      - name: Scan for known vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_PREFIX }}/${{ matrix.name }}@${{ steps.build.outputs.digest }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: ${{ needs.plan.outputs.release == 'true' && '1' || '0' }}
+
+  pages:
+    name: Demo on GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: demo
+          path: site
+      - name: Demo page as the site's index
+        run: mv site/logicpath.html site/index.html && touch site/.nojekyll
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+
+  staging:
+    name: Deploy to staging
+    if: github.ref == 'refs/heads/main'
+    needs: [plan, images]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      overlay: staging
+      tag: ${{ needs.plan.outputs.version }}
+    secrets: inherit
+
+  release:
+    name: GitHub Release
+    if: needs.plan.outputs.release == 'true'
+    needs: [plan, images]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: demo
+          path: assets
+      - name: Release assets (demo and Kubernetes manifests for this version)
+        run: |
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.2/kustomize_v5.8.2_linux_amd64.tar.gz | sudo tar xz -C /usr/local/bin kustomize
+          cd infra/k8s/overlays/production
+          for image in $(node ../../../ci/images.mjs | jq -r '.include[].name'); do
+            kustomize edit set image "$IMAGE_PREFIX/$image=$IMAGE_PREFIX/$image:${{ needs.plan.outputs.version }}"
+          done
+          kustomize build . > "$GITHUB_WORKSPACE/assets/logicpath-k8s-${{ needs.plan.outputs.version }}.yaml"
+          mv "$GITHUB_WORKSPACE/assets/logicpath.html" "$GITHUB_WORKSPACE/assets/logicpath-demo-${{ needs.plan.outputs.version }}.html"
+      - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: assets/*
+
+  production:
+    name: Deploy to production
+    if: needs.plan.outputs.release == 'true'
+    needs: [plan, images, release]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      overlay: production
+      tag: ${{ needs.plan.outputs.version }}
+    secrets: inherit

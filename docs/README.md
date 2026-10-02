@@ -21,6 +21,7 @@ These docs are the full pre-build plan: product, learning science, architecture,
 | 10 | [Security and privacy](10-security-privacy.md) | Threat model, auth, OWASP controls, data protection law | Security |
 | 11 | [Quality and testing](11-quality-testing.md) | Test strategy, gates, load and content QA | Everyone |
 | 12 | [Project management](12-project-management.md) | Phases, milestones, workflow, Definition of Done, risks | Tech lead |
+| — | [CI/CD](cicd.md) | The running pipeline: checks, images, deploys, secrets, releases | Platform |
 | — | [Architecture Decision Records](adr/) | Why each big choice was made | Tech lead |
 
 ## Principles (apply to every doc)

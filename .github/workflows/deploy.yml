@@ -1,0 +1,108 @@
+# Deploys one environment (called by cd.yml). Each target runs only if its secret exists:
+#   KUBE_CONFIG          base64 kubeconfig for the cluster      → kustomize overlay, rolling update
+#   RENDER_DEPLOY_HOOKS  JSON {"identity": "<deploy hook URL>"} → Render pulls the new images
+# Variable PUBLIC_URL (per environment) enables the smoke test. See docs/cicd.md.
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment: { type: string, required: true }
+      overlay: { type: string, required: true }
+      tag: { type: string, required: true }
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_PREFIX: ghcr.io/abhayvaishnav09/dsa-learning
+
+jobs:
+  deploy:
+    name: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Production waits for a required reviewer (set in Settings → Environments).
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.PUBLIC_URL }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Which targets are connected
+        id: targets
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          RENDER_DEPLOY_HOOKS: ${{ secrets.RENDER_DEPLOY_HOOKS }}
+        run: |
+          echo "kube=$([ -n "$KUBE_CONFIG" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "render=$([ -n "$RENDER_DEPLOY_HOOKS" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "images=$(node infra/ci/images.mjs | jq -c '[.include[].name]')" >> "$GITHUB_OUTPUT"
+
+      # ---------- Kubernetes ----------
+      - uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+        if: steps.targets.outputs.kube == 'true'
+      - name: Kubernetes rollout
+        id: kube
+        if: steps.targets.outputs.kube == 'true'
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+          IMAGES: ${{ steps.targets.outputs.images }}
+        run: |
+          mkdir -p ~/.kube && echo "$KUBE_CONFIG" | base64 -d > ~/.kube/config && chmod 600 ~/.kube/config
+          curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.2/kustomize_v5.8.2_linux_amd64.tar.gz | sudo tar xz -C /usr/local/bin kustomize
+          cd infra/k8s/overlays/${{ inputs.overlay }}
+          for image in $(echo "$IMAGES" | jq -r '.[]'); do
+            kustomize edit set image "$IMAGE_PREFIX/$image=$IMAGE_PREFIX/$image:${{ inputs.tag }}"
+          done
+          namespace=$(kustomize build . | grep -m1 -E '^  namespace: ' | awk '{print $2}')
+          kubectl create namespace "$namespace" --dry-run=client -o yaml | kubectl apply -f -
+          kustomize build . | kubectl apply --server-side --force-conflicts -f -
+          echo "namespace=$namespace" >> "$GITHUB_OUTPUT"
+          for image in $(echo "$IMAGES" | jq -r '.[]'); do
+            kubectl -n "$namespace" rollout status "deployment/$image" --timeout=5m
+          done
+      - name: Roll back a failed rollout
+        if: failure() && steps.kube.outputs.namespace != ''
+        env:
+          IMAGES: ${{ steps.targets.outputs.images }}
+        run: |
+          for image in $(echo "$IMAGES" | jq -r '.[]'); do
+            kubectl -n "${{ steps.kube.outputs.namespace }}" rollout undo "deployment/$image" || true
+          done
+
+      # ---------- Render ----------
+      - name: Render deploy hooks
+        if: steps.targets.outputs.render == 'true'
+        env:
+          RENDER_DEPLOY_HOOKS: ${{ secrets.RENDER_DEPLOY_HOOKS }}
+        run: |
+          echo "$RENDER_DEPLOY_HOOKS" | jq -r 'to_entries[] | "\(.key) \(.value)"' | while read -r image hook; do
+            image_url=$(jq -rn --arg u "$IMAGE_PREFIX/$image:${{ inputs.tag }}" '$u|@uri')
+            echo "deploying $image"
+            curl -fsS -X POST "${hook}&imgURL=${image_url}" > /dev/null
+          done
+
+      # ---------- checks ----------
+      - name: Smoke test
+        if: vars.PUBLIC_URL != '' && (steps.targets.outputs.kube == 'true' || steps.targets.outputs.render == 'true')
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS "${{ vars.PUBLIC_URL }}/v1/content/manifest" && exit 0
+            sleep 10
+          done
+          echo "::error::${{ vars.PUBLIC_URL }} did not answer" && exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### ${{ inputs.environment }}: ${{ inputs.tag }}"
+            echo "| Target | Result |"
+            echo "|---|---|"
+            echo "| Kubernetes | ${{ steps.targets.outputs.kube == 'true' && (steps.kube.outcome || 'skipped') || 'not connected (add KUBE_CONFIG)' }} |"
+            echo "| Render | ${{ steps.targets.outputs.render == 'true' && 'hooks called' || 'not connected (add RENDER_DEPLOY_HOOKS)' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

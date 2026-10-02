@@ -37,6 +37,8 @@ Kubernetes (EKS) is **not** used at the start: it adds operational load a small 
 
 ## 4. CI/CD (GitHub Actions)
 
+**Implemented:** see [cicd.md](cicd.md) for the running pipeline, secrets and one-time setup. The diagram below is the target design; contract diffing (oasdiff), Lighthouse CI and canary releases are still to come.
+
 ```
 PR opened
  ├─ install (pnpm, cached) ─ turbo affected graph

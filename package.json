@@ -20,7 +20,8 @@
     "stack:down": "node infra/dev/stack.mjs down",
     "stack:status": "node infra/dev/stack.mjs status",
     "test:integration": "turbo run test:integration --concurrency=4",
-    "knip": "knip"
+    "knip": "knip",
+    "infra:generate": "node infra/compose/generate.mjs && node infra/k8s/generate.mjs && node infra/render/generate.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
