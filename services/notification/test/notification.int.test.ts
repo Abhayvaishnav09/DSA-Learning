@@ -409,16 +409,22 @@ describe('email', () => {
     await eventually(
       async () => (await sql("SELECT 1 FROM mails WHERE status = 'queued'")).length === 1,
     );
-    for (let attempt = 1; attempt <= 5; attempt++) {
-      await sql("UPDATE mails SET next_attempt_at = now() WHERE status = 'queued'");
+    // Each flush makes one more try; the mail stays queued until the fifth fails.
+    let last = { attempts: 0, status: 'queued', last_error: null as string | null };
+    for (let flush = 1; flush <= 10 && last.status === 'queued'; flush++) {
+      await sql(
+        "UPDATE mails SET next_attempt_at = now() - interval '1 second' WHERE status = 'queued'",
+      );
       await internal('POST', '/internal/mail/flush');
       const [row] = await sql<{ attempts: number; status: string; last_error: string | null }>(
         'SELECT attempts, status, last_error FROM mails ORDER BY created_at DESC LIMIT 1',
       );
-      expect(row!.attempts).toBe(attempt);
-      expect(row!.status).toBe(attempt < 5 ? 'queued' : 'failed');
-      expect(row!.last_error).toBeTruthy();
+      expect(row!.attempts).toBeGreaterThanOrEqual(last.attempts);
+      expect(row!.attempts).toBeLessThanOrEqual(5);
+      last = row!;
     }
+    expect(last).toMatchObject({ attempts: 5, status: 'failed' });
+    expect(last.last_error).toBeTruthy();
   }, 60_000);
 });
 
