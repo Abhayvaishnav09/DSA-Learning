@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { Suspense } from 'react';
+import { ResetScreen } from '@/features/auth/ResetScreen';
 
-export const metadata: Metadata = { title: 'Reset password' };
+export const metadata: Metadata = { title: 'Choose a new password' };
 
 export default function Page() {
-  return <ComingSoon title="signIn" />;
+  return (
+    <Suspense>
+      <ResetScreen />
+    </Suspense>
+  );
 }

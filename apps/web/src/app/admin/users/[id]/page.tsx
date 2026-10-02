@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { UserScreen } from '@/features/admin/UserScreen';
 
 export const metadata: Metadata = { title: 'User' };
 
-export default function Page() {
-  return <ComingSoon title="users" />;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <UserScreen id={id} />;
 }

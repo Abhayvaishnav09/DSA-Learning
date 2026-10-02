@@ -41,6 +41,8 @@ export const routes = {
   draft: (id: string) => `/studio/drafts/${seg(id)}`,
   editInDraft: (id: string, kind: string, itemId: string) =>
     `/studio/drafts/${seg(id)}/edit/${seg(kind)}/${seg(itemId)}`,
+  newInDraft: (id: string, kind: string, params: { type?: string; concept?: string } = {}) =>
+    `/studio/drafts/${seg(id)}/edit/${seg(kind)}/new${q(params)}`,
   studioMedia: '/studio/media',
   studioStats: '/studio/stats',
 

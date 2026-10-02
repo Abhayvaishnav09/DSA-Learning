@@ -5,10 +5,11 @@ import { Toaster, TooltipProvider } from '@logicpath/ui';
 import { MotionProvider } from '@logicpath/ui/motion';
 import { useEffect, type ReactNode } from 'react';
 import { getApiClient } from '@/shared/api/client';
-import { useLocale } from '@/shared/i18n/useT';
+import { loadHinglish, useLocale } from '@/shared/i18n/useT';
 import { useHydrated } from '@/shared/lib/useHydrated';
 import { useSession } from '@/shared/session/store';
 import { useSettings } from '@/shared/settings/store';
+import { SyncProvider } from '@/entities/progress/SyncProvider';
 
 /** Keeps <html> in sync with the learner's settings: language, theme, contrast. */
 function useDocumentSettings() {
@@ -17,6 +18,7 @@ function useDocumentSettings() {
   const contrast = useSettings((s) => s.contrast);
   useEffect(() => {
     document.documentElement.lang = locale === 'hi-Latn' ? 'hi-Latn' : 'en';
+    if (locale === 'hi-Latn') void loadHinglish();
   }, [locale]);
   useEffect(() => {
     if (theme === 'system') document.documentElement.removeAttribute('data-theme');
@@ -51,7 +53,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <MotionProvider mode={hydrated ? motion : 'full'}>
       <ApiProvider client={getApiClient()}>
         <TooltipProvider delayDuration={300}>
-          {children}
+          <SyncProvider>{children}</SyncProvider>
           <Toaster />
         </TooltipProvider>
       </ApiProvider>

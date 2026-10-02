@@ -11,8 +11,10 @@ import {
 } from '@logicpath/learning-engine';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import type { learning } from '@logicpath/contracts';
 import { learnerTimeZone, now } from '@/shared/lib/clock';
 import { safeLocalStorage } from '@/shared/lib/storage';
+import { enqueue } from '@/shared/sync/queue';
 
 /**
  * Learner progress, kept on the device in R0 (guest mode). In R1 the same records sync to the
@@ -58,6 +60,13 @@ export interface AttemptInput {
   misconception: string | null;
   durationMs: number;
   source: AttemptSource;
+  /** What the learner answered, sent to the server so it can grade it too. */
+  answer: learning.AttemptRequest['answer'];
+  /** The "why" option picked after a right answer. */
+  explainOption?: number | null;
+  /** Which try this is for the question in this sitting. */
+  attemptNo?: number;
+  solutionShown?: boolean;
 }
 
 export interface ItemOutcome {
@@ -77,6 +86,12 @@ interface ProgressState {
   lessons: Record<string, LessonProgress>;
   streak: Streak;
   recordAttempt: (input: AttemptInput) => void;
+  /** Tells the server a solution was shown (no credit on the device). */
+  recordSolutionShown: (input: AttemptInput) => void;
+  /** Takes what the server knows (already merged with this device) as the new state. */
+  importProgress: (
+    progress: Pick<ProgressState, 'concepts' | 'cards' | 'lessons' | 'streak'>,
+  ) => void;
   completeItem: (outcome: ItemOutcome) => ReviewCard;
   saveLessonPosition: (conceptId: string, beat: LessonBeat, practiceIndex: number) => void;
   completeLesson: (conceptId: string) => void;
@@ -105,17 +120,43 @@ const newId = () =>
   globalThis.crypto?.randomUUID?.() ??
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 
+function queueAttempt(input: AttemptInput, id: string, at: Date) {
+  enqueue({
+    kind: 'attempt',
+    request: {
+      id,
+      itemId: input.itemId,
+      answer: input.answer,
+      hintLevel: input.hintLevel,
+      durationMs: Math.min(3_600_000, Math.max(0, Math.round(input.durationMs))),
+      source: input.source,
+      explainOption: input.explainOption ?? null,
+      solutionShown: input.solutionShown ?? false,
+      attemptNo: input.attemptNo ?? 1,
+      at: at.toISOString(),
+    },
+  });
+}
+
 export const useProgress = create<ProgressState>()(
   persist(
     (set, get) => ({
       ...initial,
 
+      recordSolutionShown: (input) => {
+        queueAttempt({ ...input, solutionShown: true }, newId(), now());
+      },
+
+      importProgress: (progress) => set(progress),
+
       recordAttempt: (input) => {
         const at = now();
         const timeZone = learnerTimeZone();
+        const attemptId = newId();
+        queueAttempt(input, attemptId, at);
         set((state) => {
           const attempt: AttemptRecord = {
-            id: newId(),
+            id: attemptId,
             itemId: input.itemId,
             conceptId: input.conceptId,
             correct: input.correct,
@@ -170,7 +211,8 @@ export const useProgress = create<ProgressState>()(
         return next;
       },
 
-      saveLessonPosition: (conceptId, beat, practiceIndex) =>
+      saveLessonPosition: (conceptId, beat, practiceIndex) => {
+        enqueue({ kind: 'position', conceptId, beat, practiceIndex });
         set((state) => {
           const existing = state.lessons[conceptId];
           return {
@@ -184,9 +226,11 @@ export const useProgress = create<ProgressState>()(
               },
             },
           };
-        }),
+        });
+      },
 
-      completeLesson: (conceptId) =>
+      completeLesson: (conceptId) => {
+        enqueue({ kind: 'complete', conceptId });
         set((state) => {
           const existing = state.lessons[conceptId];
           const at = now().toISOString();
@@ -201,7 +245,8 @@ export const useProgress = create<ProgressState>()(
               },
             },
           };
-        }),
+        });
+      },
 
       reset: () => set(initial),
     }),

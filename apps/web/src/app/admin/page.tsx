@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { OverviewScreen } from '@/features/admin/OverviewScreen';
 
-export const metadata: Metadata = { title: 'Admin' };
+export const metadata: Metadata = { title: 'Overview' };
 
 export default function Page() {
-  return <ComingSoon title="overview" />;
+  return <OverviewScreen />;
 }

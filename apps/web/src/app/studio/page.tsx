@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { StudioHome } from '@/features/studio/StudioHome';
 
 export const metadata: Metadata = { title: 'Studio' };
 
 export default function Page() {
-  return <ComingSoon title="studio" />;
+  return <StudioHome />;
 }

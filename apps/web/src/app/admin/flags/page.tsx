@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { FlagsScreen } from '@/features/admin/FlagsScreen';
 
 export const metadata: Metadata = { title: 'Feature flags' };
 
 export default function Page() {
-  return <ComingSoon title="flags" />;
+  return <FlagsScreen />;
 }

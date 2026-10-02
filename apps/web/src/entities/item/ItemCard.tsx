@@ -36,6 +36,8 @@ interface ItemCardProps {
   heading?: string;
   /** Called when the learner presses Next (practice) or as soon as a prediction is checked. */
   onDone: (result: ItemResult) => void;
+  /** A writer trying their own question: nothing is recorded, nothing is scheduled. */
+  preview?: boolean;
 }
 
 /** Only called from event handlers, never during render. */
@@ -43,10 +45,11 @@ const msSince = (start: number) => Math.round(performance.now() - start);
 
 const SHOWS_CODE = new Set<Item['type']>(['mcq', 'predict-output', 'trace-table']);
 
-export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps) {
+export function ItemCard({ item, mode, source, heading, onDone, preview = false }: ItemCardProps) {
   const locale = useLocale();
   const t = useT();
   const recordAttempt = useProgress((s) => s.recordAttempt);
+  const recordSolutionShown = useProgress((s) => s.recordSolutionShown);
   const completeItem = useProgress((s) => s.completeItem);
 
   const [snapshot, send] = useMachine(itemMachine, {
@@ -69,6 +72,7 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
   const [explainChoice, setExplainChoice] = useState<number | null>(null);
 
   const startedAt = useRef(0);
+  const tries = useRef(0);
   const solvedMs = useRef<number | null>(null);
   const pendingCorrect = useRef<AttemptInput | null>(null);
   const nextButton = useRef<HTMLButtonElement>(null);
@@ -88,6 +92,7 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
     event.preventDefault();
     if (!answer || locked) return;
     const result = grade(item, answer as never);
+    tries.current += 1;
     setVerdict(result);
     setDirty(false);
     if (result.correct) setCelebrations((n) => n + 1);
@@ -103,10 +108,15 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
       misconception: result.misconception,
       durationMs: msSince(startedAt.current),
       source: mode === 'predict' ? 'predict' : source,
+      answer: answer as AttemptInput['answer'],
+      attemptNo: tries.current,
     };
     // A right answer is recorded once the "why" check tells us whether it was understood.
-    if (result.correct && mode === 'practice' && item.explainWhy) pendingCorrect.current = attempt;
-    else recordAttempt(attempt);
+    if (preview) {
+      // Nothing is recorded.
+    } else if (result.correct && mode === 'practice' && item.explainWhy) {
+      pendingCorrect.current = attempt;
+    } else recordAttempt(attempt);
     track({
       name: 'item_attempted',
       itemId: item.id,
@@ -128,8 +138,12 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
 
   const explain = (option: number) => {
     const correct = gradeExplain(item, option);
-    if (pendingCorrect.current)
-      recordAttempt({ ...pendingCorrect.current, explainedCorrectly: correct });
+    if (pendingCorrect.current && !preview)
+      recordAttempt({
+        ...pendingCorrect.current,
+        explainedCorrectly: correct,
+        explainOption: option,
+      });
     pendingCorrect.current = null;
     setExplainChoice(option);
     send({ type: 'EXPLAIN', correct });
@@ -141,6 +155,20 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
   };
 
   const showSolution = () => {
+    if (!preview) {
+      recordSolutionShown({
+        itemId: item.id,
+        conceptId: item.concept,
+        correct: true,
+        hintLevel,
+        guessProbability: 0,
+        misconception: null,
+        durationMs: msSince(startedAt.current),
+        source: mode === 'predict' ? 'predict' : source,
+        answer: correctAnswer(item) as AttemptInput['answer'],
+        attemptNo: tries.current + 1,
+      });
+    }
     setDraft(draftFromAnswer(correctAnswer(item)));
     setVerdict(null);
     track({ name: 'solution_shown', itemId: item.id });
@@ -148,14 +176,16 @@ export function ItemCard({ item, mode, source, heading, onDone }: ItemCardProps)
   };
 
   const next = () => {
-    const card = completeItem({
-      cardId: item.variationOf ?? item.id,
-      firstTryCorrect: ctx.firstTryCorrect === true,
-      hintLevel: ctx.hintLevel,
-      durationMs: solvedMs.current ?? msSince(startedAt.current),
-      expectedMs: item.estSeconds * 1000,
-      solutionShown: ctx.solutionShown,
-    });
+    const card = preview
+      ? null
+      : completeItem({
+          cardId: item.variationOf ?? item.id,
+          firstTryCorrect: ctx.firstTryCorrect === true,
+          hintLevel: ctx.hintLevel,
+          durationMs: solvedMs.current ?? msSince(startedAt.current),
+          expectedMs: item.estSeconds * 1000,
+          solutionShown: ctx.solutionShown,
+        });
     onDone({
       itemId: item.id,
       firstTryCorrect: ctx.firstTryCorrect === true,

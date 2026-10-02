@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { NewDraftScreen } from '@/features/studio/NewDraftScreen';
 
 export const metadata: Metadata = { title: 'New draft' };
 
 export default function Page() {
-  return <ComingSoon title="newDraft" />;
+  return <NewDraftScreen />;
 }

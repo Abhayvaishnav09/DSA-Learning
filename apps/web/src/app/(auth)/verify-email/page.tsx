@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { Suspense } from 'react';
+import { VerifyScreen } from '@/features/auth/VerifyScreen';
 
-export const metadata: Metadata = { title: 'Verify your email' };
+export const metadata: Metadata = { title: 'Confirm your email' };
 
 export default function Page() {
-  return <ComingSoon title="signIn" />;
+  return (
+    <Suspense>
+      <VerifyScreen />
+    </Suspense>
+  );
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { HomeScreen } from '@/features/home/HomeScreen';
 
 export const metadata: Metadata = { title: 'Home' };
 
 export default function Page() {
-  return <ComingSoon title="dashboard" />;
+  return <HomeScreen />;
 }

@@ -48,7 +48,7 @@ function TodayCard() {
       : t.home.continue;
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2" aria-label={t.home.today}>
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label={t.home.today}>
       <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5">
         <p className="text-sm font-semibold uppercase tracking-wide text-muted">{t.home.upNext}</p>
         {upNext ? (
@@ -105,7 +105,7 @@ function ConceptMap() {
       {bundle.stages.map((stage) => (
         <section key={stage.id} aria-labelledby={`stage-${stage.id}`}>
           <StageHeading id={stage.id} />
-          <ol className="grid gap-3 sm:grid-cols-2">
+          <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {views
               .filter((v) => v.concept.stage === stage.id)
               .map((view) => (

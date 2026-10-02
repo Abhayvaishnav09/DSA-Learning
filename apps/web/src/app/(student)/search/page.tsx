@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { Suspense } from 'react';
+import { SearchScreen } from '@/features/search/SearchScreen';
 
 export const metadata: Metadata = { title: 'Search' };
 
 export default function Page() {
-  return <ComingSoon title="search" />;
+  return (
+    <Suspense>
+      <SearchScreen />
+    </Suspense>
+  );
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { ContentScreen } from '@/features/admin/ContentScreen';
 
 export const metadata: Metadata = { title: 'Content versions' };
 
 export default function Page() {
-  return <ComingSoon title="content" />;
+  return <ContentScreen />;
 }

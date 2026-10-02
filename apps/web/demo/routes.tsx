@@ -1,4 +1,35 @@
 import type { ReactNode } from 'react';
+import { AdminClassesScreen } from '@/features/admin/AdminClassesScreen';
+import { ApiKeysScreen } from '@/features/admin/ApiKeysScreen';
+import { AuditScreen } from '@/features/admin/AuditScreen';
+import { ContentScreen } from '@/features/admin/ContentScreen';
+import { FlagsScreen } from '@/features/admin/FlagsScreen';
+import { OverviewScreen } from '@/features/admin/OverviewScreen';
+import { ReviewQueueScreen } from '@/features/admin/ReviewQueueScreen';
+import { SubmissionScreen } from '@/features/admin/SubmissionScreen';
+import { UserScreen } from '@/features/admin/UserScreen';
+import { UsersScreen } from '@/features/admin/UsersScreen';
+import { ConsentScreen } from '@/features/auth/ConsentScreen';
+import { ForgotScreen } from '@/features/auth/ForgotScreen';
+import { ResetScreen } from '@/features/auth/ResetScreen';
+import { SignupScreen } from '@/features/auth/SignupScreen';
+import { VerifyScreen } from '@/features/auth/VerifyScreen';
+import { ClassesScreen } from '@/features/classes/ClassesScreen';
+import { JoinClassScreen } from '@/features/classes/JoinClassScreen';
+import { DeveloperKeysScreen } from '@/features/developer/DeveloperKeysScreen';
+import { HomeScreen } from '@/features/home/HomeScreen';
+import { InboxScreen } from '@/features/inbox/InboxScreen';
+import { LeagueScreen } from '@/features/league/LeagueScreen';
+import { MediaLibrary } from '@/features/media/MediaLibrary';
+import { ProfileScreen } from '@/features/profile/ProfileScreen';
+import { SearchScreen } from '@/features/search/SearchScreen';
+import { SettingsScreen } from '@/features/settings/SettingsScreen';
+import { DraftScreen } from '@/features/studio/DraftScreen';
+import { DraftsScreen } from '@/features/studio/DraftsScreen';
+import { EditorScreen } from '@/features/studio/editor/EditorScreen';
+import { NewDraftScreen } from '@/features/studio/NewDraftScreen';
+import { StatsScreen } from '@/features/studio/StatsScreen';
+import { StudioHome } from '@/features/studio/StudioHome';
 import { LoginScreen } from '@/features/auth/LoginScreen';
 import { Landing } from '@/features/landing/Landing';
 import { LessonPlayer } from '@/features/lesson-player/LessonPlayer';
@@ -6,7 +37,6 @@ import { LearnHome } from '@/features/map/LearnHome';
 import { Developers } from '@/features/marketing/Developers';
 import { HowItWorks } from '@/features/marketing/HowItWorks';
 import { Privacy, Terms } from '@/features/marketing/Legal';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
 import { ReviewHeader } from '@/features/review/ReviewHeader';
 import { ReviewSession } from '@/features/review/ReviewSession';
 import { getLesson } from '@/shared/content/bundle';
@@ -26,21 +56,21 @@ export const SCREENS: Record<RoutePattern, Screen> = {
   '/legal/privacy': () => <Privacy />,
   '/legal/terms': () => <Terms />,
   '/login': () => <LoginScreen />,
-  '/signup': () => <ComingSoon title="signUp" />,
-  '/forgot-password': () => <ComingSoon title="signIn" />,
-  '/reset-password': () => <ComingSoon title="signIn" />,
-  '/verify-email': () => <ComingSoon title="signIn" />,
-  '/consent/:token': () => <ComingSoon title="account" />,
-  '/home': () => <ComingSoon title="dashboard" />,
+  '/signup': () => <SignupScreen />,
+  '/forgot-password': () => <ForgotScreen />,
+  '/reset-password': () => <ResetScreen />,
+  '/verify-email': () => <VerifyScreen />,
+  '/consent/:token': ({ token }) => <ConsentScreen token={token!} />,
+  '/home': () => <HomeScreen />,
   '/learn': () => <LearnHome />,
-  '/leaderboard': () => <ComingSoon title="leagues" />,
-  '/classes': () => <ComingSoon title="classes" />,
-  '/classes/join/:code': () => <ComingSoon title="classes" />,
-  '/search': () => <ComingSoon title="search" />,
-  '/notifications': () => <ComingSoon title="notifications" />,
-  '/profile': () => <ComingSoon title="profile" />,
-  '/settings': () => <ComingSoon title="settings" />,
-  '/settings/developer': () => <ComingSoon title="developer" />,
+  '/leaderboard': () => <LeagueScreen />,
+  '/classes': () => <ClassesScreen />,
+  '/classes/join/:code': ({ code }) => <JoinClassScreen code={code!} />,
+  '/search': () => <SearchScreen />,
+  '/notifications': () => <InboxScreen />,
+  '/profile': () => <ProfileScreen />,
+  '/settings': () => <SettingsScreen />,
+  '/settings/developer': () => <DeveloperKeysScreen />,
   '/learn/:concept': ({ concept }) =>
     getLesson(concept!) ? <LessonPlayer key={concept} conceptId={concept!} /> : <NotFoundScreen />,
   '/review': () => (
@@ -49,22 +79,24 @@ export const SCREENS: Record<RoutePattern, Screen> = {
       <ReviewSession />
     </div>
   ),
-  '/studio': () => <ComingSoon title="studio" />,
-  '/studio/drafts': () => <ComingSoon title="drafts" />,
-  '/studio/drafts/new': () => <ComingSoon title="newDraft" />,
-  '/studio/drafts/:id': () => <ComingSoon title="drafts" />,
-  '/studio/drafts/:id/edit/:kind/:itemId': () => <ComingSoon title="drafts" />,
-  '/studio/media': () => <ComingSoon title="media" />,
-  '/studio/stats': () => <ComingSoon title="stats" />,
-  '/admin': () => <ComingSoon title="overview" />,
-  '/admin/review': () => <ComingSoon title="reviewQueue" />,
-  '/admin/review/:id': () => <ComingSoon title="reviewQueue" />,
-  '/admin/content': () => <ComingSoon title="content" />,
-  '/admin/users': () => <ComingSoon title="users" />,
-  '/admin/users/:id': () => <ComingSoon title="users" />,
-  '/admin/classes': () => <ComingSoon title="classes" />,
-  '/admin/flags': () => <ComingSoon title="flags" />,
-  '/admin/api-keys': () => <ComingSoon title="apiKeys" />,
-  '/admin/media': () => <ComingSoon title="media" />,
-  '/admin/audit': () => <ComingSoon title="audit" />,
+  '/studio': () => <StudioHome />,
+  '/studio/drafts': () => <DraftsScreen />,
+  '/studio/drafts/new': () => <NewDraftScreen />,
+  '/studio/drafts/:id': ({ id }) => <DraftScreen id={id!} />,
+  '/studio/drafts/:id/edit/:kind/:itemId': ({ id, kind, itemId }) => (
+    <EditorScreen key={`${kind}:${itemId}`} draftId={id!} kind={kind!} targetId={itemId!} />
+  ),
+  '/studio/media': () => <MediaLibrary />,
+  '/studio/stats': () => <StatsScreen />,
+  '/admin': () => <OverviewScreen />,
+  '/admin/review': () => <ReviewQueueScreen />,
+  '/admin/review/:id': ({ id }) => <SubmissionScreen id={id!} />,
+  '/admin/content': () => <ContentScreen />,
+  '/admin/users': () => <UsersScreen />,
+  '/admin/users/:id': ({ id }) => <UserScreen id={id!} />,
+  '/admin/classes': () => <AdminClassesScreen />,
+  '/admin/flags': () => <FlagsScreen />,
+  '/admin/api-keys': () => <ApiKeysScreen />,
+  '/admin/media': () => <MediaLibrary />,
+  '/admin/audit': () => <AuditScreen />,
 };

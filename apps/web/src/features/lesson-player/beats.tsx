@@ -32,7 +32,10 @@ export function StoryBeat({ lesson, locale, t, onNext }: BeatProps) {
           </h3>
           <dl className="grid gap-3">
             {story.terms.map((term, i) => (
-              <div key={i} className="grid gap-1 sm:grid-cols-[minmax(9rem,auto)_1fr] sm:gap-4">
+              <div
+                key={i}
+                className="grid grid-cols-1 gap-1 sm:grid-cols-[minmax(9rem,auto)_1fr] sm:gap-4"
+              >
                 <dt className="font-mono font-semibold text-accent">{text(term.term, locale)}</dt>
                 <dd>{text(term.meaning, locale)}</dd>
               </div>

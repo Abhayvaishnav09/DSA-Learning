@@ -112,7 +112,7 @@ export function LoginScreen() {
             />
           </Field>
           <div className="flex items-center justify-between text-sm">
-            <Link href={routes.forgotPassword} className="text-accent hover:underline">
+            <Link href={routes.forgotPassword} className="text-accent underline underline-offset-2">
               {t.auth.forgot}
             </Link>
           </div>
@@ -129,7 +129,7 @@ export function LoginScreen() {
             {t.auth.noAccount}{' '}
             <Link
               href={routes.signup(next ?? undefined)}
-              className="font-semibold text-accent hover:underline"
+              className="font-semibold text-accent underline underline-offset-2"
             >
               {t.auth.createAccount}
             </Link>

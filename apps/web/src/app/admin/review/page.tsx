@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { ReviewQueueScreen } from '@/features/admin/ReviewQueueScreen';
 
 export const metadata: Metadata = { title: 'Review queue' };
 
 export default function Page() {
-  return <ComingSoon title="reviewQueue" />;
+  return <ReviewQueueScreen />;
 }

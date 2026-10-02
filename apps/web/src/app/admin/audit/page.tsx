@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { AuditScreen } from '@/features/admin/AuditScreen';
 
 export const metadata: Metadata = { title: 'Audit log' };
 
 export default function Page() {
-  return <ComingSoon title="audit" />;
+  return <AuditScreen />;
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { MediaLibrary } from '@/features/media/MediaLibrary';
 
-export const metadata: Metadata = { title: 'Media' };
+export const metadata: Metadata = { title: 'Pictures' };
 
 export default function Page() {
-  return <ComingSoon title="media" />;
+  return <MediaLibrary />;
 }

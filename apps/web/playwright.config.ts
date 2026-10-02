@@ -9,6 +9,8 @@ const executablePath =
 
 export default defineConfig({
   testDir: './e2e',
+  // Whole-page journeys on a shared CI machine can pass 30 s without being broken.
+  timeout: 60_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { ApiKeysScreen } from '@/features/admin/ApiKeysScreen';
 
 export const metadata: Metadata = { title: 'API keys' };
 
 export default function Page() {
-  return <ComingSoon title="apiKeys" />;
+  return <ApiKeysScreen />;
 }

@@ -9,7 +9,7 @@ import {
 import { useMemo } from 'react';
 import { conceptGraph, concepts, getLesson } from '@/shared/content/bundle';
 import { now } from '@/shared/lib/clock';
-import { useProgress } from './store';
+import { useProgress, type LessonProgress } from './store';
 
 export interface ConceptView {
   concept: BundleConcept;
@@ -39,4 +39,15 @@ export function useReviewQueue(): { due: ReviewCard[]; nextDueAt: string | null 
     const all = Object.values(cards);
     return { due: dueCards(all, now()), nextDueAt: nextDue(all) };
   }, [cards]);
+}
+
+/** The lesson to suggest next: one in progress, else the first open one. */
+export function useUpNext(): { view: ConceptView; lesson: LessonProgress | undefined } | null {
+  const views = useConceptViews();
+  const lessons = useProgress((s) => s.lessons);
+  const view =
+    views.find((v) => v.status === 'learning' && !lessons[v.concept.id]?.completedAt) ??
+    views.find((v) => v.status === 'available') ??
+    views.find((v) => v.status === 'learning');
+  return view ? { view, lesson: lessons[view.concept.id] } : null;
 }

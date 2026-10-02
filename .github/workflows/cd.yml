@@ -181,7 +181,13 @@ jobs:
         env:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
-          for path in / /learn /learn/loops.counter /login; do
+          # Every screen answers (the app itself decides who may see what once it runs).
+          for path in / /learn /learn/loops.counter /review /login /signup /forgot-password \
+            /reset-password /verify-email /consent/check /home /profile /settings \
+            /settings/developer /search /notifications /leaderboard /classes /classes/join/DEMO42 \
+            /studio /studio/drafts /studio/drafts/new /studio/media /studio/stats \
+            /admin /admin/review /admin/content /admin/users /admin/classes /admin/flags \
+            /admin/api-keys /admin/media /admin/audit; do
             curl -fsS -o /dev/null --retry 5 --retry-all-errors --retry-delay 5 "$URL$path" && echo "ok $path"
           done
 

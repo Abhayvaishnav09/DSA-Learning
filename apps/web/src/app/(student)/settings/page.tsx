@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { SettingsScreen } from '@/features/settings/SettingsScreen';
 
 export const metadata: Metadata = { title: 'Settings' };
 
 export default function Page() {
-  return <ComingSoon title="settings" />;
+  return <SettingsScreen />;
 }

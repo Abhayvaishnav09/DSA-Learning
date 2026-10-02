@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { ComingSoon } from '@/features/placeholder/ComingSoon';
+import { ConsentScreen } from '@/features/auth/ConsentScreen';
 
 export const metadata: Metadata = { title: 'Parental consent' };
 
-export default function Page() {
-  return <ComingSoon title="account" />;
+export default async function Page({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
+  return <ConsentScreen token={token} />;
 }
