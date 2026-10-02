@@ -3,6 +3,7 @@ import { decide, type DraftAction } from '@logicpath/authoring-workflow';
 import { applyToBundle, validateChanges, withVisuals } from '@logicpath/content-tools/browser';
 import type { authoring, content } from '@logicpath/contracts';
 import type { DraftRow, LocalDb } from '../db';
+import { localeOf, notify, say } from './engage';
 import {
   audit,
   badRequest,
@@ -79,6 +80,7 @@ export function authoringHandlers(db: LocalDb): Record<string, LocalHandler> {
       .filter((r) => !status || r.status === status)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     const page = paginate(filtered, query);
+
     return { items: page.items.map(summary), nextCursor: page.nextCursor };
   };
 
@@ -106,6 +108,33 @@ export function authoringHandlers(db: LocalDb): Record<string, LocalHandler> {
 
   const ownOrAdmin = (row: DraftRow, user: LocalUser) => {
     if (user.role !== 'admin' && row.authorId !== user.id) throw notFound('Draft');
+  };
+
+  /** Lets the writer know how their submission went. */
+  const tell = (
+    row: { id: string; title: string; authorId: string },
+    outcome: 'approved' | 'changes',
+    now: Date,
+    comment?: string,
+  ) => {
+    if (!db.t.users[row.authorId]) return;
+    const locale = localeOf(db, row.authorId);
+    notify(
+      db,
+      row.authorId,
+      {
+        kind: 'submission',
+        title:
+          outcome === 'approved'
+            ? say(locale, `Published: ${row.title}`, `Publish ho gaya: ${row.title}`)
+            : say(locale, `Changes requested: ${row.title}`, `Badlav chahiye: ${row.title}`),
+        body:
+          comment ??
+          say(locale, 'It is live for every learner.', 'Ab sabhi learners ke liye live hai.'),
+        link: `/studio/drafts/${row.id}`,
+      },
+      now,
+    );
   };
 
   return {
@@ -235,6 +264,7 @@ export function authoringHandlers(db: LocalDb): Record<string, LocalHandler> {
       );
       audit(db, admin, 'submission.approved', 'submission', row.id, { title: row.title }, ctx.now);
       publish(row, admin, ctx.now);
+      tell(row, 'approved', ctx.now);
       db.touch();
       return full(row);
     },
@@ -254,6 +284,7 @@ export function authoringHandlers(db: LocalDb): Record<string, LocalHandler> {
         { title: row.title },
         ctx.now,
       );
+      tell(row, 'changes', ctx.now, (body as { comment: string }).comment);
       db.touch();
       return full(row);
     },

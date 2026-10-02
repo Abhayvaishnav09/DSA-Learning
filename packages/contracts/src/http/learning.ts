@@ -41,6 +41,14 @@ export const AttemptRequest = z
       .default(null)
       .describe('The "why" option picked after a correct answer'),
     solutionShown: z.boolean().default(false),
+    attemptNo: z
+      .number()
+      .int()
+      .min(1)
+      .default(1)
+      .describe(
+        'Which try this is for the item in this sitting; a first-try answer schedules reviews further out',
+      ),
     at: IsoDateTime.describe('When it happened on the device (offline attempts sync later)'),
   })
   .meta({ id: 'AttemptRequest' });
@@ -120,6 +128,45 @@ export const ProgressMap = z
   })
   .meta({ id: 'ProgressMap' });
 export type ProgressMap = z.infer<typeof ProgressMap>;
+
+/**
+ * The learner's whole learning state, in the shape the apps' own engine (learning-engine) keeps
+ * on the device. A new device downloads it, so progress follows the person, not the phone.
+ */
+export const EngineState = z
+  .object({
+    concepts: z.record(
+      z.string(),
+      z.object({
+        conceptId: z.string(),
+        pKnown: z.number(),
+        attempts: z.number().int(),
+        correct: z.number().int(),
+        firstPracticedOn: LocalDate,
+        recallPassedOn: LocalDate.nullable(),
+      }),
+    ),
+    cards: z.record(
+      z.string(),
+      z.object({
+        itemId: z.string(),
+        due: IsoDateTime,
+        stability: z.number(),
+        difficulty: z.number(),
+        scheduledDays: z.number(),
+        learningSteps: z.number().int(),
+        reps: z.number().int(),
+        lapses: z.number().int(),
+        state: z.enum(['new', 'learning', 'review', 'relearning']),
+        lastReview: IsoDateTime.nullable(),
+      }),
+    ),
+    lessons: z.record(z.string(), LessonState),
+    streak: Streak,
+    masteredAt: z.record(z.string(), IsoDateTime),
+  })
+  .meta({ id: 'EngineState' });
+export type EngineState = z.infer<typeof EngineState>;
 
 export const LessonPosition = z
   .object({ beat: LessonBeat, practiceIndex: z.number().int().min(0).default(0) })

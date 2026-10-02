@@ -269,6 +269,14 @@ export const ENDPOINT_META: Record<string, EndpointMeta> = {
     status: 200,
     summary: 'Mastery, lessons, streak and today',
   },
+  'progress.state': {
+    method: 'GET',
+    path: '/v1/progress/state',
+    service: 'progress',
+    auth: 'user',
+    status: 200,
+    summary: 'Everything the app needs to continue on a new device',
+  },
   'progress.lesson.position': {
     method: 'PUT',
     path: '/v1/progress/lessons/:conceptId',

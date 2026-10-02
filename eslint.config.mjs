@@ -16,6 +16,7 @@ export default tseslint.config(
       '**/.next/**',
       '**/.turbo/**',
       '**/.vercel/**',
+      '**/coverage/**',
       '**/next-env.d.ts',
       '**/test-results/**',
       '**/playwright-report/**',

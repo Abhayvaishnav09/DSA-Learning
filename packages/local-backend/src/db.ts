@@ -1,5 +1,6 @@
 import type { ContentBundle } from '@logicpath/content-schema';
-import type { authoring, identity, platform, profile } from '@logicpath/contracts';
+import type { authoring, engagement, identity, platform, profile } from '@logicpath/contracts';
+import type { LearnerState } from '@logicpath/progress-rules';
 
 /** Where the local database is kept: localStorage in browsers, memory in tests. */
 export interface KeyValueStorage {
@@ -44,6 +45,87 @@ export interface DraftRow extends Omit<authoring.Draft, 'activity' | 'changeCoun
   createdAt: string;
 }
 
+export interface AttemptRow {
+  id: string;
+  userId: string;
+  itemId: string;
+  conceptId: string;
+  correct: boolean;
+  misconception: string | null;
+  hintLevel: number;
+  durationMs: number;
+  source: 'lesson' | 'predict' | 'review';
+  at: string;
+}
+
+export interface XpRow {
+  userId: string;
+  amount: number;
+  reason: string;
+  at: string;
+}
+
+export interface LeagueRow {
+  tier: engagement.LeagueTier;
+  /** Monday of the week this tier was reached. */
+  since: string;
+}
+
+export interface ClassRow {
+  id: string;
+  name: string;
+  code: string;
+  ownerId: string;
+  createdAt: string;
+}
+
+export interface NotificationRow extends engagement.Notification {
+  userId: string;
+}
+
+export interface ConsentRow {
+  id: string;
+  userId: string;
+  token: string;
+  parentEmail: string;
+  childName: string;
+  status: 'pending' | 'granted' | 'denied' | 'expired';
+  requestedAt: string;
+}
+
+export interface MediaRow extends platform.MediaAsset {
+  /** The picture itself, kept in the browser as a data URL. */
+  dataUrl: string;
+}
+
+export interface ApiKeyRow extends Omit<platform.ApiKey, 'usageToday'> {
+  secretHash: string;
+  /** Requests per local day. */
+  usage: Record<string, number>;
+}
+
+export interface MailRow {
+  id: string;
+  to: string;
+  subject: string;
+  body: string;
+  /** The in-app link the email would carry. */
+  link: string | null;
+  at: string;
+}
+
+export interface TokenRow {
+  kind: 'verify' | 'reset';
+  userId: string;
+  expiresAt: string;
+}
+
+export interface DeletionRow {
+  id: string;
+  userId: string;
+  requestedAt: string;
+}
+
 export interface Tables {
   schema: number;
   users: Record<string, UserRow>;
@@ -54,6 +136,26 @@ export interface Tables {
   drafts: Record<string, DraftRow>;
   activity: (authoring.Activity & { draftId: string })[];
   audit: platform.AuditEntry[];
+  learners: Record<string, LearnerState>;
+  attempts: AttemptRow[];
+  xp: XpRow[];
+  badges: Record<string, { id: string; earnedAt: string }[]>;
+  leagues: Record<string, LeagueRow>;
+  leagueHistory: Record<string, engagement.LeagueHistory['items']>;
+  settledWeeks: string[];
+  classes: ClassRow[];
+  members: { classId: string; userId: string; joinedAt: string }[];
+  notifications: NotificationRow[];
+  notificationPrefs: Record<string, engagement.NotificationPrefs>;
+  consents: ConsentRow[];
+  deletions: DeletionRow[];
+  flags: platform.Flag[];
+  media: MediaRow[];
+  apiKeys: ApiKeyRow[];
+  mailbox: MailRow[];
+  tokens: Record<string, TokenRow>;
+  /** Small markers, e.g. which demo days have been simulated already. */
+  meta: Record<string, string>;
 }
 
 const SCHEMA = 1;
@@ -67,6 +169,25 @@ const empty = (): Tables => ({
   drafts: {},
   activity: [],
   audit: [],
+  learners: {},
+  attempts: [],
+  xp: [],
+  badges: {},
+  leagues: {},
+  leagueHistory: {},
+  settledWeeks: [],
+  classes: [],
+  members: [],
+  notifications: [],
+  notificationPrefs: {},
+  consents: [],
+  deletions: [],
+  flags: [],
+  media: [],
+  apiKeys: [],
+  mailbox: [],
+  tokens: {},
+  meta: {},
 });
 
 /**

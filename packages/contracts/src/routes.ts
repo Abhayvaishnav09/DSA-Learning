@@ -383,6 +383,15 @@ export const ENDPOINTS = {
     response: learning.ProgressMap,
     status: 200,
   }),
+  'progress.state': e({
+    method: 'GET',
+    path: '/v1/progress/state',
+    service: 'progress',
+    auth: 'user',
+    summary: 'Everything the app needs to continue on a new device',
+    response: learning.EngineState,
+    status: 200,
+  }),
   'progress.lesson.position': e({
     method: 'PUT',
     path: '/v1/progress/lessons/:conceptId',

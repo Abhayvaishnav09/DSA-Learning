@@ -1,6 +1,7 @@
 import { fail, type LocalHandler, type LocalUser } from '@logicpath/api-client/local';
 import type { identity, ParamsOf, Role } from '@logicpath/contracts';
 import type { LocalDb, UserRow } from '../db';
+import { notify, say } from './engage';
 import {
   audit,
   conflict,
@@ -16,9 +17,41 @@ import {
 } from '../util';
 
 const ADULT_AGE = 18;
+const TOKEN_HOURS = 24;
+/** A parent has a week to answer. */
+export const CONSENT_DAYS = 7;
 const SESSION_DAYS = 30;
 
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
+/** The demo has no email: messages land in a mailbox the sign-in screens show (see DemoMailbox). */
+export function sendMail(
+  db: LocalDb,
+  mail: { to: string; subject: string; body: string; link?: string },
+  now: Date,
+) {
+  db.t.mailbox.unshift({ id: uuid(), link: mail.link ?? null, at: iso(now), ...mail });
+  db.t.mailbox = db.t.mailbox.slice(0, 20);
+}
+
+function issueToken(db: LocalDb, kind: 'verify' | 'reset', userId: string, now: Date): string {
+  const token = randomToken(`lp_${kind}_`);
+  db.t.tokens[token] = {
+    kind,
+    userId,
+    expiresAt: iso(new Date(now.getTime() + TOKEN_HOURS * 3_600_000)),
+  };
+  return token;
+}
+
+function useToken(db: LocalDb, token: string, kind: 'verify' | 'reset', now: Date) {
+  const row = db.t.tokens[token];
+  if (!row || row.kind !== kind || row.expiresAt < iso(now)) {
+    throw fail(400, 'Bad request', 'This link has expired or was already used', 'token');
+  }
+  delete db.t.tokens[token];
+  return row;
+}
 
 export const toUser = (row: UserRow): identity.User => ({
   id: row.id,
@@ -77,6 +110,24 @@ export async function createUser(
   return row;
 }
 
+export function welcome(db: LocalDb, row: UserRow, now: Date) {
+  notify(
+    db,
+    row.id,
+    {
+      kind: 'system',
+      title: say(row.locale, 'Welcome to LogicPath!', 'LogicPath me swagat hai!'),
+      body: say(
+        row.locale,
+        'Start with the first lesson. A few minutes a day is enough.',
+        'Pehle lesson se shuru karo. Roz kuch minute kaafi hain.',
+      ),
+      link: '/learn',
+    },
+    now,
+  );
+}
+
 function issueSession(db: LocalDb, row: UserRow, now: Date): identity.Session {
   const accessToken = randomToken('lp_local_');
   db.t.sessions[accessToken] = {
@@ -121,13 +172,46 @@ export function identityHandlers(db: LocalDb): Record<string, LocalHandler> {
         },
         ctx.now,
       );
+      const verify = issueToken(db, 'verify', row.id, ctx.now);
+      sendMail(
+        db,
+        {
+          to: row.email,
+          subject: 'Confirm your email',
+          body: `Hi ${row.name}, confirm your email address for LogicPath.`,
+          link: `/verify-email?token=${verify}`,
+        },
+        ctx.now,
+      );
       if (minor) {
+        const token = randomToken('lp_consent_');
+        db.t.consents.unshift({
+          id: uuid(),
+          userId: row.id,
+          token,
+          parentEmail: row.parentEmail!,
+          childName: row.name,
+          status: 'pending',
+          requestedAt: iso(ctx.now),
+        });
+        sendMail(
+          db,
+          {
+            to: row.parentEmail!,
+            subject: `Please approve ${row.name}'s LogicPath account`,
+            body: `${row.name} would like to learn on LogicPath. Because they are under 18, we need a parent or guardian to say yes before the account starts.`,
+            link: `/consent/${token}`,
+          },
+          ctx.now,
+        );
+        db.touch();
         return {
           status: 'pending_consent',
           user: toUser(row),
           message: 'We emailed your parent or guardian. You can sign in after they approve.',
         };
       }
+      welcome(db, row, ctx.now);
       return { status: 'active', ...issueSession(db, row, ctx.now) };
     },
 
@@ -164,10 +248,46 @@ export function identityHandlers(db: LocalDb): Record<string, LocalHandler> {
       return { ok: true };
     },
 
-    'auth.verifyEmail': () => ({ ok: true }),
-    'auth.forgotPassword': () => ({ ok: true }),
-    'auth.resetPassword': () => {
-      throw fail(400, 'Bad request', 'Reset links are emailed; the demo has no email', 'request');
+    'auth.verifyEmail': (ctx, { body }) => {
+      const { token } = body as identity.TokenRequest;
+      const { userId } = useToken(db, token, 'verify', ctx.now);
+      const row = db.t.users[userId];
+      if (row) row.emailVerified = true;
+      db.touch();
+      return { ok: true };
+    },
+    // The answer is the same whether or not the address has an account (no way to probe for users).
+    'auth.forgotPassword': (ctx, { body }) => {
+      const { email } = body as identity.ForgotPasswordRequest;
+      const row = Object.values(db.t.users).find((u) => u.email === normalizeEmail(email));
+      if (row && row.status !== 'pending_consent') {
+        const token = issueToken(db, 'reset', row.id, ctx.now);
+        sendMail(
+          db,
+          {
+            to: row.email,
+            subject: 'Reset your password',
+            body: 'Someone asked to reset the password for this LogicPath account. If it was you, use the link.',
+            link: `/reset-password?token=${token}`,
+          },
+          ctx.now,
+        );
+        db.touch();
+      }
+      return { ok: true };
+    },
+    'auth.resetPassword': async (ctx, { body }) => {
+      const { token, password } = body as identity.ResetPasswordRequest;
+      const { userId } = useToken(db, token, 'reset', ctx.now);
+      const row = db.t.users[userId];
+      if (!row) throw notFound('Account');
+      row.salt = randomToken('');
+      row.passwordHash = await sha256(`${row.salt}:${password}`);
+      // A new password signs every device out.
+      for (const [t, s] of Object.entries(db.t.sessions))
+        if (s.userId === userId) delete db.t.sessions[t];
+      db.touch();
+      return { ok: true };
     },
 
     'auth.me': (ctx) => toUser(db.t.users[me(ctx).id]!),

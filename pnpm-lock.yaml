@@ -229,6 +229,24 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/flags-rules:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^5.0.3
+        version: 5.0.3(vitest@5.0.3)
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/gamification-rules:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^5.0.3
+        version: 5.0.3(vitest@5.0.3)
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
   packages/grader:
     dependencies:
       '@logicpath/content-schema':
@@ -281,10 +299,53 @@ importers:
       '@logicpath/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@logicpath/flags-rules':
+        specifier: workspace:*
+        version: link:../flags-rules
+      '@logicpath/gamification-rules':
+        specifier: workspace:*
+        version: link:../gamification-rules
+      '@logicpath/learning-engine':
+        specifier: workspace:*
+        version: link:../learning-engine
+      '@logicpath/progress-rules':
+        specifier: workspace:*
+        version: link:../progress-rules
     devDependencies:
       '@logicpath/content':
         specifier: workspace:*
         version: link:../../content
+      '@logicpath/grader':
+        specifier: workspace:*
+        version: link:../grader
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/progress-rules:
+    dependencies:
+      '@logicpath/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
+      '@logicpath/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@logicpath/gamification-rules':
+        specifier: workspace:*
+        version: link:../gamification-rules
+      '@logicpath/grader':
+        specifier: workspace:*
+        version: link:../grader
+      '@logicpath/learning-engine':
+        specifier: workspace:*
+        version: link:../learning-engine
+    devDependencies:
+      '@logicpath/content':
+        specifier: workspace:*
+        version: link:../../content
+      '@vitest/coverage-v8':
+        specifier: ^5.0.3
+        version: 5.0.3(vitest@5.0.3)
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
