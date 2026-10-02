@@ -25,13 +25,21 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     rules: {
       '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
     },
   },
   {
     files: ['apps/web/**/*.{ts,tsx}', 'packages/visualizer/**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
+  },
+  {
+    // Tests poke at loosely-typed JSON responses.
+    files: ['**/test/**/*.ts', '**/*.test.ts', '**/*.test.tsx'],
+    rules: { '@typescript-eslint/no-explicit-any': 'off' },
   },
   {
     files: ['apps/web/src/shared/**'],

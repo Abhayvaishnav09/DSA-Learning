@@ -14,14 +14,21 @@
     "test:e2e": "turbo run test:e2e",
     "content:check": "pnpm --filter @logicpath/content check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "stack:infra": "node infra/dev/stack.mjs infra",
+    "stack:up": "node infra/dev/stack.mjs up",
+    "stack:down": "node infra/dev/stack.mjs down",
+    "stack:status": "node infra/dev/stack.mjs status",
+    "test:integration": "turbo run test:integration --concurrency=4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.2",
     "eslint": "^10.11.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
     "turbo": "^2.11.6",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.0"

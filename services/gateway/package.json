@@ -1,0 +1,30 @@
+{
+  "name": "@logicpath/gateway",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "node ../../infra/build-service.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:integration": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@fastify/http-proxy": "^11.6.3",
+    "@fastify/rate-limit": "^11.2.0",
+    "@logicpath/contracts": "workspace:*",
+    "@logicpath/service-kit": "workspace:*",
+    "@scalar/fastify-api-reference": "^1.72.4",
+    "fastify": "^5.12.5",
+    "ioredis": "^6.0.0",
+    "pino": "^10.3.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.3"
+  }
+}
