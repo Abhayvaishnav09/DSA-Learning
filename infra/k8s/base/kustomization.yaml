@@ -12,6 +12,11 @@ resources:
   - services/profile.yaml
   - services/content.yaml
   - services/authoring.yaml
+  - services/audit.yaml
+  - services/search.yaml
+  - services/media.yaml
+  - services/flags.yaml
+  - services/developer.yaml
   - services/gateway.yaml
   - services/web.yaml
 images:
@@ -19,5 +24,10 @@ images:
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/profile, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/content, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/authoring, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/audit, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/search, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/media, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/flags, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/developer, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/gateway, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/web, newTag: latest }

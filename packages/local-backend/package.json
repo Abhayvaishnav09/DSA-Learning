@@ -21,7 +21,8 @@
     "@logicpath/flags-rules": "workspace:*",
     "@logicpath/gamification-rules": "workspace:*",
     "@logicpath/learning-engine": "workspace:*",
-    "@logicpath/progress-rules": "workspace:*"
+    "@logicpath/progress-rules": "workspace:*",
+    "@logicpath/search-rules": "workspace:*"
   },
   "devDependencies": {
     "@logicpath/content": "workspace:*",

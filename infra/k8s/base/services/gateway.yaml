@@ -41,6 +41,11 @@ spec:
             - { name: PROFILE_URL, value: "http://profile:8080" }
             - { name: CONTENT_URL, value: "http://content:8080" }
             - { name: AUTHORING_URL, value: "http://authoring:8080" }
+            - { name: AUDIT_URL, value: "http://audit:8080" }
+            - { name: SEARCH_URL, value: "http://search:8080" }
+            - { name: MEDIA_URL, value: "http://media:8080" }
+            - { name: FLAGS_URL, value: "http://flags:8080" }
+            - { name: DEVELOPER_URL, value: "http://developer:8080" }
           readinessProbe:
             httpGet: { path: /healthz, port: http }
             periodSeconds: 5

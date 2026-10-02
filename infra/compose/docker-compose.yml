@@ -83,6 +83,56 @@ services:
       <<: *service-env
       SERVICE_NAME: authoring
       DATABASE_URL: postgres://authoring:authoring@postgres:5432/authoring
+  audit:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: audit }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: audit
+      DATABASE_URL: postgres://audit:audit@postgres:5432/audit
+  search:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: search }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: search
+      DATABASE_URL: postgres://search:search@postgres:5432/search
+  media:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: media }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: media
+      DATABASE_URL: postgres://media:media@postgres:5432/media
+  flags:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: flags }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: flags
+      DATABASE_URL: postgres://flags:flags@postgres:5432/flags
+  developer:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: developer }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: developer
+      DATABASE_URL: postgres://developer:developer@postgres:5432/developer
   gateway:
     build:
       context: ../..
@@ -101,6 +151,11 @@ services:
       PROFILE_URL: http://profile:8080
       CONTENT_URL: http://content:8080
       AUTHORING_URL: http://authoring:8080
+      AUDIT_URL: http://audit:8080
+      SEARCH_URL: http://search:8080
+      MEDIA_URL: http://media:8080
+      FLAGS_URL: http://flags:8080
+      DEVELOPER_URL: http://developer:8080
   web:
     build:
       context: ../..

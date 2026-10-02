@@ -21,6 +21,7 @@ export {
   unauthorized,
 } from './errors';
 export { emit, handleOnce, OutboxRelay } from './outbox';
+export { problems } from './problems';
 export { decodeCursor, encodeCursor } from './cursor';
 export { internalFetch } from './internal';
 export { retry } from './retry';

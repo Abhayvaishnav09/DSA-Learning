@@ -1,0 +1,25 @@
+{
+  "name": "@logicpath/search-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "node ../../infra/build-service.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:integration": "vitest run"
+  },
+  "dependencies": {
+    "@logicpath/contracts": "workspace:*",
+    "@logicpath/search-rules": "workspace:*",
+    "@logicpath/service-kit": "workspace:*",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@logicpath/content": "workspace:*",
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.3"
+  }
+}

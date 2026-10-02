@@ -1,0 +1,23 @@
+{
+  "name": "@logicpath/search-rules",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@logicpath/content-schema": "workspace:*",
+    "@logicpath/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@logicpath/content": "workspace:*",
+    "@vitest/coverage-v8": "^5.0.3",
+    "vitest": "^5.0.3"
+  }
+}

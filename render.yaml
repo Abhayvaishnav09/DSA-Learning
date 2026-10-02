@@ -65,6 +65,56 @@ services:
       - { key: SERVICE_NAME, value: authoring }
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: audit
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/audit:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: audit }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: search
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/search:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: search }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: media
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/media:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: media }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: flags
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/flags:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: flags }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: developer
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/developer:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: developer }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
   - type: web
     name: gateway
     runtime: image
@@ -81,6 +131,11 @@ services:
       - { key: PROFILE_URL, value: "http://profile:8080" }
       - { key: CONTENT_URL, value: "http://content:8080" }
       - { key: AUTHORING_URL, value: "http://authoring:8080" }
+      - { key: AUDIT_URL, value: "http://audit:8080" }
+      - { key: SEARCH_URL, value: "http://search:8080" }
+      - { key: MEDIA_URL, value: "http://media:8080" }
+      - { key: FLAGS_URL, value: "http://flags:8080" }
+      - { key: DEVELOPER_URL, value: "http://developer:8080" }
   - type: web
     name: web
     runtime: image
