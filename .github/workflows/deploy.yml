@@ -30,7 +30,7 @@ jobs:
       group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Which targets are connected
         id: targets
@@ -43,7 +43,7 @@ jobs:
           echo "images=$(node infra/ci/images.mjs | jq -c '[.include[].name]')" >> "$GITHUB_OUTPUT"
 
       # ---------- Kubernetes ----------
-      - uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+      - uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
         if: steps.targets.outputs.kube == 'true'
       - name: Kubernetes rollout
         id: kube
