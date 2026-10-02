@@ -16,8 +16,11 @@ resources:
   - services/practice.yaml
   - services/progress.yaml
   - services/review.yaml
+  - services/gamification.yaml
   - services/notification.yaml
+  - services/analytics.yaml
   - services/audit.yaml
+  - services/leaderboard.yaml
   - services/classroom.yaml
   - services/search.yaml
   - services/media.yaml
@@ -34,8 +37,11 @@ images:
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/practice, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/progress, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/review, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/gamification, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/notification, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/analytics, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/audit, newTag: latest }
+  - { name: ghcr.io/abhayvaishnav09/dsa-learning/leaderboard, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/classroom, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/search, newTag: latest }
   - { name: ghcr.io/abhayvaishnav09/dsa-learning/media, newTag: latest }

@@ -14,8 +14,11 @@ envVarGroups:
       - { key: PRACTICE_URL, value: "http://practice:8080" }
       - { key: PROGRESS_URL, value: "http://progress:8080" }
       - { key: REVIEW_URL, value: "http://review:8080" }
+      - { key: GAMIFICATION_URL, value: "http://gamification:8080" }
       - { key: NOTIFICATION_URL, value: "http://notification:8080" }
+      - { key: ANALYTICS_URL, value: "http://analytics:8080" }
       - { key: AUDIT_URL, value: "http://audit:8080" }
+      - { key: LEADERBOARD_URL, value: "http://leaderboard:8080" }
       - { key: CLASSROOM_URL, value: "http://classroom:8080" }
       - { key: SEARCH_URL, value: "http://search:8080" }
       - { key: MEDIA_URL, value: "http://media:8080" }
@@ -121,6 +124,16 @@ services:
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
+    name: gamification
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/gamification:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: gamification }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
     name: notification
     runtime: image
     image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/notification:main" }
@@ -131,6 +144,16 @@ services:
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
+    name: analytics
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/analytics:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: analytics }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
     name: audit
     runtime: image
     image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/audit:main" }
@@ -138,6 +161,16 @@ services:
     envVars:
       - fromGroup: logicpath-shared
       - { key: SERVICE_NAME, value: audit }
+      # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
+      - { key: DATABASE_URL, sync: false }
+  - type: pserv
+    name: leaderboard
+    runtime: image
+    image: { url: "ghcr.io/abhayvaishnav09/dsa-learning/leaderboard:main" }
+    plan: starter
+    envVars:
+      - fromGroup: logicpath-shared
+      - { key: SERVICE_NAME, value: leaderboard }
       # One database per service (ADR-0011); create them with infra/compose/postgres-init.sh.
       - { key: DATABASE_URL, sync: false }
   - type: pserv
@@ -210,8 +243,11 @@ services:
       - { key: PRACTICE_URL, value: "http://practice:8080" }
       - { key: PROGRESS_URL, value: "http://progress:8080" }
       - { key: REVIEW_URL, value: "http://review:8080" }
+      - { key: GAMIFICATION_URL, value: "http://gamification:8080" }
       - { key: NOTIFICATION_URL, value: "http://notification:8080" }
+      - { key: ANALYTICS_URL, value: "http://analytics:8080" }
       - { key: AUDIT_URL, value: "http://audit:8080" }
+      - { key: LEADERBOARD_URL, value: "http://leaderboard:8080" }
       - { key: CLASSROOM_URL, value: "http://classroom:8080" }
       - { key: SEARCH_URL, value: "http://search:8080" }
       - { key: MEDIA_URL, value: "http://media:8080" }

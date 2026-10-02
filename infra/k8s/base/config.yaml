@@ -17,8 +17,11 @@ data:
   PRACTICE_URL: http://practice:8080
   PROGRESS_URL: http://progress:8080
   REVIEW_URL: http://review:8080
+  GAMIFICATION_URL: http://gamification:8080
   NOTIFICATION_URL: http://notification:8080
+  ANALYTICS_URL: http://analytics:8080
   AUDIT_URL: http://audit:8080
+  LEADERBOARD_URL: http://leaderboard:8080
   CLASSROOM_URL: http://classroom:8080
   SEARCH_URL: http://search:8080
   MEDIA_URL: http://media:8080

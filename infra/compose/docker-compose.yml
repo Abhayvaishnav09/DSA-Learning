@@ -24,8 +24,11 @@ x-service: &service
     PRACTICE_URL: http://practice:8080
     PROGRESS_URL: http://progress:8080
     REVIEW_URL: http://review:8080
+    GAMIFICATION_URL: http://gamification:8080
     NOTIFICATION_URL: http://notification:8080
+    ANALYTICS_URL: http://analytics:8080
     AUDIT_URL: http://audit:8080
+    LEADERBOARD_URL: http://leaderboard:8080
     CLASSROOM_URL: http://classroom:8080
     SEARCH_URL: http://search:8080
     MEDIA_URL: http://media:8080
@@ -137,6 +140,16 @@ services:
       <<: *service-env
       SERVICE_NAME: review
       DATABASE_URL: postgres://review:review@postgres:5432/review
+  gamification:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: gamification }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: gamification
+      DATABASE_URL: postgres://gamification:gamification@postgres:5432/gamification
   notification:
     <<: *service
     build:
@@ -147,6 +160,16 @@ services:
       <<: *service-env
       SERVICE_NAME: notification
       DATABASE_URL: postgres://notification:notification@postgres:5432/notification
+  analytics:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: analytics }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: analytics
+      DATABASE_URL: postgres://analytics:analytics@postgres:5432/analytics
   audit:
     <<: *service
     build:
@@ -157,6 +180,16 @@ services:
       <<: *service-env
       SERVICE_NAME: audit
       DATABASE_URL: postgres://audit:audit@postgres:5432/audit
+  leaderboard:
+    <<: *service
+    build:
+      context: ../..
+      dockerfile: infra/docker/service.Dockerfile
+      args: { SERVICE: leaderboard }
+    environment:
+      <<: *service-env
+      SERVICE_NAME: leaderboard
+      DATABASE_URL: postgres://leaderboard:leaderboard@postgres:5432/leaderboard
   classroom:
     <<: *service
     build:
@@ -229,8 +262,11 @@ services:
       PRACTICE_URL: http://practice:8080
       PROGRESS_URL: http://progress:8080
       REVIEW_URL: http://review:8080
+      GAMIFICATION_URL: http://gamification:8080
       NOTIFICATION_URL: http://notification:8080
+      ANALYTICS_URL: http://analytics:8080
       AUDIT_URL: http://audit:8080
+      LEADERBOARD_URL: http://leaderboard:8080
       CLASSROOM_URL: http://classroom:8080
       SEARCH_URL: http://search:8080
       MEDIA_URL: http://media:8080
