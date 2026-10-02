@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "seed": "pnpm --filter @logicpath/content build && node -e \"require('node:fs').copyFileSync('../../content/dist/bundle.json','assets/seed-bundle.json')\"",
+    "seed": "node scripts/seed.mjs",
     "build": "pnpm seed && node ../../infra/build-service.mjs",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json",
@@ -21,6 +21,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@logicpath/content": "workspace:*",
     "@types/node": "^26.6.4",
     "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15",

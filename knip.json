@@ -15,7 +15,14 @@
       "entry": ["test/**/*.ts"],
       "project": ["src/**/*.ts"]
     },
-    "packages/*": { "project": ["src/**/*.{ts,tsx}"] },
-    "content": {}
+    "packages/*": {
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "content": {},
+    "services/content": {
+      "entry": ["test/**/*.ts", "scripts/*.mjs"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["@logicpath/content"]
+    }
   }
 }
