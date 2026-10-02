@@ -20,7 +20,7 @@ import {
   run,
   traceRows,
 } from '@logicpath/visualizer/engine';
-import type { Issue, LoadedContent } from './load';
+import type { Issue, LoadedContent } from './types';
 
 /**
  * Semantic checks that a schema can't express (docs/06-content-system.md §3):

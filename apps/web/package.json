@@ -14,12 +14,17 @@
     "build:demo": "node demo/build.mjs"
   },
   "dependencies": {
+    "@logicpath/api-client": "workspace:*",
     "@logicpath/content": "workspace:*",
     "@logicpath/content-schema": "workspace:*",
+    "@logicpath/contracts": "workspace:*",
     "@logicpath/grader": "workspace:*",
     "@logicpath/learning-engine": "workspace:*",
+    "@logicpath/local-backend": "workspace:*",
+    "@logicpath/ui": "workspace:*",
     "@logicpath/visualizer": "workspace:*",
     "@xstate/react": "^6.1.0",
+    "lucide-react": "^1.50.0",
     "next": "^16.3.8",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

@@ -36,3 +36,7 @@ export const ProfileUpdate = z
     theme: Theme.optional(),
   })
   .meta({ id: 'ProfileUpdate' });
+
+// Types for every schema above.
+export type Theme = z.infer<typeof Theme>;
+export type ProfileUpdate = z.infer<typeof ProfileUpdate>;

@@ -1,13 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { decide, type Actor, type DraftAction } from '@logicpath/authoring-workflow';
 import type { ContentBundle } from '@logicpath/content-schema';
-import {
-  applyToBundle,
-  bundleToLoaded,
-  checkContent,
-  contentPath,
-} from '@logicpath/content-tools/browser';
-import type { content } from '@logicpath/contracts';
+import { validateChanges } from '@logicpath/content-tools/browser';
 import {
   authoring,
   Id,
@@ -81,38 +75,6 @@ async function record(
     action,
     comment,
   });
-}
-
-/** Files a set of changes touches, so warnings elsewhere in the curriculum aren't shown. */
-function touchedFiles(changes: content.ContentChange[]): Set<string> {
-  return new Set(
-    changes.map((c) =>
-      contentPath(
-        c.kind,
-        c.id,
-        c.op === 'upsert' && c.kind === 'item' ? c.data.concept : undefined,
-      ),
-    ),
-  );
-}
-
-/** Applies the changes to the live curriculum and runs every content check. */
-export function validateChanges(
-  live: ContentBundle,
-  changes: content.ContentChange[],
-): content.ContentIssue[] {
-  let next: ContentBundle;
-  try {
-    next = applyToBundle(live, changes);
-  } catch (error) {
-    return [
-      { file: '-', message: `could not apply the changes: ${String(error)}`, severity: 'error' },
-    ];
-  }
-  const touched = touchedFiles(changes);
-  return checkContent(bundleToLoaded(next)).filter(
-    (issue) => issue.severity === 'error' || touched.has(issue.file),
-  );
 }
 
 export function authoringService(config: AuthoringConfig): ServiceDefinition<AuthoringConfig> {

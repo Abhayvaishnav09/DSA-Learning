@@ -1,44 +1,39 @@
 import { createRoot } from 'react-dom/client';
-import { LearnHome } from '@/features/map/LearnHome';
-import { Landing } from '@/features/landing/Landing';
-import { LessonPlayer } from '@/features/lesson-player/LessonPlayer';
-import { ReviewHeader } from '@/features/review/ReviewHeader';
-import { ReviewSession } from '@/features/review/ReviewSession';
-import { AppHeader } from '@/features/settings/AppHeader';
-import { getLesson } from '@/shared/content/bundle';
+import { Providers } from '@/app/providers';
+import { matchRoute, type RoutePattern } from '@/shared/routing/table';
+import { NotFoundScreen } from '@/widgets/shell/StatusScreens';
+import { AppShell, AuthShell, FocusShell, MarketingShell } from '@/widgets/shell/Shells';
 import { usePathname } from './router';
+import { SCREENS } from './routes';
 
-function Page() {
-  const path = usePathname();
-  if (path === '/learn') {
-    return (
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <LearnHome />
-      </div>
-    );
-  }
-  if (path === '/review') {
-    return (
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <ReviewHeader />
-        <ReviewSession />
-      </div>
-    );
-  }
-  const lesson = /^\/learn\/(.+)$/.exec(path)?.[1];
-  if (lesson && getLesson(lesson)) return <LessonPlayer key={lesson} conceptId={lesson} />;
-  return <Landing />;
-}
-
+/** The same shells and screens as the Next.js app, routed from the same table. */
 function App() {
-  return (
-    <>
-      <AppHeader />
-      <main id="main" tabIndex={-1} className="outline-none">
-        <Page />
-      </main>
-    </>
-  );
+  const path = usePathname();
+  const match = matchRoute(path);
+  if (!match) {
+    return (
+      <MarketingShell>
+        <NotFoundScreen />
+      </MarketingShell>
+    );
+  }
+  const screen = SCREENS[match.row.pattern as RoutePattern](match.params);
+  switch (match.row.shell) {
+    case 'marketing':
+      return <MarketingShell>{screen}</MarketingShell>;
+    case 'auth':
+      return <AuthShell>{screen}</AuthShell>;
+    case 'focus':
+      return <FocusShell>{screen}</FocusShell>;
+    case 'student':
+    case 'studio':
+    case 'admin':
+      return <AppShell area={match.row.shell}>{screen}</AppShell>;
+  }
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(
+  <Providers>
+    <App />
+  </Providers>,
+);

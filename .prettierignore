@@ -9,3 +9,4 @@ content/dist
 infra/compose/docker-compose.yml
 infra/compose/prometheus.yml
 services/*/drizzle/meta
+services/*/assets

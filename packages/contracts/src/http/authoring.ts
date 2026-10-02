@@ -107,3 +107,11 @@ export const Submission = z.object({
   changes: z.array(ContentChange),
 });
 export type Submission = z.infer<typeof Submission>;
+
+// Types for every schema above.
+export type DraftPage = z.infer<typeof DraftPage>;
+export type DraftQuery = z.infer<typeof DraftQuery>;
+export type CreateDraft = z.infer<typeof CreateDraft>;
+export type UpdateDraft = z.infer<typeof UpdateDraft>;
+export type ReviewDecision = z.infer<typeof ReviewDecision>;
+export type RequestChanges = z.infer<typeof RequestChanges>;

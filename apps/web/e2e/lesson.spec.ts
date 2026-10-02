@@ -164,6 +164,10 @@ for (const path of ['/', '/learn', '/learn/loops.counter', '/review']) {
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
       .analyze();
     const serious = violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
-    expect(serious.map((v) => `${v.id}: ${v.help} (${v.nodes.length})`)).toEqual([]);
+    expect(
+      serious.map(
+        (v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`,
+      ),
+    ).toEqual([]);
   });
 }

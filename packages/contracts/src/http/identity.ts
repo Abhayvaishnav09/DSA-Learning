@@ -110,3 +110,15 @@ export type Tokens = z.infer<typeof Tokens>;
 export type Session = z.infer<typeof Session>;
 export type RegisterRequest = z.infer<typeof RegisterRequest>;
 export type RegisterResponse = z.infer<typeof RegisterResponse>;
+
+// Types for every schema above.
+export type UserStatus = z.infer<typeof UserStatus>;
+export type LoginRequest = z.infer<typeof LoginRequest>;
+export type RefreshRequest = z.infer<typeof RefreshRequest>;
+export type TokenRequest = z.infer<typeof TokenRequest>;
+export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequest>;
+export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequest>;
+export type AdminUserQuery = z.infer<typeof AdminUserQuery>;
+export type UserPage = z.infer<typeof UserPage>;
+export type AdminUserUpdate = z.infer<typeof AdminUserUpdate>;
+export type AdminCreateUser = z.infer<typeof AdminCreateUser>;

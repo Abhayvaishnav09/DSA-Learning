@@ -235,3 +235,30 @@ export const AdminApiKeyUpdate = z
     dailyQuota: z.number().int().min(0).optional(),
   })
   .meta({ id: 'AdminApiKeyUpdate' });
+
+// Types for every schema above.
+export type ConsentRequest = z.infer<typeof ConsentRequest>;
+export type ConsentDecision = z.infer<typeof ConsentDecision>;
+export type PendingConsent = z.infer<typeof PendingConsent>;
+export type PendingConsentPage = z.infer<typeof PendingConsentPage>;
+export type DataExport = z.infer<typeof DataExport>;
+export type DeletionStatus = z.infer<typeof DeletionStatus>;
+export type ItemStats = z.infer<typeof ItemStats>;
+export type AuditEntry = z.infer<typeof AuditEntry>;
+export type AuditPage = z.infer<typeof AuditPage>;
+export type AuditQuery = z.infer<typeof AuditQuery>;
+export type SearchType = z.infer<typeof SearchType>;
+export type SearchQuery = z.infer<typeof SearchQuery>;
+export type SearchResults = z.infer<typeof SearchResults>;
+export type MediaPage = z.infer<typeof MediaPage>;
+export type Platform = z.infer<typeof Platform>;
+export type FlagChange = z.infer<typeof FlagChange>;
+export type FlagList = z.infer<typeof FlagList>;
+export type FlagsQuery = z.infer<typeof FlagsQuery>;
+export type ApiScope = z.infer<typeof ApiScope>;
+export type CreateApiKey = z.infer<typeof CreateApiKey>;
+export type CreatedApiKey = z.infer<typeof CreatedApiKey>;
+export type ApiKeyList = z.infer<typeof ApiKeyList>;
+export type ApiKeyPage = z.infer<typeof ApiKeyPage>;
+export type ApiKeyUsage = z.infer<typeof ApiKeyUsage>;
+export type AdminApiKeyUpdate = z.infer<typeof AdminApiKeyUpdate>;

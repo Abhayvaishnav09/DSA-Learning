@@ -5,7 +5,7 @@ import {
   type LessonVisual,
 } from '@logicpath/content-schema';
 import { caption, run } from '@logicpath/visualizer/engine';
-import type { LoadedContent } from './load';
+import type { LoadedContent } from './types';
 
 /**
  * Compiles checked content into one bundle. The version is a hash of the content, so the same

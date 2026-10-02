@@ -110,3 +110,8 @@ export const ContentIssue = z
 export type ContentIssue = z.infer<typeof ContentIssue>;
 
 export { LocalizedText };
+
+// Types for every schema above.
+export type LessonVisual = z.infer<typeof LessonVisual>;
+export type VersionPage = z.infer<typeof VersionPage>;
+export type RollbackRequest = z.infer<typeof RollbackRequest>;

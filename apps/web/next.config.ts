@@ -1,21 +1,24 @@
 import type { NextConfig } from 'next';
 
-/** STATIC_EXPORT=1 builds a plain static site (out/) for hosts without a Node server. */
-const staticExport = process.env.STATIC_EXPORT === '1';
-
 const config: NextConfig = {
   reactStrictMode: true,
-  ...(staticExport ? { output: 'export' as const, trailingSlash: true } : {}),
+  // The Docker image runs the self-contained server (infra/docker/web.Dockerfile).
+  ...(process.env.NEXT_OUTPUT === 'standalone' ? { output: 'standalone' as const } : {}),
   // Workspace packages ship TypeScript source (docs/02-architecture.md §9).
   transpilePackages: [
+    '@logicpath/api-client',
+    '@logicpath/authoring-workflow',
+    '@logicpath/content-tools',
+    '@logicpath/contracts',
+    '@logicpath/local-backend',
+    '@logicpath/ui',
     '@logicpath/content-schema',
     '@logicpath/grader',
     '@logicpath/learning-engine',
     '@logicpath/visualizer',
   ],
   poweredByHeader: false,
-  // Static hosts set their own headers; headers() only applies to `next start`.
-  ...(staticExport ? {} : { headers }),
+  headers,
 };
 
 async function headers() {

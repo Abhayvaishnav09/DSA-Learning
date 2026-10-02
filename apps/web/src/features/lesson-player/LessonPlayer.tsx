@@ -10,7 +10,7 @@ import { track } from '@/shared/analytics/track';
 import { getConcept, getItem, getLesson, text } from '@/shared/content/bundle';
 import { formatDay, useLocale, useT } from '@/shared/i18n/useT';
 import { useHydrated } from '@/shared/lib/useHydrated';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { ProgressBar } from '@logicpath/ui';
 import { PredictBeat, SeeBeat, StoryBeat } from './beats';
 import { BEATS, lessonMachine } from './lessonMachine';
 

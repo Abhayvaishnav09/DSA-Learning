@@ -157,3 +157,15 @@ export const ReviewSummary = z
   })
   .meta({ id: 'ReviewSummary' });
 export type ReviewSummary = z.infer<typeof ReviewSummary>;
+
+// Types for every schema above.
+export type AttemptSource = z.infer<typeof AttemptSource>;
+export type ConceptStatus = z.infer<typeof ConceptStatus>;
+export type SyncRequest = z.infer<typeof SyncRequest>;
+export type SyncResult = z.infer<typeof SyncResult>;
+export type LessonBeat = z.infer<typeof LessonBeat>;
+export type ConceptProgress = z.infer<typeof ConceptProgress>;
+export type Streak = z.infer<typeof Streak>;
+export type Today = z.infer<typeof Today>;
+export type LessonPosition = z.infer<typeof LessonPosition>;
+export type DueCard = z.infer<typeof DueCard>;

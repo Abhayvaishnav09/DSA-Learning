@@ -1,28 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { Graph, Item, Lesson, Misconceptions, type Misconception } from '@logicpath/content-schema';
+import { Graph, Item, Lesson, Misconceptions } from '@logicpath/content-schema';
 import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
+import type { Issue, LoadedContent, LoadedItem } from './types';
 
-export interface Issue {
-  file: string;
-  message: string;
-  severity: 'error' | 'warning';
-}
-
-export interface LoadedItem {
-  file: string;
-  dirConcept: string;
-  item: Item;
-}
-
-export interface LoadedContent {
-  root: string;
-  graph: Graph;
-  misconceptions: Misconception[];
-  lessons: Map<string, { file: string; lesson: Lesson }>;
-  items: LoadedItem[];
-}
+export type { Issue, LoadedContent } from './types';
 
 /**
  * Reads the content folder (docs/06-content-system.md §1):

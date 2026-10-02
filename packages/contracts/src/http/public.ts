@@ -50,3 +50,10 @@ export const PublicItem = z
 export const PublicItemList = z
   .object({ items: z.array(PublicItem) })
   .meta({ id: 'PublicItemList' });
+
+// Types for every schema above.
+export type PublicConcept = z.infer<typeof PublicConcept>;
+export type PublicCurriculum = z.infer<typeof PublicCurriculum>;
+export type PublicLesson = z.infer<typeof PublicLesson>;
+export type PublicItem = z.infer<typeof PublicItem>;
+export type PublicItemList = z.infer<typeof PublicItemList>;

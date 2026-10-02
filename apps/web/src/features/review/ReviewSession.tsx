@@ -10,7 +10,7 @@ import { itemFamily } from '@/shared/content/bundle';
 import { useT } from '@/shared/i18n/useT';
 import { now } from '@/shared/lib/clock';
 import { useHydrated } from '@/shared/lib/useHydrated';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { ProgressBar } from '@logicpath/ui';
 
 /** Rotate through the original and its variations so learners recall the logic, not the answer. */
 function itemForCard(card: ReviewCard) {

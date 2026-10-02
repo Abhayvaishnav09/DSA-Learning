@@ -1,0 +1,26 @@
+{
+  "name": "@logicpath/local-backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./accounts": "./src/accounts.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@logicpath/api-client": "workspace:*",
+    "@logicpath/authoring-workflow": "workspace:*",
+    "@logicpath/content-schema": "workspace:*",
+    "@logicpath/content-tools": "workspace:*",
+    "@logicpath/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@logicpath/content": "workspace:*",
+    "vitest": "^5.0.3"
+  }
+}

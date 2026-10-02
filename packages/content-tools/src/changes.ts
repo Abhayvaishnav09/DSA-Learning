@@ -6,7 +6,9 @@ import type {
   Misconception,
 } from '@logicpath/content-schema';
 import { buildBundle } from './build';
-import type { LoadedContent } from './load';
+import { checkContent } from './check';
+import type { Issue } from './types';
+import type { LoadedContent } from './types';
 
 /** One edit a writer makes to the curriculum (an authoring draft holds a list of these). */
 export type ContentChange =
@@ -107,4 +109,32 @@ export function applyToBundle(
   changes: readonly ContentChange[],
 ): ContentBundle {
   return buildBundle(applyChanges(bundleToLoaded(bundle), changes));
+}
+
+/**
+ * A writer's changes checked against the live curriculum: every check runs on the result.
+ * Errors anywhere block publishing (a change can break something elsewhere); warnings are kept
+ * only for what the changes touch, so writers aren't shown other people's warnings.
+ */
+export function validateChanges(live: ContentBundle, changes: readonly ContentChange[]): Issue[] {
+  let next: ContentBundle;
+  try {
+    next = applyToBundle(live, changes);
+  } catch (error) {
+    return [
+      { file: '-', message: `could not apply the changes: ${String(error)}`, severity: 'error' },
+    ];
+  }
+  const touched = new Set(
+    changes.map((c) =>
+      contentPath(
+        c.kind,
+        c.id,
+        c.op === 'upsert' && c.kind === 'item' ? c.data.concept : undefined,
+      ),
+    ),
+  );
+  return checkContent(bundleToLoaded(next)).filter(
+    (issue) => issue.severity === 'error' || touched.has(issue.file),
+  );
 }

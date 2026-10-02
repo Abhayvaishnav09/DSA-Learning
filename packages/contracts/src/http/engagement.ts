@@ -151,3 +151,15 @@ export const NotificationPrefs = z
     productNews: z.boolean(),
   })
   .meta({ id: 'NotificationPrefs' });
+
+// Types for every schema above.
+export type XpEntry = z.infer<typeof XpEntry>;
+export type Standing = z.infer<typeof Standing>;
+export type LeagueHistory = z.infer<typeof LeagueHistory>;
+export type ClassMember = z.infer<typeof ClassMember>;
+export type ClassList = z.infer<typeof ClassList>;
+export type ClassPage = z.infer<typeof ClassPage>;
+export type CreateClass = z.infer<typeof CreateClass>;
+export type JoinClass = z.infer<typeof JoinClass>;
+export type NotificationPage = z.infer<typeof NotificationPage>;
+export type NotificationPrefs = z.infer<typeof NotificationPrefs>;

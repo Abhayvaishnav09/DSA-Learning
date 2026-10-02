@@ -7,7 +7,7 @@ import { useProgress } from '@/entities/progress/store';
 import { bundle, getConcept, text } from '@/shared/content/bundle';
 import { formatDay, useLocale, useT } from '@/shared/i18n/useT';
 import { useHydrated } from '@/shared/lib/useHydrated';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { ProgressBar } from '@logicpath/ui';
 
 export function LearnHome() {
   const hydrated = useHydrated();

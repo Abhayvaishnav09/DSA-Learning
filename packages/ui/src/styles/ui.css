@@ -1,0 +1,379 @@
+/*
+ * LogicPath design system (ADR-0019). Import once, after `@import 'tailwindcss'`.
+ *
+ * Tokens are CSS variables with semantic names; components never use raw colours, so themes
+ * (light, dark, high contrast) only swap variables. Tailwind utilities map onto them through
+ * `@theme inline` (bg-surface, text-muted, shadow-raised, ...).
+ */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* ---------- light (default) ---------- */
+:root {
+  color-scheme: light;
+  --bg: #f7f7fc;
+  --bg-elevated: #fbfbfe;
+  --surface: #ffffff;
+  --surface-2: #f2f2fa;
+  --overlay: rgb(18 18 34 / 0.45);
+  --fg: #17172b;
+  --muted: #55556e;
+  --subtle: #6b6b85;
+  --border: #e3e3ef;
+  --border-strong: #c9c9dc;
+  --code: #f2f2f9;
+  --accent: #5546d6;
+  --accent-hover: #4637c4;
+  --accent-fg: #ffffff;
+  --accent-soft: #ecebfd;
+  --accent-2: #0f8fa8;
+  --accent-2-soft: #dff4f8;
+  --xp: #b45309;
+  --xp-soft: #fff1dc;
+  --success: #0e7247;
+  --success-soft: #e2f5ea;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --warning: #8a5a00;
+  --warning-soft: #fff4d4;
+  --ring: #5546d6;
+  --glow: rgb(85 70 214 / 0.35);
+  --hero-from: #ecebfd;
+  --hero-via: #f7f7fc;
+  --hero-to: #dff4f8;
+
+  --shadow-raised: 0 1px 2px rgb(23 23 43 / 0.06), 0 2px 8px rgb(23 23 43 / 0.05);
+  --shadow-floating: 0 8px 24px rgb(23 23 43 / 0.1), 0 2px 6px rgb(23 23 43 / 0.06);
+  --shadow-overlay: 0 24px 64px rgb(23 23 43 / 0.2), 0 4px 16px rgb(23 23 43 / 0.08);
+}
+
+/* ---------- dark (OS preference unless the learner chose light, or chosen explicitly) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0c0c18;
+    --bg-elevated: #10101e;
+    --surface: #15152a;
+    --surface-2: #1c1c35;
+    --overlay: rgb(4 4 12 / 0.65);
+    --fg: #ececf8;
+    --muted: #a8a8c4;
+    --subtle: #8e8eb4;
+    --border: #2a2a46;
+    --border-strong: #3b3b60;
+    --code: #11112a;
+    --accent: #9a8fff;
+    --accent-hover: #b0a7ff;
+    --accent-fg: #0c0c18;
+    --accent-soft: #252250;
+    --accent-2: #4fd1e8;
+    --accent-2-soft: #0f2f38;
+    --xp: #fbbf24;
+    --xp-soft: #362708;
+    --success: #4ade80;
+    --success-soft: #11301f;
+    --danger: #f87171;
+    --danger-soft: #3a1717;
+    --warning: #fbbf24;
+    --warning-soft: #392c0e;
+    --ring: #b0a7ff;
+    --glow: rgb(154 143 255 / 0.4);
+    --hero-from: #1a1640;
+    --hero-via: #0c0c18;
+    --hero-to: #0b2a33;
+    --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.03);
+    --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.05);
+    --shadow-overlay: 0 32px 80px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c0c18;
+  --bg-elevated: #10101e;
+  --surface: #15152a;
+  --surface-2: #1c1c35;
+  --overlay: rgb(4 4 12 / 0.65);
+  --fg: #ececf8;
+  --muted: #a8a8c4;
+  --subtle: #8e8eb4;
+  --border: #2a2a46;
+  --border-strong: #3b3b60;
+  --code: #11112a;
+  --accent: #9a8fff;
+  --accent-hover: #b0a7ff;
+  --accent-fg: #0c0c18;
+  --accent-soft: #252250;
+  --accent-2: #4fd1e8;
+  --accent-2-soft: #0f2f38;
+  --xp: #fbbf24;
+  --xp-soft: #362708;
+  --success: #4ade80;
+  --success-soft: #11301f;
+  --danger: #f87171;
+  --danger-soft: #3a1717;
+  --warning: #fbbf24;
+  --warning-soft: #392c0e;
+  --ring: #b0a7ff;
+  --glow: rgb(154 143 255 / 0.4);
+  --hero-from: #1a1640;
+  --hero-via: #0c0c18;
+  --hero-to: #0b2a33;
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.03);
+  --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.05);
+  --shadow-overlay: 0 32px 80px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+/* ---------- high contrast (OS setting or the in-app toggle) ---------- */
+@media (prefers-contrast: more) {
+  :root {
+    --muted: #2e2e44;
+    --subtle: #45455c;
+    --border: #6b6b85;
+    --border-strong: #3f3f58;
+  }
+  :root[data-theme='dark'] {
+    --muted: #d6d6ea;
+    --subtle: #b8b8d2;
+    --border: #8a8aac;
+  }
+}
+:root[data-contrast='more'] {
+  --muted: #2e2e44;
+  --subtle: #45455c;
+  --border: #6b6b85;
+  --border-strong: #3f3f58;
+}
+:root[data-contrast='more'][data-theme='dark'] {
+  --muted: #d6d6ea;
+  --subtle: #b8b8d2;
+  --border: #8a8aac;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-overlay: var(--overlay);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-code: var(--code);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-soft: var(--accent-2-soft);
+  --color-xp: var(--xp);
+  --color-xp-soft: var(--xp-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-ring: var(--ring);
+  --color-hero-from: var(--hero-from);
+  --color-hero-via: var(--hero-via);
+  --color-hero-to: var(--hero-to);
+
+  --shadow-raised: var(--shadow-raised);
+  --shadow-floating: var(--shadow-floating);
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-glow: 0 0 0 1px var(--accent), 0 8px 32px var(--glow);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Fluid type: scales smoothly from a 360px phone to a 1440px desktop. */
+  --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+  --text-sm: clamp(0.84rem, 0.82rem + 0.1vw, 0.9rem);
+  --text-base: clamp(0.96rem, 0.93rem + 0.15vw, 1.05rem);
+  --text-lg: clamp(1.08rem, 1.03rem + 0.25vw, 1.22rem);
+  --text-xl: clamp(1.22rem, 1.13rem + 0.45vw, 1.45rem);
+  --text-2xl: clamp(1.45rem, 1.3rem + 0.75vw, 1.9rem);
+  --text-3xl: clamp(1.8rem, 1.55rem + 1.25vw, 2.6rem);
+  --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.5rem);
+  --text-5xl: clamp(2.6rem, 2rem + 3vw, 4.6rem);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  /* Motion tokens (mirrored in src/motion/tokens.ts for JS animations). */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+
+  --animate-shimmer: lp-shimmer 1.6s linear infinite;
+  --animate-float: lp-float 6s ease-in-out infinite;
+  --animate-shake: lp-shake 360ms ease-in-out;
+  --animate-pop: lp-pop 360ms var(--ease-spring);
+
+  @keyframes lp-shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes lp-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes lp-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-5px);
+    }
+    40%,
+    80% {
+      transform: translateX(5px);
+    }
+  }
+  @keyframes lp-pop {
+    from {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/* Breakpoint used by the app shell: 600 = tablet (rail), 1024 = desktop (sidebar). */
+@custom-variant tablet (@media (width >= 600px));
+@custom-variant desktop (@media (width >= 1024px));
+@custom-variant wide (@media (width >= 1536px));
+/* Motion modes set by <MotionProvider> on <html data-motion="..."> */
+@custom-variant motion-off ([data-motion='off'] &);
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scrollbar-gutter: stable;
+  }
+  html,
+  body {
+    background: var(--bg);
+    color: var(--fg);
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  code,
+  kbd,
+  pre {
+    font-family: var(--font-mono);
+    font-feature-settings: 'calt' 0;
+  }
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--fg);
+  }
+  /* "Animations off" in Settings stops CSS motion too, not only JS animations. */
+  [data-motion='off'] *,
+  [data-motion='off'] *::before,
+  [data-motion='off'] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  /* Legacy button classes still used by lesson screens; new code uses <Button>. */
+  .lp-btn,
+  .lp-btn-secondary,
+  .lp-btn-ghost {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold transition-[background,color,box-shadow,transform] duration-200 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .lp-btn {
+    @apply bg-accent text-accent-fg shadow-raised hover:bg-accent-hover;
+  }
+  .lp-btn-secondary {
+    @apply border-2 border-accent/50 bg-surface text-accent hover:bg-accent-soft;
+  }
+  .lp-btn-ghost {
+    @apply text-muted underline-offset-4 hover:text-fg hover:underline;
+  }
+  .lp-btn-icon {
+    @apply inline-grid size-11 shrink-0 place-items-center rounded-xl border border-border bg-surface text-base transition-colors hover:border-accent disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .lp-btn-play {
+    @apply border-accent bg-accent text-accent-fg;
+  }
+
+  /* Frosted panels for bars and sheets over content. */
+  .lp-glass {
+    background: color-mix(in oklab, var(--bg-elevated) 78%, transparent);
+    backdrop-filter: saturate(1.6) blur(14px);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  }
+  .lp-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 37%,
+      var(--surface-2) 63%
+    );
+    background-size: 400% 100%;
+  }
+  .lp-gradient-text {
+    background: linear-gradient(110deg, var(--accent) 10%, var(--accent-2) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Respect notches and home indicators on phones. */
+  .lp-safe-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .lp-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}

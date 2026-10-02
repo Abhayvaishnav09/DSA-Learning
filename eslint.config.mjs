@@ -75,6 +75,7 @@ export default tseslint.config(
           patterns: [
             layer('@/entities/*', 'shared/ must not import entities/'),
             layer('@/features/*', 'shared/ must not import features/'),
+            layer('@/widgets/*', 'shared/ must not import widgets/'),
           ],
         },
       ],
@@ -85,7 +86,12 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [layer('@/app/*', 'features/ must not import app/')] },
+        {
+          patterns: [
+            layer('@/app/*', 'features/ must not import app/'),
+            layer('@/widgets/*', 'features/ must not import widgets/'),
+          ],
+        },
       ],
     },
   },
@@ -94,7 +100,12 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': [
         'error',
-        { patterns: [layer('@/features/*', 'entities/ must not import features/')] },
+        {
+          patterns: [
+            layer('@/features/*', 'entities/ must not import features/'),
+            layer('@/widgets/*', 'entities/ must not import widgets/'),
+          ],
+        },
       ],
     },
   },

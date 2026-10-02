@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { buildBundle, contentHash, lessonVisual } from './build';
 import { applyChanges, applyToBundle, bundleToLoaded } from './changes';
 import { checkContent } from './check';
-import type { LoadedContent } from './load';
+import type { LoadedContent } from './types';
 
 const t = (s: string): LocalizedText => ({ en: s, 'hi-Latn': s });
 
