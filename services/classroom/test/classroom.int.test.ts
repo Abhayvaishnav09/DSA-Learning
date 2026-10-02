@@ -226,7 +226,9 @@ describe('the roster', () => {
     await eventually(async () => {
       const res = await call('GET', `/v1/classes/${klass.id}`, tokens.teacher);
       return (
-        res.body.members?.[0]?.xpThisWeek === 55 && res.body.members?.[0]?.conceptsMastered === 1
+        res.body.members?.[0]?.xpThisWeek === 55 &&
+        res.body.members?.[0]?.conceptsMastered === 1 &&
+        res.body.members?.[1]?.xpThisWeek === 20
       );
     });
     const res = await call('GET', `/v1/classes/${klass.id}`, tokens.teacher);
