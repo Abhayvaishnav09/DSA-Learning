@@ -57,3 +57,36 @@ describe('summarize', () => {
     expect(summarize({ mode: null, series: [] })).toBeNull();
   });
 });
+
+describe('summarize on a slow machine', () => {
+  it('compares cases at a size both reached, not at whatever size each stopped', () => {
+    // "missing" stopped at 32 (time limit), "last" reached 64: missing is still the worst.
+    const result = summarize({
+      mode: 'list',
+      series: [
+        {
+          label: 'last',
+          points: [
+            [8, 22],
+            [16, 38],
+            [32, 70],
+            [64, 134],
+          ],
+          capped: false,
+          failed: false,
+        },
+        {
+          label: 'missing',
+          points: [
+            [8, 23],
+            [16, 39],
+            [32, 71],
+          ],
+          capped: false,
+          failed: false,
+        },
+      ],
+    })!;
+    expect(result.worst.label).toBe('missing');
+  });
+});

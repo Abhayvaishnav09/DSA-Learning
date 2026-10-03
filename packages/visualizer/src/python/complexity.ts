@@ -158,8 +158,16 @@ export function summarize(raw: RawMeasurement): Complexity | null {
     });
   if (!cases.length) return null;
   // Compare cases by growth first, then by work at the same size.
+  // Same growth: compare the work at the biggest size both reached. On a slow machine one
+  // case may stop at a smaller size than another, so their last points are not comparable.
+  const workAtSameSize = (a: MeasuredCase, b: MeasuredCase) => {
+    const shared = a.points.map(([n]) => n).filter((n) => b.points.some(([m]) => m === n));
+    const n = Math.max(...shared);
+    if (!Number.isFinite(n)) return a.steps / a.n - b.steps / b.n;
+    return a.points.find(([m]) => m === n)![1] - b.points.find(([m]) => m === n)![1];
+  };
   const order = (a: MeasuredCase, b: MeasuredCase) =>
-    rank(a.growth) - rank(b.growth) || a.steps / a.n - b.steps / b.n;
+    rank(a.growth) - rank(b.growth) || workAtSameSize(a, b);
   // A case whose growth could not be fitted says nothing about best or worst.
   const fitted = cases.filter((c) => c.growth !== null);
   const sorted = [...(fitted.length ? fitted : cases)].sort(order);
