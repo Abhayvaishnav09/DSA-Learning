@@ -6,6 +6,9 @@ import { join } from 'node:path';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const web = join(here, '..');
+const pyodideVersion = JSON.parse(
+  readFileSync(join(web, 'node_modules/pyodide/package.json'), 'utf8'),
+).version;
 const result = await build({
   entryPoints: [join(here, 'entry.tsx')],
   bundle: true,
@@ -17,6 +20,10 @@ const result = await build({
   define: {
     'process.env.NODE_ENV': '"production"',
     'process.env.NEXT_PUBLIC_API_MODE': '"local"',
+    // One HTML file has nowhere to keep Python's 13 MB: the demo loads it from the npm CDN.
+    'process.env.NEXT_PUBLIC_PYODIDE_URL': JSON.stringify(
+      `https://cdn.jsdelivr.net/npm/pyodide@${pyodideVersion}/`,
+    ),
   },
   alias: {
     '@': join(web, 'src'),

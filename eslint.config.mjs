@@ -17,6 +17,7 @@ export default tseslint.config(
       '**/.next/**',
       '**/.turbo/**',
       '**/.vercel/**',
+      'apps/web/public/pyodide/**',
       '**/coverage/**',
       '**/next-env.d.ts',
       '**/test-results/**',

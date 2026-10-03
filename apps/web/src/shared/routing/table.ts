@@ -38,6 +38,7 @@ export const ROUTE_TABLE = [
   { pattern: '/classes', shell: 'student', access: 'user' },
   { pattern: '/classes/join/:code', shell: 'student', access: 'user' },
   { pattern: '/search', shell: 'student', access: 'guest' },
+  { pattern: '/visualize', shell: 'student', access: 'guest' },
   { pattern: '/notifications', shell: 'student', access: 'user' },
   { pattern: '/profile', shell: 'student', access: 'user' },
   { pattern: '/settings', shell: 'student', access: 'guest' },

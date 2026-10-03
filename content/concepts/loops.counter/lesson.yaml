@@ -43,6 +43,24 @@ see:
     '5':
       en: Back to the loop line. i goes up to 2. 2 is not more than 3, so the indented lines run again.
       hi-Latn: Wapas loop wali line par. i badh kar 2 ho gaya. 2, 3 se zyada nahi hai, isliye andar ki lines phir chalti hain.
+  complexity:
+    bigO: O(n)
+    summary:
+      en: The work grows with the number of students. 3 students, 3 rounds; 100 students, 100 rounds.
+      hi-Latn: Kaam students ki ginti ke saath badhta hai. 3 students, 3 round; 100 students, 100 round.
+    cases:
+      - title: { en: 3 students, hi-Latn: 3 students }
+        body:
+          en: The indented lines run 3 times.
+          hi-Latn: Andar ki lines 3 baar chalti hain.
+      - title: { en: n students, hi-Latn: n students }
+        body:
+          en: They run n times. Double the students, double the work.
+          hi-Latn: Woh n baar chalti hain. Students double, toh kaam bhi double.
+      - title: { en: Why O(n)?, hi-Latn: O(n) kyun? }
+        body:
+          en: O(n) is short for "the work grows in step with n". It does not jump, it climbs in a straight line.
+          hi-Latn: O(n) ka matlab hai "kaam n ke saath seedha badhta hai". Achanak nahi uchhalta, seedhi line me badhta hai.
 
 predict:
   intro:

@@ -7,7 +7,7 @@
       "ignoreDependencies": ["tsx"]
     },
     "apps/web": {
-      "entry": ["demo/*.{ts,tsx,mjs}", "e2e/**/*.ts"],
+      "entry": ["demo/*.{ts,tsx,mjs}", "e2e/**/*.ts", "scripts/*.mjs"],
       "project": ["src/**/*.{ts,tsx}", "demo/**/*.{ts,tsx}"],
       "ignoreDependencies": ["tailwindcss"]
     },

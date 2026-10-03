@@ -9,8 +9,9 @@ import { expect, test, type Page } from '@playwright/test';
  */
 
 const KB = 1024;
-// Lessons carry the interpreter, grader and scheduler, so they get a little more.
-const BUDGET = { criticalJs: 360 * KB, lessonJs: 380 * KB, threeD: 250 * KB };
+// Lessons carry the interpreter, grader and scheduler, so they get a little more. The landing
+// page shows the program player, which now draws list cells, marks and a comparisons meter.
+const BUDGET = { criticalJs: 366 * KB, lessonJs: 380 * KB, threeD: 250 * KB };
 
 async function criticalJs(page: Page, path: string): Promise<number> {
   const html = await (await page.request.get(path)).text();

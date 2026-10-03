@@ -24,6 +24,7 @@ import { MediaLibrary } from '@/features/media/MediaLibrary';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
 import { SearchScreen } from '@/features/search/SearchScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
+import { VisualizeScreen } from '@/features/visualize/VisualizeScreen';
 import { DraftScreen } from '@/features/studio/DraftScreen';
 import { DraftsScreen } from '@/features/studio/DraftsScreen';
 import { EditorScreen } from '@/features/studio/editor/EditorScreen';
@@ -67,6 +68,7 @@ export const SCREENS: Record<RoutePattern, Screen> = {
   '/classes': () => <ClassesScreen />,
   '/classes/join/:code': ({ code }) => <JoinClassScreen code={code!} />,
   '/search': () => <SearchScreen />,
+  '/visualize': () => <VisualizeScreen />,
   '/notifications': () => <InboxScreen />,
   '/profile': () => <ProfileScreen />,
   '/settings': () => <SettingsScreen />,

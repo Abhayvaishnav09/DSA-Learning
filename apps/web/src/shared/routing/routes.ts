@@ -29,6 +29,7 @@ export const routes = {
   leaderboard: '/leaderboard',
   classes: '/classes',
   joinClass: (code: string) => `/classes/join/${seg(code)}`,
+  visualize: '/visualize',
   search: (query?: string) => `/search${q({ q: query })}`,
   notifications: '/notifications',
   profile: '/profile',

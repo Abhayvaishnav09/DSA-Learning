@@ -15,11 +15,19 @@ export interface VisualizerLabels {
   speed: string;
   speeds: readonly [string, string, string];
   step: (current: number, total: number) => string;
+  now: string;
+  checks: string;
+  checksCount: (done: number, total: number) => string;
+  found: string;
+  miss: string;
+  seen: string;
+  more: (count: number) => string;
 }
 
 export const LABELS: Record<Locale, VisualizerLabels> = {
   en: {
-    region: 'Program player. Use the arrow keys to step, space to play or pause.',
+    region:
+      'Program player. Use the arrow keys to step, Home and End to jump, space to play or pause.',
     code: 'Program',
     boxes: 'Boxes (variables)',
     calls: 'Function calls',
@@ -33,9 +41,18 @@ export const LABELS: Record<Locale, VisualizerLabels> = {
     speed: 'Speed',
     speeds: ['Slow', 'Normal', 'Fast'],
     step: (current, total) => `Step ${current} of ${total}`,
+    now: "What's happening",
+    checks: 'Comparisons',
+    checksCount: (done, total) =>
+      `${done} ${done === 1 ? 'comparison' : 'comparisons'} so far (${total} in this run)`,
+    found: 'found',
+    miss: 'not equal',
+    seen: 'checked',
+    more: (count) => `+${count} more`,
   },
   'hi-Latn': {
-    region: 'Program player. Arrow keys se ek-ek step chalo, space se play ya pause karo.',
+    region:
+      'Program player. Arrow keys se ek-ek step chalo, Home aur End se kood jao, space se play ya pause karo.',
     code: 'Program',
     boxes: 'Box (variables)',
     calls: 'Function calls',
@@ -49,5 +66,12 @@ export const LABELS: Record<Locale, VisualizerLabels> = {
     speed: 'Speed',
     speeds: ['Dheere', 'Normal', 'Tez'],
     step: (current, total) => `Step ${current} / ${total}`,
+    now: 'Abhi kya ho raha hai',
+    checks: 'Comparisons',
+    checksCount: (done, total) => `Ab tak ${done} comparison (is run me kul ${total})`,
+    found: 'mil gaya',
+    miss: 'barabar nahi',
+    seen: 'check ho gaya',
+    more: (count) => `+${count} aur`,
   },
 };

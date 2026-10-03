@@ -207,6 +207,22 @@ export const Lesson = z.strictObject({
     code: z.string().min(1),
     /** Author captions that replace the automatic ones, by frame index. */
     captions: z.record(z.string().regex(/^\d+$/), LocalizedText).default({}),
+    /**
+     * How the work grows with the input, shown next to the player. Author-written only:
+     * it cannot be worked out reliably from code, and a wrong guess would teach the wrong thing.
+     */
+    complexity: z
+      .strictObject({
+        /** e.g. "O(n)". */
+        bigO: z.string().min(1).max(24),
+        summary: LocalizedText,
+        /** Best case, worst case, why: at most three short cards. */
+        cases: z
+          .array(z.strictObject({ title: LocalizedText, body: LocalizedText }))
+          .max(3)
+          .default([]),
+      })
+      .optional(),
   }),
   predict: z.strictObject({
     intro: LocalizedText,

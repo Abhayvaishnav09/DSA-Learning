@@ -18,6 +18,7 @@ export const en = {
     leagues: 'Leagues',
     classes: 'Classes',
     search: 'Search',
+    visualize: 'Visualize code',
     notifications: 'Notifications',
     profile: 'Profile',
     settings: 'Settings',
@@ -282,6 +283,7 @@ export const en = {
     backToPath: 'Back to your path',
     exit: 'Exit lesson',
     notReady: 'This lesson is not ready yet.',
+    complexity: 'How the work grows',
   },
   item: {
     check: 'Check',

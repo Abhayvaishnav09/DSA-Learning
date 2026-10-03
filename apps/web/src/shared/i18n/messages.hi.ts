@@ -14,6 +14,7 @@ export const hiLatn: Messages = {
     leagues: 'Leagues',
     classes: 'Classes',
     search: 'Search',
+    visualize: 'Code ko chalte dekho',
     notifications: 'Notifications',
     profile: 'Profile',
     settings: 'Settings',
@@ -276,6 +277,7 @@ export const hiLatn: Messages = {
     backToPath: 'Apne path par wapas',
     exit: 'Lesson chhodo',
     notReady: 'Yeh lesson abhi taiyaar nahi hai.',
+    complexity: 'Kaam kitna badhta hai',
   },
   item: {
     check: 'Check karo',

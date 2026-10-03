@@ -207,6 +207,8 @@ const en = {
     unknownKind: 'This kind of change cannot be edited here.',
     notFound: 'That item was not found.',
     lessonPreviewTitle: 'How it reads',
+    programError: (message: string) => `The program does not run yet: ${message}`,
+    complexity: 'How the work grows',
   },
   media: {
     title: 'Pictures',
@@ -450,6 +452,8 @@ const hi: Strings = {
     unknownKind: 'Is tarah ka badlav yahan nahi badla ja sakta.',
     notFound: 'Woh cheez nahi mili.',
     lessonPreviewTitle: 'Aisa padhega',
+    programError: (message: string) => `Program abhi nahi chalta: ${message}`,
+    complexity: 'Kaam kitna badhta hai',
   },
   media: {
     title: 'Tasveerein',

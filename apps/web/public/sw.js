@@ -1,7 +1,7 @@
 /*
  * LogicPath service worker (PWA): learning keeps working on a flaky connection.
  *
- * - Built assets (/_next/static/*) never change once built: cache-first.
+ * - Built assets (/_next/static/*) and Python (/pyodide/<version>/*) never change: cache-first.
  * - Pages: network-first, falling back to the last copy seen, so an installed app opens offline.
  * - API calls are never cached here: the app's own data layer decides what is fresh.
  */
@@ -28,7 +28,11 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(?:svg|png|woff2)$/)) {
+  if (
+    url.pathname.startsWith('/_next/static/') ||
+    url.pathname.startsWith('/pyodide/') ||
+    url.pathname.match(/\.(?:svg|png|woff2)$/)
+  ) {
     event.respondWith(
       caches.open(STATIC).then(async (cache) => {
         const hit = await cache.match(request);

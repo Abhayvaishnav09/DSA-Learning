@@ -2,6 +2,7 @@ import type { Role } from '@logicpath/contracts';
 import {
   BarChart3,
   BookOpen,
+  Code,
   FilePlus2,
   FileText,
   Flag,
@@ -49,6 +50,7 @@ export const AREA_NAV: Record<Area, NavItem[]> = {
       signedIn: true,
     },
     { href: routes.classes, label: (t) => t.nav.classes, icon: School, signedIn: true },
+    { href: routes.visualize, label: (t) => t.nav.visualize, icon: Code },
     { href: routes.search(), label: (t) => t.nav.search, icon: Search },
     {
       href: routes.profile,

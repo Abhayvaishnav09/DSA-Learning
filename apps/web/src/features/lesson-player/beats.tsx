@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { ItemCard } from '@/entities/item/ItemCard';
 import { getItem, text } from '@/shared/content/bundle';
 import type { Messages } from '@/shared/i18n/messages';
+import { ComplexityNotes } from '@/shared/ui/ComplexityNotes';
 
 interface BeatProps {
   lesson: Lesson;
@@ -74,6 +75,13 @@ export function SeeBeat({ lesson, locale, t, onNext, onBack }: BeatProps) {
         captions={captions}
         onFrameChange={onFrameChange}
       />
+      {lesson.see.complexity && (
+        <ComplexityNotes
+          complexity={lesson.see.complexity}
+          locale={locale}
+          title={t.lesson.complexity}
+        />
+      )}
       <BeatNav
         t={t}
         onNext={onNext}
