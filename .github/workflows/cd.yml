@@ -42,7 +42,8 @@ jobs:
         with:
           node-version-file: .nvmrc
       - id: images
-        run: echo "matrix=$(node infra/ci/images.mjs)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "matrix=$(node infra/ci/images.mjs)" >> "$GITHUB_OUTPUT"
           echo "perarch=$(node infra/ci/images.mjs --arch)" >> "$GITHUB_OUTPUT"
       - id: version
         run: |
