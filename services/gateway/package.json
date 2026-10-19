@@ -27,8 +27,8 @@
     "@logicpath/api-client": "workspace:*",
     "@logicpath/content-schema": "workspace:*",
     "@logicpath/grader": "workspace:*",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "tsx": "^4.23.15",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   }
 }
