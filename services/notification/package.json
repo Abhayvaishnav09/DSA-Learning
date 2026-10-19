@@ -15,9 +15,9 @@
     "@logicpath/contracts": "workspace:*",
     "@logicpath/gamification-rules": "workspace:*",
     "@logicpath/service-kit": "workspace:*",
-    "drizzle-orm": "^0.45.3",
-    "nodemailer": "^10.0.13",
-    "zod": "^4.6.5"
+    "drizzle-orm": "^0.45.4",
+    "nodemailer": "^10.1.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
